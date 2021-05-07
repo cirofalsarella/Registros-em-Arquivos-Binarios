@@ -9,7 +9,7 @@ int GetBINData(FILE *fp, void *value, long long int size) {
 
 char *GetBINString(FILE *fp, int len) {
     char *string = (char*) malloc (len * (sizeof(char)));
-    if (fread(string, 50, sizeof(char), fp)) {
+    if (fread(string, len, sizeof(char), fp)) {
         return string;
     }
 
