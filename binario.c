@@ -1,7 +1,7 @@
 #include "binario.h"
 
 int GetBINData(FILE *fp, void *value, long long int size) {
-    if (fread(value, size, 1, fp)){
+    if (fread(&value, size, 1, fp)){
         return 1;
     }
     return 0;
@@ -18,7 +18,7 @@ char *GetBINString(FILE *fp, int len) {
 }
 
 void *WriteBINData(FILE *fp, void *value, long long int size) {
-    fwrite(&value, sizeof(int), 1, fp);
+    fwrite(&value, size, 1, fp);
 }
 
 void *WriteBINString(FILE *fp, char *string, int len) {
