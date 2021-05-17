@@ -1,13 +1,14 @@
+OBJECTS = csvToBinary.c dataModel.c operations.c printer.c stringTable.c
+
 all:
-	gcc -o programaTrab *.c
+	gcc main.c ${OBJECTS} -o programaTrab 
 	
 run:
 	./programaTrab
 
-# 	BASE = stringTable.c dataModel.c csvToBinary.c
-# 
-# all:
-# 	gcc -g -ggdb3 -Wall $(BASE) main.c -o main
-# run:
-# 	make all
-# 	gdb main.exe
+caso1:
+	./programaTrab < Teste/caso1
+	
+caso2:
+	./programaTrab < Teste/caso2
+	
