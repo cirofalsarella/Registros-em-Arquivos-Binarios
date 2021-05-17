@@ -5,6 +5,34 @@
 
 // TODO: Criar structs de registros de cabeçalho aqui
 
+typedef struct VehicleHeader {
+    char status;
+    int64_t nextReg;
+
+    int32_t numReg;
+    int32_t numRegRemov;
+    
+    char describePrefix[18];
+    char describeDate[35];
+    char describePlaces[42];
+    char describeLine[26];
+    char describeModel[17];
+    char describeCategory[20];
+} VehicleHeader_t;
+
+typedef struct BusLineHeader {
+    char status;
+    int64_t nextReg;
+
+    int32_t numReg;
+    int32_t numRegRemov;
+    
+    char describeCode[15];
+    char describeCard[13];
+    char describeName[13];
+    char describeLine[24];
+} BusLineHeader_t;
+
 #define VEHICLE_VAR_OFFSET 28 // 28 bytes until the variable-length fields start
 
 typedef struct {
