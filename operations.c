@@ -5,7 +5,7 @@ void CreateTableVehicles() {
     scanf("%s %s", csvFile, binFile);
 
     StringTable* Table = StringTable_FromCsv(csvFile, ',');
-    int flag = CsvToBinary_WriteVehicleFile(Table, binFile);
+    CsvToBinary_WriteVehicleFile(Table, binFile);
 
     StringTable_Free(Table);
 }
@@ -15,13 +15,37 @@ void CreateTableBuslines() {
     scanf("%s %s", csvFile, binFile);
 
     StringTable* Table = StringTable_FromCsv(csvFile, ',');
-    int flag = CsvToBinary_WriteBusLineFile(Table, binFile);
+    CsvToBinary_WriteBusLineFile(Table, binFile);
 
     StringTable_Free(Table);
 }
 
-void SelectVehicles() {}
-void SelectBuslines() {}
+
+void SelectVehicles() {
+    char binFile[128];
+    scanf("%s", binFile);
+
+    int n_vehicles;
+    Vehicle **vehicles = ReadBin_Vehicle(&n_vehicles, binFile);
+
+    for (int i=0; i<n_vehicles; i++) {
+        Printer_Vehicle(vehicles[i]);
+        Vehicle_Free(vehicles[i]);
+    }
+}
+
+void SelectBusLines() {
+    char binFile[128];
+    scanf("%s", binFile);
+
+    int n_busLines;
+    BusLine **buslines = ReadBin_BusLines(&n_busLines, binFile);
+
+    for (int i=0; i<n_busLines; i++) {
+        Printer_BusLine(buslines[i]);
+        BusLine_Free(buslines[i]);
+    }
+}
 
 void SelectVehiclesWhere() {}
 void SelectBuslinesWhere() {}

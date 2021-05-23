@@ -5,12 +5,13 @@
 #include "stringTable.h"
 #include "csvToBinary.h"
 #include "printer.h"
+#include "readBin.h"
 
 void CreateTableVehicles();
 void CreateTableBuslines();
 
 void SelectVehicles();
-void SelectBuslines();
+void SelectBusLines();
 
 void SelectVehiclesWhere();
 void SelectBuslinesWhere();
