@@ -3,8 +3,6 @@
 
 #include <stdint.h>
 
-// TODO: Criar structs de registros de cabeçalho aqui
-
 typedef struct VehicleHeader {
     char status;
     int64_t nextReg;
