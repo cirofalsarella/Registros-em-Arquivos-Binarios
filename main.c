@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "stringTable.h"
-#include "csvToBinary.h"
 #include "operations.h"
 
 int main() {
@@ -17,7 +15,7 @@ int main() {
         break;
     case 3: SelectVehicles();
         break;
-    case 4: SelectBuslines();
+    case 4: SelectBusLines();
         break;
     case 5: SelectVehiclesWhere();
         break;
@@ -26,8 +24,6 @@ int main() {
     case 7: InsertIntoVehicles();
         break;
     case 8: InsertIntoBuslines();
-        break;
-    default: printf("op inválida \n");
         break;
     }
 
