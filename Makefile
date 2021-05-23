@@ -1,17 +1,10 @@
-OBJECTS = csvToBinary.c dataModel.c operations.c printer.c stringTable.c readBin.c
-
-#all:
-#	gcc main.c ${OBJECTS} -o programaTrab -Wall
-	
-#run:
-#	./programaTrab
+OBJECTS = csvToBinary.c dataModel.c operations.c printer.c stringTable.c readBin.c funcao-fornecida.c
 
 all:
-	gcc main.c ${OBJECTS} -o programaTrab -Wall
+	gcc main.c ${OBJECTS} -o programaTrab.exe -Wall
 	
 run:
-	make all
-	programaTrab.exe
+	./programaTrab.exe
 
 clean:
-	rm ./*bin ./*csv programaTrab
+	rm ./*bin ./*csv programaTrab.exe

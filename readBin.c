@@ -76,6 +76,19 @@ Vehicle **ReadBin_Vehicle(int *n_vehicles, char *fileName) {
     return vehicles;
 }
 
+int numerizeVehicleArgument(char *argument) {
+    if (strcmp(argument, "prefixo") == 0) return 1;
+    if (strcmp(argument, "data") == 0) return 2;
+    if (strcmp(argument, "quantidadeLugares") == 0) return 3;
+    if (strcmp(argument, "modelo") == 0) return 4;
+    return 5;
+}
+
+Vehicle **ReadBin_VehicleWhere(int *n_vehicles, char *fileName, char *argument, void *value) {
+    Vehicle **vehicles = ReadBin_Vehicle(n_vehicles, fileName);
+}
+
+
 BusLineHeader_t *ReadBusLineHeader(FILE *srcFile){
     BusLineHeader_t *header = malloc (sizeof(VehicleHeader_t));
 
@@ -146,4 +159,8 @@ BusLine **ReadBin_BusLines(int *n_busLines, char *fileName) {
     *n_busLines = validRegisters;
     free(header);
     return busLines;
+}
+
+BusLine **ReadBin_BusLineWhere(int *n_buslines, char *fileName, char *argument, void *value) {
+    Vehicle **vehicles = ReadBin_BusLines(n_buslines, fileName);
 }

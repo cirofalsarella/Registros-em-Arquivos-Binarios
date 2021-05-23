@@ -8,6 +8,7 @@ void CreateTableVehicles() {
     CsvToBinary_WriteVehicleFile(Table, binFile);
 
     StringTable_Free(Table);
+    binarioNaTela(binFile);
 }
 
 void CreateTableBuslines() {
@@ -16,7 +17,9 @@ void CreateTableBuslines() {
 
     StringTable* Table = StringTable_FromCsv(csvFile, ',');
     CsvToBinary_WriteBusLineFile(Table, binFile);
+
     StringTable_Free(Table);
+    binarioNaTela(binFile);
 }
 
 

@@ -6,6 +6,7 @@
 #include "csvToBinary.h"
 #include "printer.h"
 #include "readBin.h"
+#include "funcao-fornecida.h"
 
 void CreateTableVehicles();
 void CreateTableBuslines();
