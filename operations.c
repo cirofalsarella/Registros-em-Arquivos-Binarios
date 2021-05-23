@@ -16,7 +16,6 @@ void CreateTableBuslines() {
 
     StringTable* Table = StringTable_FromCsv(csvFile, ',');
     CsvToBinary_WriteBusLineFile(Table, binFile);
-
     StringTable_Free(Table);
 }
 
@@ -27,8 +26,8 @@ void SelectVehicles() {
 
     int n_vehicles;
     Vehicle **vehicles = ReadBin_Vehicle(&n_vehicles, binFile);
-
-    for (int i=0; i<n_vehicles; i++) {
+    printf("NUMERO DE VEICULOS: %d\n", n_vehicles);
+    for (int i = 0; i < n_vehicles; i++) {
         Printer_Vehicle(vehicles[i]);
         Vehicle_Free(vehicles[i]);
     }
@@ -41,7 +40,7 @@ void SelectBusLines() {
     int n_busLines;
     BusLine **buslines = ReadBin_BusLines(&n_busLines, binFile);
 
-    for (int i=0; i<n_busLines; i++) {
+    for (int i = 0; i < n_busLines; i++) {
         Printer_BusLine(buslines[i]);
         BusLine_Free(buslines[i]);
     }

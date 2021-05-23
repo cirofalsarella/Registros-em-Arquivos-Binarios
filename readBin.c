@@ -1,6 +1,6 @@
 #include "readBin.h"
 #include "printer.h"
-
+#include <assert.h>
 
 VehicleHeader_t *ReadVehicleHeader(FILE *srcFile){
     VehicleHeader_t *header = malloc (sizeof(VehicleHeader_t));
@@ -50,11 +50,16 @@ Vehicle *ReadVehicle(FILE *srcFile) {
 Vehicle **ReadBin_Vehicle(int *n_vehicles, char *fileName) {
     FILE *srcFile = fopen(fileName, "rb");
 
+    // Reads the header
     VehicleHeader_t *header = ReadVehicleHeader(srcFile);
-    int validRegisters = (header->numReg - header->numRegRemov);
 
-    Vehicle **vehicles = malloc ( validRegisters * sizeof(Vehicle*) );
+    int validRegisters = header->numReg - header->numRegRemov;
+    assert(validRegisters > 0);
 
+    // Allocates space for the vehicles
+    Vehicle **vehicles = malloc(validRegisters * sizeof(Vehicle*));
+
+    // Gets the vehicles from the file
     int i = 0;
     while (i < validRegisters) {
         Vehicle *aux = ReadVehicle(srcFile);
@@ -74,6 +79,7 @@ Vehicle **ReadBin_Vehicle(int *n_vehicles, char *fileName) {
 BusLineHeader_t *ReadBusLineHeader(FILE *srcFile){
     BusLineHeader_t *header = malloc (sizeof(VehicleHeader_t));
 
+    // freads the fields stored in the binary file, in order
     fread(&header->status, sizeof(char), 1, srcFile);
     fread(&header->nextReg, sizeof(int64_t), 1, srcFile);
     fread(&header->numReg, sizeof(int32_t), 1, srcFile);
@@ -90,6 +96,7 @@ BusLineHeader_t *ReadBusLineHeader(FILE *srcFile){
 BusLine *ReadBusLine(FILE *srcFile) {
     BusLine *busLine = malloc (sizeof(BusLine));
 
+    // freads the fields stored in the binary file, in order
     fread(&busLine->removed, sizeof(char), 1, srcFile);
     fread(&busLine->regSize, sizeof(int32_t), 1, srcFile);
 
@@ -115,11 +122,16 @@ BusLine *ReadBusLine(FILE *srcFile) {
 BusLine **ReadBin_BusLines(int *n_busLines, char *fileName) {
     FILE *srcFile = fopen(fileName, "rb");
 
+    // Reads the header
     BusLineHeader_t *header = ReadBusLineHeader(srcFile);
-    int validRegisters = (header->numReg - header->numRegRemov);
 
-    BusLine **busLines = malloc ( validRegisters * sizeof(BusLine*) );
+    int validRegisters = header->numReg - header->numRegRemov;
+    assert(validRegisters > 0);
 
+    // Allocates space for the bus lines
+    BusLine **busLines = malloc(validRegisters * sizeof(BusLine*));
+
+    // Gets the bus lines from the file
     int i = 0;
     while (i < validRegisters) {
         BusLine *aux = ReadBusLine(srcFile);
