@@ -5,5 +5,5 @@
 #include "csvToBinary.h"
 
 
-void PrintVehicle(Vehicle *vehicle);
-void PrintBusLine(BusLine *busLine);
+void Printer_Vehicle(Vehicle *vehicle);
+void Printer_BusLine(BusLine *busLine);
