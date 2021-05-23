@@ -3,7 +3,7 @@
 #include <assert.h>
 
 VehicleHeader_t *ReadVehicleHeader(FILE *srcFile){
-    VehicleHeader_t *header = malloc (sizeof(VehicleHeader_t));
+    VehicleHeader_t *header = calloc(1, sizeof(VehicleHeader_t));
 
     fread(&header->status, sizeof(char), 1, srcFile);
     fread(&header->nextReg, sizeof(long), 1, srcFile);
@@ -21,7 +21,7 @@ VehicleHeader_t *ReadVehicleHeader(FILE *srcFile){
 }
 
 Vehicle *ReadVehicle(FILE *srcFile) {
-    Vehicle *vehicle = malloc (sizeof(Vehicle));
+    Vehicle *vehicle = calloc(1, sizeof(Vehicle));
 
     fread(&vehicle->removed, sizeof(char), 1, srcFile);
     fread(&vehicle->regSize, sizeof(int32_t), 1, srcFile);
@@ -32,11 +32,11 @@ Vehicle *ReadVehicle(FILE *srcFile) {
 
     // Variable-length fields
     fread(&vehicle->modelLength, sizeof(int32_t), 1, srcFile);
-    vehicle->model = malloc (vehicle->modelLength * sizeof(char));
+    vehicle->model = calloc(vehicle->modelLength, sizeof(char));
     fread(vehicle->model, sizeof(char), vehicle->modelLength, srcFile);
 
     fread(&vehicle->categoryLength, sizeof(int32_t), 1, srcFile);
-    vehicle->category = malloc (vehicle->categoryLength * sizeof(char));
+    vehicle->category = calloc(vehicle->categoryLength, sizeof(char));
     fread(vehicle->category, sizeof(char), vehicle->categoryLength, srcFile);
 
     if (vehicle->removed == 1){
@@ -57,7 +57,7 @@ Vehicle **ReadBin_Vehicle(int *n_vehicles, char *fileName) {
     assert(validRegisters > 0);
 
     // Allocates space for the vehicles
-    Vehicle **vehicles = malloc(validRegisters * sizeof(Vehicle*));
+    Vehicle **vehicles = calloc(validRegisters, sizeof(Vehicle*));
 
     // Gets the vehicles from the file
     int i = 0;
@@ -90,7 +90,7 @@ Vehicle **ReadBin_VehicleWhere(int *n_vehicles, char *fileName, char *argument, 
 
 
 BusLineHeader_t *ReadBusLineHeader(FILE *srcFile){
-    BusLineHeader_t *header = malloc (sizeof(VehicleHeader_t));
+    BusLineHeader_t *header = calloc(1, sizeof(VehicleHeader_t));
 
     // freads the fields stored in the binary file, in order
     fread(&header->status, sizeof(char), 1, srcFile);
@@ -107,7 +107,7 @@ BusLineHeader_t *ReadBusLineHeader(FILE *srcFile){
 }
 
 BusLine *ReadBusLine(FILE *srcFile) {
-    BusLine *busLine = malloc (sizeof(BusLine));
+    BusLine *busLine = calloc(1, sizeof(BusLine));
 
     // freads the fields stored in the binary file, in order
     fread(&busLine->removed, sizeof(char), 1, srcFile);
@@ -117,11 +117,11 @@ BusLine *ReadBusLine(FILE *srcFile) {
     fread(&busLine->acceptsCreditCard, sizeof(char), 1, srcFile);
 
     fread(&busLine->nameLength, sizeof(int32_t), 1, srcFile);
-    busLine->name = malloc (busLine->nameLength * sizeof(char));
+    busLine->name = calloc(busLine->nameLength, sizeof(char));
     fread(busLine->name, sizeof(char), busLine->nameLength, srcFile);
 
     fread(&busLine->colorLength, sizeof(int32_t), 1, srcFile);
-    busLine->color = malloc (busLine->colorLength * sizeof(char));
+    busLine->color = calloc(busLine->colorLength, sizeof(char));
     fread(busLine->color, sizeof(char), busLine->colorLength, srcFile);
 
     if (busLine->removed == 1){
@@ -142,7 +142,7 @@ BusLine **ReadBin_BusLines(int *n_busLines, char *fileName) {
     assert(validRegisters > 0);
 
     // Allocates space for the bus lines
-    BusLine **busLines = malloc(validRegisters * sizeof(BusLine*));
+    BusLine **busLines = calloc(validRegisters, sizeof(BusLine*));
 
     // Gets the bus lines from the file
     int i = 0;
