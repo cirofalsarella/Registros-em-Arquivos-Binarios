@@ -32,14 +32,14 @@ Vehicle *ReadVehicle(FILE *srcFile) {
 
     // Variable-length fields
     fread(&vehicle->modelLength, sizeof(int32_t), 1, srcFile);
-    vehicle->model = malloc (vehicle->modelLength * sizeof(char));
+    vehicle->model = calloc(vehicle->modelLength+1, sizeof(char));
     fread(vehicle->model, sizeof(char), vehicle->modelLength, srcFile);
 
     fread(&vehicle->categoryLength, sizeof(int32_t), 1, srcFile);
-    vehicle->category = malloc (vehicle->categoryLength * sizeof(char));
+    vehicle->category = calloc(vehicle->categoryLength+1, sizeof(char));
     fread(vehicle->category, sizeof(char), vehicle->categoryLength, srcFile);
 
-    if (vehicle->removed == 1){
+    if (vehicle->removed == 1) {
         Vehicle_Free(vehicle);
         vehicle = NULL;
     }
@@ -104,11 +104,11 @@ BusLine *ReadBusLine(FILE *srcFile) {
     fread(&busLine->acceptsCreditCard, sizeof(char), 1, srcFile);
 
     fread(&busLine->nameLength, sizeof(int32_t), 1, srcFile);
-    busLine->name = malloc (busLine->nameLength * sizeof(char));
+    busLine->name = calloc(busLine->nameLength+1, sizeof(char));
     fread(busLine->name, sizeof(char), busLine->nameLength, srcFile);
 
     fread(&busLine->colorLength, sizeof(int32_t), 1, srcFile);
-    busLine->color = malloc (busLine->colorLength * sizeof(char));
+    busLine->color = calloc(busLine->colorLength+1, sizeof(char));
     fread(busLine->color, sizeof(char), busLine->colorLength, srcFile);
 
     if (busLine->removed == 1){
