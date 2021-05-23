@@ -1,5 +1,8 @@
 #include "csvToBinary.h"
 
+//TODO -> nextReg
+
+
 // Vehicle
 
 Vehicle* CsvToBinary_CreateVehicleFromRow(StringTable* table, int row) {
@@ -59,7 +62,7 @@ void WriteVehicleHeader(VehicleHeader_t *header, FILE *destFile) {
     fwrite(&header->describeCategory, sizeof(char), 20, destFile);
 }
 
-int CsvToBinary_WriteVehicleFile(StringTable *table, char *fileName){
+void CsvToBinary_WriteVehicleFile(StringTable *table, char *fileName){
     VehicleHeader_t *header = CreateVehicleHeader(table);
     Vehicle **Vehicles = (Vehicle**) malloc ((table->rowCount - 1) * sizeof(Vehicle*));
 
@@ -142,7 +145,7 @@ void WriteBusLineHeader(BusLineHeader_t *header, FILE *destFile) {
     fwrite(&header->describeLine, sizeof(char), 24, destFile);
 }
 
-int CsvToBinary_WriteBusLineFile(StringTable *table, char *fileName){
+void CsvToBinary_WriteBusLineFile(StringTable *table, char *fileName){
     BusLineHeader_t *header = CreateBusLineHeader(table);
     BusLine **busLines = (BusLine**) malloc ((table->rowCount - 1) * sizeof(BusLine*));
 

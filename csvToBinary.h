@@ -40,7 +40,7 @@ void CsvToBinary_WriteVehicle(const Vehicle* vehicle, FILE* destFile);
  */
 void CsvToBinary_WriteBusLine(const BusLine* busLine, FILE* destFile);
 
-int CsvToBinary_WriteBusLineFile(StringTable *table, char *fileName);
-int CsvToBinary_WriteVehicleFile(StringTable *table, char *fileName);
+void CsvToBinary_WriteBusLineFile(StringTable *table, char *fileName);
+void CsvToBinary_WriteVehicleFile(StringTable *table, char *fileName);
 
 #endif
