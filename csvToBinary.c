@@ -38,12 +38,15 @@ void CsvToBinary_WriteVehicle(const Vehicle* vehicle, FILE* destFile) {
 VehicleHeader_t *CreateVehicleHeader(StringTable *table) {
     VehicleHeader_t *header = malloc (sizeof(VehicleHeader_t));
     
-    strcpy(header->describePrefix, StringTable_GetCellAt(table, 0, 0));
-    strcpy(header->describeDate, StringTable_GetCellAt(table, 1, 0));
-    strcpy(header->describePlaces, StringTable_GetCellAt(table, 2, 0));
-    strcpy(header->describeLine, StringTable_GetCellAt(table, 3, 0));
-    strcpy(header->describeModel, StringTable_GetCellAt(table, 4, 0));
-    strcpy(header->describeCategory, StringTable_GetCellAt(table, 5, 0));
+    header->status = '0';
+
+    strcpy(header->describePrefix, table->cells[0 + (0) * table->columnCount]);
+    strcpy(header->describeDate, table->cells[1 + (0) * table->columnCount]);
+    strcpy(header->describePlaces, table->cells[2 + (0) * table->columnCount]);
+    strcpy(header->describeLine, table->cells[3 + (0) * table->columnCount]);
+    strcpy(header->describeModel, table->cells[4 + (0) * table->columnCount]);
+    strcpy(header->describeCategory, table->cells[5 + (0) * table->columnCount]);
+    header->numRegRemov = 0;
 
     return header;
 }
@@ -63,15 +66,15 @@ void WriteVehicleHeader(VehicleHeader_t *header, FILE *destFile) {
 }
 
 void CsvToBinary_WriteVehicleFile(StringTable *table, char *fileName){
-    VehicleHeader_t *header = CreateVehicleHeader(table);
     Vehicle **Vehicles = (Vehicle**) malloc ((table->rowCount - 1) * sizeof(Vehicle*));
 
+    VehicleHeader_t *header = CreateVehicleHeader(table);
     header->numReg = table->rowCount -1;
-    header->nextReg = 0;
     for (int i = 0; i < table->rowCount-1; i++) {
         Vehicles[i] = CsvToBinary_CreateVehicleFromRow(table, i);
         if (Vehicles[i]->removed) {
             header->numRegRemov++;
+            header->numReg--;
         }
     }
 
@@ -82,7 +85,12 @@ void CsvToBinary_WriteVehicleFile(StringTable *table, char *fileName){
         Vehicle_Free(Vehicles[i]);
     }
 
-    header->status = 1;
+    fseek(destFile, 0, SEEK_END);
+    header->nextReg = ftell(destFile);
+    fseek(destFile, 1, SEEK_SET);
+    fwrite(&header->nextReg, sizeof(int64_t), 1, destFile);
+
+    header->status = '1';
     fseek(destFile, 0, SEEK_SET);
     fwrite(&header->status, 1, 1, destFile);
 
