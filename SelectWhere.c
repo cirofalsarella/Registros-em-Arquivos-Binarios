@@ -31,17 +31,17 @@ int Vehicle_categoria(void *pattern, Vehicle *vehicle){
 
 
 void *SelectWhere_setCondition(char *fieldName){
-    if (!strcmp(fieldName, "codLinha"))   return BusLine_codLinha;
-    if (!strcmp(fieldName, "aceitaCartao"))   return BusLine_aceitaCartao;
-    if (!strcmp(fieldName, "nomeLinha"))   return BusLine_nomeLinha;
-    if (!strcmp(fieldName, "corLinha"))   return BusLine_codLinha;
+    if (!strcmp(fieldName, "codLinha"))     return BusLine_codLinha;
+    if (!strcmp(fieldName, "aceitaCartao")) return BusLine_aceitaCartao;
+    if (!strcmp(fieldName, "nomeLinha"))    return BusLine_nomeLinha;
+    if (!strcmp(fieldName, "corLinha"))     return BusLine_codLinha;
 
-    if (!strcmp(fieldName, "prefixo"))   return Vehicle_prefixo;
-    if (!strcmp(fieldName, "data"))   return Vehicle_data;
-    if (!strcmp(fieldName, "quantidadeLugares"))   return Vehicle_quantidadeLugares;
-    if (!strcmp(fieldName, "modelo"))   return Vehicle_modelo;
-    if (!strcmp(fieldName, "categoria"))   return Vehicle_categoria;
-    
+    if (!strcmp(fieldName, "prefixo"))              return Vehicle_prefixo;
+    if (!strcmp(fieldName, "data"))                 return Vehicle_data;
+    if (!strcmp(fieldName, "quantidadeLugares"))    return Vehicle_quantidadeLugares;
+    if (!strcmp(fieldName, "modelo"))               return Vehicle_modelo;
+    if (!strcmp(fieldName, "categoria"))            return Vehicle_categoria;
+
     return NULL;
 }
 
