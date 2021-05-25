@@ -1,4 +1,4 @@
-OBJECTS = csvToBinary.c dataModel.c operations.c printer.c stringTable.c readBin.c funcao-fornecida.c
+OBJECTS = csvToBinary.c dataModel.c operations.c printer.c stringTable.c readBin.c selectWhere.c funcao-fornecida.c
 
 all:
 	gcc main.c ${OBJECTS} -o programaTrab.exe -Wall
