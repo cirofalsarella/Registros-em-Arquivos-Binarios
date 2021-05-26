@@ -1,11 +1,16 @@
+#ifndef _SELECT_WHERE_H_
+#define _SELECT_WHERE_H_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "dataModel.h"
 
-void *SelectWhere_setCondition(char *fieldName);
-void *SelectWhere_setPattern(char *fieldName);
+void *SelectWhere_SetCondition(char *fieldName);
+void *SelectWhere_SetPattern(char *fieldName);
 
-BusLine **SelectWhere_selectBusLines(void *functionPt(void*, BusLine*), void *pattern, BusLine ***busLines, int *n_busLines);
-Vehicle **SelectWhere_selectVehicles(void *functionPt(void*, Vehicle*), void *pattern, Vehicle ***vehicles, int *n_vehicles);
+BusLine **SelectWhere_SelectBusLines(void *functionPt(void*, BusLine*), void *pattern, BusLine ***busLines, int *n_busLines);
+Vehicle **SelectWhere_SelectVehicles(void *functionPt(void*, Vehicle*), void *pattern, Vehicle ***vehicles, int *n_vehicles);
+
+#endif

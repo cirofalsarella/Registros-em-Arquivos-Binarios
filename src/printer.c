@@ -6,7 +6,7 @@
  * @param label 
  * @param value 
  */
-void prettyPrintInt(const char* label, int value) {
+void PrettyPrintInt(const char* label, int value) {
     printf("%s: ", label);
     
     if (value == 0) {
@@ -22,7 +22,7 @@ void prettyPrintInt(const char* label, int value) {
  * @param label 
  * @param str 
  */
-void prettyPrint(const char* label, const char* str) {
+void PrettyPrint(const char* label, const char* str) {
     printf("%s: ", label);
     
     if (str == NULL) {
@@ -40,7 +40,7 @@ void prettyPrint(const char* label, const char* str) {
  * @param str 
  * @param maxLength 
  */
-void prettyPrintWithMaxLength(const char* label, const char* str, int maxLength) {
+void PrettyPrintWithMaxLength(const char* label, const char* str, int maxLength) {
     printf("%s: ", label);
     
     if (str == NULL) {
@@ -57,18 +57,18 @@ void prettyPrintWithMaxLength(const char* label, const char* str, int maxLength)
 
 
 void Printer_Vehicle(Vehicle *vehicle) {
-    prettyPrintWithMaxLength("Prefixo do veiculo", vehicle->prefix, 5);
-    prettyPrint("Modelo do veiculo", vehicle->model);
-    prettyPrint("Categoria do veiculo", vehicle->category);
-    prettyPrintWithMaxLength("Data de entrada do veiculo na frota", vehicle->date, 10);
-    prettyPrintInt("Quantidade de lugares sentados disponiveis", vehicle->numSeats);
+    PrettyPrintWithMaxLength("Prefixo do veiculo", vehicle->prefix, 5);
+    PrettyPrint("Modelo do veiculo", vehicle->model);
+    PrettyPrint("Categoria do veiculo", vehicle->category);
+    PrettyPrintWithMaxLength("Data de entrada do veiculo na frota", vehicle->date, 10);
+    PrettyPrintInt("Quantidade de lugares sentados disponiveis", vehicle->numSeats);
     printf("\n");
 }
 
 void Printer_BusLine(BusLine *busLine) {
-    prettyPrintWithMaxLength("Codigo da linha", busLine->lineCode, 4);
-    prettyPrint("Nome da linha", busLine->name);
-    prettyPrint("Cor que descreve a linha", busLine->color);
+    PrettyPrintWithMaxLength("Codigo da linha", busLine->lineCode, 4);
+    PrettyPrint("Nome da linha", busLine->name);
+    PrettyPrint("Cor que descreve a linha", busLine->color);
 
     // Converts accepts credit card char to a string
     char* acceptsCardStr = calloc(100, sizeof(char));
@@ -84,7 +84,7 @@ void Printer_BusLine(BusLine *busLine) {
         acceptsCardStr = NULL;
     }
 
-    prettyPrint("Aceita cartao", acceptsCardStr);
+    PrettyPrint("Aceita cartao", acceptsCardStr);
 
     if (acceptsCardStr != NULL) free(acceptsCardStr);
     printf("\n");

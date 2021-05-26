@@ -30,7 +30,7 @@ int Vehicle_categoria(void *pattern, Vehicle *vehicle){
 }
 
 
-void *SelectWhere_setCondition(char *fieldName){
+void *SelectWhere_SetCondition(char *fieldName) {
     if (!strcmp(fieldName, "codLinha"))     return BusLine_codLinha;
     if (!strcmp(fieldName, "aceitaCartao")) return BusLine_aceitaCartao;
     if (!strcmp(fieldName, "nomeLinha"))    return BusLine_nomeLinha;
@@ -45,12 +45,12 @@ void *SelectWhere_setCondition(char *fieldName){
     return NULL;
 }
 
-void *SelectWhere_setPattern(char *fieldName){
+void *SelectWhere_SetPattern(char *fieldName){
     return NULL;
 }
 
 
-Vehicle **SelectWhere_selectVehicles(void *functionPt(void*, Vehicle*), void *pattern, Vehicle ***vehicles, int *n_vehicles){
+Vehicle **SelectWhere_SelectVehicles(void *functionPt(void*, Vehicle*), void *pattern, Vehicle ***vehicles, int *n_vehicles){
     int n = *n_vehicles;
     for (int i=0; i<*n_vehicles; i++) {
         if (functionPt(pattern, *vehicles[i])){
@@ -74,7 +74,7 @@ Vehicle **SelectWhere_selectVehicles(void *functionPt(void*, Vehicle*), void *pa
     return selectedVehicles;
 }
 
-BusLine **SelectWhere_selectBusLines(void *functionPt(void*, BusLine*), void *pattern, BusLine ***busLines, int *n_busLines){
+BusLine **SelectWhere_SelectBusLines(void *functionPt(void*, BusLine*), void *pattern, BusLine ***busLines, int *n_busLines){
     int n = *n_busLines;
     for (int i=0; i<*n_busLines; i++) {
         if (functionPt(pattern, *busLines[i])){

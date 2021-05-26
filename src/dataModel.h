@@ -2,7 +2,6 @@
 #define _DATA_MODEL_H_
 
 #include <stdint.h>
-
 typedef struct VehicleHeader {
     char status;
     int64_t nextReg;

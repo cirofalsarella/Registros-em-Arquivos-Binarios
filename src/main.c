@@ -5,25 +5,35 @@
 #include "operations.h"
 
 int main() {
+    // Gets op number
     int op;
     scanf("%d", &op);
 
+    // Depending on the requested op, executes a specific function
     switch (op) {
-    case 1: CreateTableVehicles();
-        break;    
-    case 2: CreateTableBuslines();
+    case 1:
+        Op_CreateTableVehicles();
         break;
-    case 3: SelectVehicles();
+    case 2:
+        Op_CreateTableBuslines();
         break;
-    case 4: SelectBusLines();
+    case 3:
+        Op_SelectVehicles();
         break;
-    case 5: SelectVehiclesWhere();
+    case 4:
+        Op_SelectBusLines();
         break;
-    case 6: SelectBuslinesWhere();
+    case 5:
+        Op_SelectVehiclesWhere();
         break;
-    case 7: InsertIntoVehicles();
+    case 6:
+        Op_SelectBuslinesWhere();
         break;
-    case 8: InsertIntoBuslines();
+    case 7:
+        Op_PushVehicles();
+        break;
+    case 8:
+        Op_PushBuslines();
         break;
     }
 
