@@ -63,7 +63,7 @@ void Printer_Vehicle(Vehicle *vehicle) {
 }
 
 void Printer_BusLine(BusLine *busLine) {
-    PrettyPrintWithMaxLength("Codigo da linha", busLine->lineCode, 4);
+    PrettyPrintInt("Codigo da linha", busLine->lineCode);
     PrettyPrint("Nome da linha", busLine->name);
     PrettyPrint("Cor que descreve a linha", busLine->color);
 

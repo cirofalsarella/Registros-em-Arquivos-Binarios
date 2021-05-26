@@ -2,6 +2,7 @@
 #define _DATA_MODEL_H_
 
 #include <stdint.h>
+
 typedef struct {
     char status;
     int64_t nextReg;
@@ -42,7 +43,7 @@ typedef struct {
     char prefix[5];
     char date[10];
     int32_t numSeats;
-    char lineCode[4];
+    int32_t lineCode;
 
     // Variable-length fields
     int32_t modelLength;
@@ -60,7 +61,7 @@ typedef struct {
     int32_t regSize;
 
     // Fixed-length fields
-    char lineCode[4];
+    int32_t lineCode;
     char acceptsCreditCard;
 
     // Variable-length fields
@@ -82,7 +83,7 @@ typedef struct {
  * @param category 
  * @return Vehicle* 
  */
-Vehicle* Vehicle_Create(char removed, char* prefix, char* date, int32_t numPlaces, char* lineCode, char* model, char* category);
+Vehicle* Vehicle_Create(char removed, char* prefix, char* date, int32_t numPlaces, int32_t lineCode, char* model, char* category);
 
 /**
  * @brief Frees the memory allocated for the given vehicle.
@@ -101,7 +102,7 @@ void Vehicle_Free(Vehicle* vehicle);
  * @param color 
  * @return BusLine* 
  */
-BusLine* BusLine_Create(char removed, char* lineCode, char acceptsCreditCard, char* name, char* color);
+BusLine* BusLine_Create(char removed, int32_t lineCode, char acceptsCreditCard, char* name, char* color);
 
 /**
  * @brief Frees the memory allocated for the given vehicle.

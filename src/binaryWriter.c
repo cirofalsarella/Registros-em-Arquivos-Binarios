@@ -11,7 +11,8 @@ void BinaryWriter_WriteVehicle(const Vehicle* vehicle, FILE* destFile) {
     fwrite(&vehicle->prefix[0], sizeof(char), 5, destFile);
     fwrite(&vehicle->date[0], sizeof(char), 10, destFile);
     fwrite(&vehicle->numSeats, sizeof(int32_t), 1, destFile);
-    fwrite(&vehicle->lineCode[0], sizeof(char), 4, destFile);
+
+    fwrite(&vehicle->lineCode, sizeof(int32_t), 1, destFile);
 
     // Variable-length fields
     fwrite(&vehicle->modelLength, sizeof(int32_t), 1, destFile);
@@ -25,7 +26,7 @@ void BinaryWriter_WriteBusLine(const BusLine* busLine, FILE* destFile) {
     fwrite(&busLine->removed, sizeof(char), 1, destFile);
     fwrite(&busLine->regSize, sizeof(int32_t), 1, destFile);
 
-    fwrite(&busLine->lineCode[0], sizeof(char), 4, destFile);
+    fwrite(&busLine->lineCode, sizeof(int32_t), 1, destFile);
     fwrite(&busLine->acceptsCreditCard, sizeof(char), 1, destFile);
 
     // Variable-length fields

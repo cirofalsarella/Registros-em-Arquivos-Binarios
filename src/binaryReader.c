@@ -28,7 +28,7 @@ Vehicle* ReadVehicle(FILE *srcFile) {
     fread(&vehicle->prefix[0], sizeof(char), 5, srcFile);
     fread(&vehicle->date[0], sizeof(char), 10, srcFile);
     fread(&vehicle->numSeats, sizeof(int32_t), 1, srcFile);
-    fread(&vehicle->lineCode[0], sizeof(char), 4, srcFile);
+    fread(&vehicle->lineCode, sizeof(int32_t), 1, srcFile);
 
     // Variable-length fields
     fread(&vehicle->modelLength, sizeof(int32_t), 1, srcFile);
@@ -66,7 +66,7 @@ BusLine* ReadBusLine(FILE *srcFile) {
     fread(&busLine->removed, sizeof(char), 1, srcFile);
     fread(&busLine->regSize, sizeof(int32_t), 1, srcFile);
 
-    fread(&busLine->lineCode[0], sizeof(char), 4, srcFile);
+    fread(&busLine->lineCode, sizeof(int32_t), 1, srcFile);
     fread(&busLine->acceptsCreditCard, sizeof(char), 1, srcFile);
 
     fread(&busLine->nameLength, sizeof(int32_t), 1, srcFile);

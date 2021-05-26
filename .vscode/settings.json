@@ -6,6 +6,7 @@
         "stringtable.h": "c",
         "selectwhere.h": "c",
         "stdlib.h": "c",
-        "operations.h": "c"
+        "operations.h": "c",
+        "datamodel.h": "c"
     }
 }

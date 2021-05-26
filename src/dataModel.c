@@ -5,7 +5,7 @@
 
 // TODO: NULOS + Fix hashes (nextReg is different)
 
-Vehicle* Vehicle_Create(char removed, char* prefix, char* date, int32_t numSeats, char* lineCode, char* model, char* category) {    
+Vehicle* Vehicle_Create(char removed, char* prefix, char* date, int32_t numSeats, int32_t lineCode, char* model, char* category) {    
     int modelLength = strlen(model);
     int categoryLength = strlen(category);
 
@@ -16,8 +16,9 @@ Vehicle* Vehicle_Create(char removed, char* prefix, char* date, int32_t numSeats
     vehicle->regSize = VEHICLE_VAR_OFFSET + sizeof(int32_t)*2 + modelLength + categoryLength;
     Utils_StrCopyToFixedLen(&vehicle->prefix[0], prefix, 5);
     Utils_StrCopyToFixedLen(&vehicle->date[0], date, 10);
+
     vehicle->numSeats = numSeats;
-    Utils_StrCopyToFixedLen(&vehicle->lineCode[0], lineCode, 4);
+    vehicle->lineCode = lineCode;
     vehicle->modelLength = modelLength;
     vehicle->model = model;
     vehicle->categoryLength = categoryLength;
@@ -31,7 +32,7 @@ void Vehicle_Free(Vehicle* vehicle) {
     free(vehicle);
 }
 
-BusLine* BusLine_Create(char removed, char* lineCode, char acceptsCreditCard, char* name, char* color) {
+BusLine* BusLine_Create(char removed, int32_t lineCode, char acceptsCreditCard, char* name, char* color) {
     int nameLength = strlen(name);
     int colorLength = strlen(color);
 
@@ -40,7 +41,7 @@ BusLine* BusLine_Create(char removed, char* lineCode, char acceptsCreditCard, ch
     busLine->removed = removed;
     // Reg size = Variable fields offset + 2x 4-byte integers + length of the two strings
     busLine->regSize = BUS_LINE_VAR_OFFSET + sizeof(int32_t)*2 + nameLength + colorLength;
-    Utils_StrCopyToFixedLen(&busLine->lineCode[0], lineCode, 4);
+    busLine->lineCode = lineCode;
     busLine->acceptsCreditCard = acceptsCreditCard;
     busLine->nameLength = nameLength;
     busLine->name = name;
