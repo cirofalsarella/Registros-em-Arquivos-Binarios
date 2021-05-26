@@ -1,4 +1,5 @@
 #include "printer.h"
+#include "utils.h"
 
 /**
  * @brief Prints an integer with the given label. Also handles the case when the field is NULL.
@@ -47,11 +48,7 @@ void PrettyPrintWithMaxLength(const char* label, const char* str, int maxLength)
         printf("campo com valor nulo\n");
     } else {
         // Prints each char from the string, and ensures we don't print unallocated memory
-        int strLen = strlen(str);
-        for (int i = 0; i < (strLen < maxLength ? strLen : maxLength); ++i) {
-            printf("%c", str[i]);
-        }
-        printf("\n");
+        Utils_StrPrintWithFixedLen(str, maxLength);
     }
 }
 

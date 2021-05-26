@@ -36,4 +36,12 @@ int Utils_MinNumber(int x, int y);
  */
 void Utils_StrCopyToFixedLen(char* from, char* to, int length);
 
+/**
+ * @brief Prints str in terminal.
+ * 
+ * @param str 
+ * @param maxLength 
+ */
+void Utils_StrPrintWithFixedLen(const char* str, int maxLength);
+
 #endif

@@ -40,3 +40,11 @@ void Utils_StrCopyToFixedLen(char* to, char* from, int length) {
         to[lenToCopy] = '\0';
     }
 }
+
+void Utils_StrPrintWithFixedLen(const char* str, int maxLength) {
+    int strLen = strlen(str);
+    for (int i = 0; i < (strLen < maxLength ? strLen : maxLength); ++i) {
+        printf("%c", str[i]);
+    }
+    printf("\n");
+}
