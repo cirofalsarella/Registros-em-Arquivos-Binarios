@@ -54,6 +54,10 @@ char* ReadLine(FILE* stream) {
 
 StringTable* StringTable_FromCsv(const char* fileName, char sep) {
     FILE* stream = fopen(fileName, "r");
+    if (stream == NULL){
+        return NULL;
+    }
+
     StringTable* table = StringTable_Create();
     char* sepStr = malloc(sizeof(char));
     sepStr[0] = sep;

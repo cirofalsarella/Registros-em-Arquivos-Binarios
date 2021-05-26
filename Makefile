@@ -4,7 +4,6 @@ all:
 	gcc src/main.c ${OBJECTS} -o programaTrab.exe -Wall
 	
 run:
-	make all
 	./programaTrab.exe
 
 clean:

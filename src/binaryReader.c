@@ -82,6 +82,9 @@ BusLine* ReadBusLine(FILE *srcFile) {
 
 Vehicle** BinaryReader_Vehicles(VehicleHeader** header, char* fileName) {
     FILE* srcFile = fopen(fileName, "rb");
+    if (srcFile == NULL) {
+        return NULL;
+    }
 
     // Reads the header
     *header = ReadVehicleHeader(srcFile);
@@ -108,7 +111,10 @@ Vehicle** BinaryReader_Vehicles(VehicleHeader** header, char* fileName) {
 
 BusLine** BinaryReader_BusLines(BusLineHeader** header, char* fileName) {
     FILE* srcFile = fopen(fileName, "rb");
-
+    if (srcFile == NULL) {
+        return NULL;
+    }
+    
     // Reads the header
     *header = ReadBusLineHeader(srcFile);
 

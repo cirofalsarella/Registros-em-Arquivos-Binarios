@@ -43,6 +43,11 @@ void Op_CreateTableVehicles() {
 
     // Converts csv to binary and saves to disk
     StringTable* Table = StringTable_FromCsv(csvFile, ',');
+    if (Table == NULL) {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
     CsvToBinary_WriteVehicleFile(Table, binFile);
 
     StringTable_Free(Table);
@@ -56,6 +61,11 @@ void Op_CreateTableBuslines() {
 
     // Converts csv to binary and saves to disk
     StringTable* Table = StringTable_FromCsv(csvFile, ',');
+        if (Table == NULL) {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
     CsvToBinary_WriteBusLineFile(Table, binFile);
 
     StringTable_Free(Table);
@@ -70,8 +80,13 @@ void Op_SelectVehicles() {
     // Reads binary file from disk
     VehicleHeader* header = NULL;
     Vehicle** vehicles = BinaryReader_Vehicles(&header, binFile);
+    if (vehicles == NULL) {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
     
     // Prints all vehicles
+    if (header->numReg > 0){ }
     printf("NUMERO DE VEICULOS: %d\n", header->numReg);
     for (int i = 0; i < header->numReg; i++) {
         Printer_Vehicle(vehicles[i]);
@@ -89,6 +104,10 @@ void Op_SelectBusLines() {
     // Reads binary file from disk
     BusLineHeader* header = NULL;
     BusLine** buslines = BinaryReader_BusLines(&header, binFile);
+    if (buslines == NULL) {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
 
     // Prints all bus lines
     printf("NUMERO DE LINHAS: %d\n", header->numReg);
@@ -108,6 +127,10 @@ void Op_SelectVehiclesWhere() {
     // Reads binary file from disk
     VehicleHeader* header = NULL;
     Vehicle** vehicles = BinaryReader_Vehicles(&header, binFile);
+    if (vehicles == NULL) {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
 
     // Reads field name
     char fieldName[64] = { '\0' };
@@ -136,6 +159,10 @@ void Op_SelectBuslinesWhere() {
     // Reads binary file from disk
     BusLineHeader* header = NULL;
     BusLine **buslines = BinaryReader_BusLines(&header, binFile);
+    if (buslines == NULL) {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
 
     // Reads field name
     char fieldName[64] = { '\0' };
