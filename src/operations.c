@@ -95,7 +95,7 @@ void Op_SelectVehicles() {
         printf("Registro inexistente.\n");
     }
 
-    free(header);
+    VehicleHeader_Free(header);
     free(vehicles);
 }
 
@@ -122,7 +122,7 @@ void Op_SelectBusLines() {
         printf("Registro inexistente.\n");
     }
 
-    free(header);
+    VehicleHeader_Free(header);
     free(buslines);
 }
 
@@ -158,7 +158,7 @@ void Op_SelectVehiclesWhere() {
         printf("Registro inexistente.\n");
     }
 
-    free(header);
+    VehicleHeader_Free(header);
     free(vehicles);
 }
 
@@ -194,7 +194,7 @@ void Op_SelectBuslinesWhere() {
         printf("Registro inexistente.\n");
     }
 
-    free(header);
+    VehicleHeader_Free(header);
     free(buslines);
 }
 
@@ -258,6 +258,7 @@ void Op_PushVehicles() {
 
     // Writes to file
     BinaryWriter_CreateVehicleFile(vehicles, header->numReg, header, binFile);
+    PrintHash(binFile);
 }
 
 void Op_PushBuslines() {
@@ -295,4 +296,5 @@ void Op_PushBuslines() {
 
     // Writes to file
     BinaryWriter_CreateBusLineFile(busLines, header->numReg, header, binFile);
+    PrintHash(binFile);
 }
