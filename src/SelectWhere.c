@@ -1,4 +1,4 @@
-#include "SelectWhere.h"
+#include "selectWhere.h"
 
 int BusLine_codLinha(void *pattern, BusLine *busLine){
     return 0;
@@ -29,8 +29,7 @@ int Vehicle_categoria(void *pattern, Vehicle *vehicle){
     return 0;   
 }
 
-
-void *SelectWhere_SetCondition(char *fieldName) {
+void* SelectWhere_SetCondition(char *fieldName) {
     if (!strcmp(fieldName, "codLinha"))     return BusLine_codLinha;
     if (!strcmp(fieldName, "aceitaCartao")) return BusLine_aceitaCartao;
     if (!strcmp(fieldName, "nomeLinha"))    return BusLine_nomeLinha;
@@ -45,14 +44,14 @@ void *SelectWhere_SetCondition(char *fieldName) {
     return NULL;
 }
 
-void *SelectWhere_SetPattern(char *fieldName){
+void *SelectWhere_SetPattern(char *fieldName) {
     return NULL;
 }
 
 
-Vehicle **SelectWhere_SelectVehicles(void *functionPt(void*, Vehicle*), void *pattern, Vehicle ***vehicles, int *n_vehicles){
-    int n = *n_vehicles;
-    for (int i=0; i<*n_vehicles; i++) {
+Vehicle** SelectWhere_SelectVehicles(void *functionPt(void*, Vehicle*), void *pattern, Vehicle ***vehicles, int* vehiclesCount) {
+    int n = *vehiclesCount;
+    for (int i = 0; i < *vehiclesCount; i++) {
         if (functionPt(pattern, *vehicles[i])){
             Vehicle_Free(*vehicles[i]);
             *vehicles[i] = NULL;
@@ -62,7 +61,7 @@ Vehicle **SelectWhere_SelectVehicles(void *functionPt(void*, Vehicle*), void *pa
 
     Vehicle **selectedVehicles = calloc (n, sizeof(Vehicle*));
     n = 0;
-    for (int i=0; i<*n_vehicles; i++) {
+    for (int i = 0; i < *vehiclesCount; i++) {
         if (*vehicles[i] != NULL) {
             selectedVehicles[n] = *vehicles[i];
             n++;
@@ -70,13 +69,13 @@ Vehicle **SelectWhere_SelectVehicles(void *functionPt(void*, Vehicle*), void *pa
     }
 
     free(*vehicles);
-    *n_vehicles = n;
+    *vehiclesCount = n;
     return selectedVehicles;
 }
 
-BusLine **SelectWhere_SelectBusLines(void *functionPt(void*, BusLine*), void *pattern, BusLine ***busLines, int *n_busLines){
-    int n = *n_busLines;
-    for (int i=0; i<*n_busLines; i++) {
+BusLine **SelectWhere_SelectBusLines(void *functionPt(void*, BusLine*), void *pattern, BusLine*** busLines, int* busLinesCount) {
+    int n = *busLinesCount;
+    for (int i = 0; i < *busLinesCount; i++) {
         if (functionPt(pattern, *busLines[i])){
             BusLine_Free(*busLines[i]);
             *busLines[i] = NULL;
@@ -84,9 +83,9 @@ BusLine **SelectWhere_SelectBusLines(void *functionPt(void*, BusLine*), void *pa
         }
     }
 
-    BusLine **selectedBusLines = calloc (n, sizeof(BusLine*));
+    BusLine **selectedBusLines = calloc(n, sizeof(BusLine*));
     n = 0;
-    for (int i=0; i<*n_busLines; i++) {
+    for (int i = 0; i < *busLinesCount; i++) {
         if (*busLines[i] != NULL) {
             selectedBusLines[n] = *busLines[i];
             n++;
@@ -94,6 +93,6 @@ BusLine **SelectWhere_SelectBusLines(void *functionPt(void*, BusLine*), void *pa
     }
 
     free(*busLines);
-    *n_busLines = n;
+    *busLinesCount = n;
     return selectedBusLines;
 }

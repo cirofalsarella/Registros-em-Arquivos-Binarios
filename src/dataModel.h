@@ -2,7 +2,7 @@
 #define _DATA_MODEL_H_
 
 #include <stdint.h>
-typedef struct VehicleHeader {
+typedef struct {
     char status;
     int64_t nextReg;
 
@@ -15,9 +15,9 @@ typedef struct VehicleHeader {
     char describeLine[26];
     char describeModel[17];
     char describeCategory[20];
-} VehicleHeader_t;
+} VehicleHeader;
 
-typedef struct BusLineHeader {
+typedef struct {
     char status;
     int64_t nextReg;
 
@@ -28,7 +28,7 @@ typedef struct BusLineHeader {
     char describeCard[13];
     char describeName[13];
     char describeLine[24];
-} BusLineHeader_t;
+} BusLineHeader;
 
 #define VEHICLE_VAR_OFFSET 28 // 28 bytes until the variable-length fields start
 

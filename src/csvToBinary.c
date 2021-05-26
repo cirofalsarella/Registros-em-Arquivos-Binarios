@@ -1,7 +1,6 @@
 #include "csvToBinary.h"
-
-//TODO -> nextReg
-
+#include "binaryHeaders.h"
+#include "binaryWriter.h"
 
 // Vehicle
 
@@ -18,71 +17,25 @@ Vehicle* CsvToBinary_CreateVehicleFromRow(StringTable* table, int row) {
     return Vehicle_Create(removed, prefix, date, atoi(numSeats), lineCode, strdup(model), strdup(category));
 }
 
-void CsvToBinary_WriteVehicle(const Vehicle* vehicle, FILE* destFile) {
-    // Writes each field from vehicle in the given file
-    fwrite(&vehicle->removed, sizeof(char), 1, destFile);
-    fwrite(&vehicle->regSize, sizeof(int32_t), 1, destFile);
+void CsvToBinary_WriteVehicleFile(StringTable *table, char *fileName) {
+    Vehicle** vehicles = (Vehicle**) malloc ((table->rowCount - 1) * sizeof(Vehicle*));
 
-    fwrite(&vehicle->prefix[0], sizeof(char), 5, destFile);
-    fwrite(&vehicle->date[0], sizeof(char), 10, destFile);
-    fwrite(&vehicle->numSeats, sizeof(int32_t), 1, destFile);
-    fwrite(&vehicle->lineCode[0], sizeof(char), 4, destFile);
-
-    // Variable-length fields
-    fwrite(&vehicle->modelLength, sizeof(int32_t), 1, destFile);
-    fwrite(vehicle->model, sizeof(char), vehicle->modelLength, destFile);
-    fwrite(&vehicle->categoryLength, sizeof(int32_t), 1, destFile);
-    fwrite(vehicle->category, sizeof(char), vehicle->categoryLength, destFile);
-}
-
-VehicleHeader_t *CreateVehicleHeader(StringTable *table) {
-    VehicleHeader_t *header = malloc (sizeof(VehicleHeader_t));
-    
-    header->status = '0';
-
-    strcpy(header->describePrefix, table->cells[0 + (0) * table->columnCount]);
-    strcpy(header->describeDate, table->cells[1 + (0) * table->columnCount]);
-    strcpy(header->describePlaces, table->cells[2 + (0) * table->columnCount]);
-    strcpy(header->describeLine, table->cells[3 + (0) * table->columnCount]);
-    strcpy(header->describeModel, table->cells[4 + (0) * table->columnCount]);
-    strcpy(header->describeCategory, table->cells[5 + (0) * table->columnCount]);
-    header->numRegRemov = 0;
-
-    return header;
-}
-
-void WriteVehicleHeader(VehicleHeader_t *header, FILE *destFile) {
-    fwrite(&header->status, sizeof(char), 1, destFile);
-    fwrite(&header->nextReg, sizeof(int64_t), 1, destFile);
-    fwrite(&header->numReg, sizeof(int32_t), 1, destFile);
-    fwrite(&header->numRegRemov, sizeof(int32_t), 1, destFile);
-
-    fwrite(&header->describePrefix, sizeof(char), 18, destFile);
-    fwrite(&header->describeDate, sizeof(char), 35, destFile);
-    fwrite(&header->describePlaces, sizeof(char), 42, destFile);
-    fwrite(&header->describeLine, sizeof(char), 26, destFile);
-    fwrite(&header->describeModel, sizeof(char), 17, destFile);
-    fwrite(&header->describeCategory, sizeof(char), 20, destFile);
-}
-
-void CsvToBinary_WriteVehicleFile(StringTable *table, char *fileName){
-    Vehicle **Vehicles = (Vehicle**) malloc ((table->rowCount - 1) * sizeof(Vehicle*));
-
-    VehicleHeader_t *header = CreateVehicleHeader(table);
+    VehicleHeader* header = VehicleHeader_CreateFromTable(table);
     header->numReg = table->rowCount -1;
     for (int i = 0; i < table->rowCount-1; i++) {
-        Vehicles[i] = CsvToBinary_CreateVehicleFromRow(table, i);
-        if (Vehicles[i]->removed) {
+        vehicles[i] = CsvToBinary_CreateVehicleFromRow(table, i);
+        if (vehicles[i]->removed) {
             header->numRegRemov++;
             header->numReg--;
         }
     }
 
-    FILE *destFile = fopen(fileName, "wb");
-    WriteVehicleHeader(header, destFile);
-    for (int i=0; i<table->rowCount-1; i++){
-        CsvToBinary_WriteVehicle(Vehicles[i], destFile);
-        Vehicle_Free(Vehicles[i]);
+    FILE* destFile = fopen(fileName, "wb");
+    BinaryWriter_WriteVehicleHeader(header, destFile);
+
+    for (int i=0; i < table->rowCount-1; i++){
+        BinaryWriter_WriteVehicle(vehicles[i], destFile);
+        Vehicle_Free(vehicles[i]);
     }
 
     fseek(destFile, 0, SEEK_END);
@@ -94,8 +47,12 @@ void CsvToBinary_WriteVehicleFile(StringTable *table, char *fileName){
     fseek(destFile, 0, SEEK_SET);
     fwrite(&header->status, 1, 1, destFile);
 
+    for (int i = 0; i < table->rowCount - 1; ++i) {
+        Vehicle_Free(vehicles[i]);
+    }
+
     fclose(destFile);
-    free(Vehicles);
+    free(vehicles);
     free(header);
 }
 
@@ -113,48 +70,8 @@ BusLine* CsvToBinary_CreateBusLineFromRow(StringTable* table, int row) {
     return BusLine_Create(removed, lineCode, acceptsCreditCard[0], strdup(name), strdup(color));
 }
 
-void CsvToBinary_WriteBusLine(const BusLine* busLine, FILE* destFile) {
-    // Writes each field from bus line in the given file
-    fwrite(&busLine->removed, sizeof(char), 1, destFile);
-    fwrite(&busLine->regSize, sizeof(int32_t), 1, destFile);
-
-    fwrite(&busLine->lineCode[0], sizeof(char), 4, destFile);
-    fwrite(&busLine->acceptsCreditCard, sizeof(char), 1, destFile);
-
-    // Variable-length fields
-    fwrite(&busLine->nameLength, sizeof(int32_t), 1, destFile);
-    fwrite(busLine->name, sizeof(char), busLine->nameLength, destFile);
-    fwrite(&busLine->colorLength, sizeof(int32_t), 1, destFile);
-    fwrite(busLine->color, sizeof(char), busLine->colorLength, destFile);
-}
-
-BusLineHeader_t *CreateBusLineHeader(StringTable *table) {
-    BusLineHeader_t *header = malloc (sizeof(BusLineHeader_t));
-    
-    strcpy(header->describeCard, StringTable_GetCellAt(table, 0, 0));
-    strcpy(header->describeCode, StringTable_GetCellAt(table, 1, 0));
-    strcpy(header->describeName, StringTable_GetCellAt(table, 2, 0));
-    strcpy(header->describeLine, StringTable_GetCellAt(table, 3, 0));
-    header->numRegRemov = 0;
-    header->status = 0;
-
-    return header;
-}
-
-void WriteBusLineHeader(BusLineHeader_t *header, FILE *destFile) {
-    fwrite(&header->status, sizeof(char), 1, destFile);
-    fwrite(&header->nextReg, sizeof(int64_t), 1, destFile);
-    fwrite(&header->numReg, sizeof(int32_t), 1, destFile);
-    fwrite(&header->numRegRemov, sizeof(int32_t), 1, destFile);
-
-    fwrite(&header->describeCode, sizeof(char), 15, destFile);
-    fwrite(&header->describeCard, sizeof(char), 13, destFile);
-    fwrite(&header->describeName, sizeof(char), 13, destFile);
-    fwrite(&header->describeLine, sizeof(char), 24, destFile);
-}
-
 void CsvToBinary_WriteBusLineFile(StringTable *table, char *fileName){
-    BusLineHeader_t *header = CreateBusLineHeader(table);
+    BusLineHeader* header = BusLineHeader_CreateFromTable(table);
     BusLine **busLines = (BusLine**) malloc ((table->rowCount - 1) * sizeof(BusLine*));
 
     header->numReg = table->rowCount -1;
@@ -167,9 +84,10 @@ void CsvToBinary_WriteBusLineFile(StringTable *table, char *fileName){
     }
 
     FILE *destFile = fopen(fileName, "wb");
-    WriteBusLineHeader(header, destFile);
+    BinaryWriter_WriteBusLineHeader(header, destFile);
+
     for (int i=0; i<table->rowCount-1; i++){
-        CsvToBinary_WriteBusLine(busLines[i], destFile);
+        BinaryWriter_WriteBusLine(busLines[i], destFile);
         BusLine_Free(busLines[i]);
     }
 

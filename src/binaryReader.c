@@ -1,9 +1,9 @@
-#include "readBinary.h"
+#include "binaryReader.h"
 #include "printer.h"
 #include <assert.h>
 
-VehicleHeader_t* ReadVehicleHeader(FILE *srcFile){
-    VehicleHeader_t* header = calloc(1, sizeof(VehicleHeader_t));
+VehicleHeader* ReadVehicleHeader(FILE *srcFile) {
+    VehicleHeader* header = calloc(1, sizeof(VehicleHeader));
 
     fread(&header->status, sizeof(char), 1, srcFile);
     fread(&header->nextReg, sizeof(long), 1, srcFile);
@@ -47,38 +47,8 @@ Vehicle* ReadVehicle(FILE *srcFile) {
     return vehicle;
 }
 
-Vehicle** ReadBinary_Vehicle(int* n_vehicles, char* fileName) {
-    FILE* srcFile = fopen(fileName, "rb");
-
-    // Reads the header
-    VehicleHeader_t *header = ReadVehicleHeader(srcFile);
-
-    int validRegisters = header->numReg - header->numRegRemov;
-    assert(validRegisters > 0);
-
-    // Allocates space for the vehicles
-    Vehicle** vehicles = calloc(validRegisters, sizeof(Vehicle*));
-
-    // Gets the vehicles from the file
-    int i = 0;
-    while (i < validRegisters) {
-        Vehicle* aux = ReadVehicle(srcFile);
-        if (aux != NULL) {
-            vehicles[i] = aux;
-            i++;
-        }
-    }
-
-    fclose(srcFile);
-
-    *n_vehicles = validRegisters;
-    free(header);
-    return vehicles;
-}
-
-
-BusLineHeader_t* ReadBusLineHeader(FILE *srcFile){
-    BusLineHeader_t* header = calloc(1, sizeof(VehicleHeader_t));
+BusLineHeader* ReadBusLineHeader(FILE *srcFile) {
+    BusLineHeader* header = calloc(1, sizeof(VehicleHeader));
 
     // freads the fields stored in the binary file, in order
     fread(&header->status, sizeof(char), 1, srcFile);
@@ -120,11 +90,40 @@ BusLine* ReadBusLine(FILE *srcFile) {
     return busLine;
 }
 
-BusLine** ReadBinary_BusLines(int* n_busLines, char* fileName) {
+Vehicle** BinaryReader_Vehicles(int* vehiclesCount, char* fileName) {
     FILE* srcFile = fopen(fileName, "rb");
 
     // Reads the header
-    BusLineHeader_t* header = ReadBusLineHeader(srcFile);
+    VehicleHeader* header = ReadVehicleHeader(srcFile);
+
+    int validRegisters = header->numReg - header->numRegRemov;
+    assert(validRegisters > 0);
+
+    // Allocates space for the vehicles
+    Vehicle** vehicles = calloc(validRegisters, sizeof(Vehicle*));
+
+    // Gets the vehicles from the file
+    int i = 0;
+    while (i < validRegisters) {
+        Vehicle* aux = ReadVehicle(srcFile);
+        if (aux != NULL) {
+            vehicles[i] = aux;
+            i++;
+        }
+    }
+
+    fclose(srcFile);
+
+    *vehiclesCount = validRegisters;
+    free(header);
+    return vehicles;
+}
+
+BusLine** BinaryReader_BusLines(int* busLinesCount, char* fileName) {
+    FILE* srcFile = fopen(fileName, "rb");
+
+    // Reads the header
+    BusLineHeader* header = ReadBusLineHeader(srcFile);
 
     int validRegisters = header->numReg - header->numRegRemov;
     assert(validRegisters > 0);
@@ -144,7 +143,7 @@ BusLine** ReadBinary_BusLines(int* n_busLines, char* fileName) {
 
     fclose(srcFile);
 
-    *n_busLines = validRegisters;
+    *busLinesCount = validRegisters;
     free(header);
     return busLines;
 }

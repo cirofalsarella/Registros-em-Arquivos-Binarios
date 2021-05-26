@@ -18,7 +18,9 @@ void CopyToFixedLen(char* from, char* to, int length) {
     }
 }
 
-Vehicle* Vehicle_Create(char removed, char* prefix, char* date, int32_t numSeats, char* lineCode, char* model, char* category) {
+// TODO: Deal with NULOs
+
+Vehicle* Vehicle_Create(char removed, char* prefix, char* date, int32_t numSeats, char* lineCode, char* model, char* category) {    
     int modelLength = strlen(model);
     int categoryLength = strlen(category);
 

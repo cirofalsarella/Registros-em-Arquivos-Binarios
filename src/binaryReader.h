@@ -10,19 +10,19 @@
 /**
  * @brief Reads a binary file containing a list of vehicles. Returns that list.
  * 
- * @param n_vehicles Reference to the int that will hold the number of vehicles.
+ * @param vehiclesCount Reference to the int that will hold the number of vehicles.
  * @param fileName The name of the file.
  * @return Vehicle** 
  */
-Vehicle** ReadBinary_Vehicle(int *n_vehicles, char *fileName);
+Vehicle** BinaryReader_Vehicles(int *vehiclesCount, char *fileName);
 
 /**
  * @brief Reads a binary file containing a list of bus lines. Returns that list.
  * 
- * @param n_vehicles Reference to the int that will hold the number of bus lines.
+ * @param busLinesCount Reference to the int that will hold the number of bus lines.
  * @param fileName The name of the file.
  * @return BusLine** 
  */
-BusLine** ReadBinary_BusLines(int *n_buslines, char *fileName);
+BusLine** BinaryReader_BusLines(int *busLinesCount, char *fileName);
 
 #endif

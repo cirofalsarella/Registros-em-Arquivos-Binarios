@@ -25,22 +25,19 @@ Vehicle* CsvToBinary_CreateVehicleFromRow(StringTable* table, int row);
 BusLine* CsvToBinary_CreateBusLineFromRow(StringTable* table, int row);
 
 /**
- * @brief Writes a vehicle to the given file.
+ * @brief Creates a vehicle file from the givens tring table.
  * 
- * @param vehicle 
- * @param destFile 
+ * @param table 
+ * @param fileName 
  */
-void CsvToBinary_WriteVehicle(const Vehicle* vehicle, FILE* destFile);
+void CsvToBinary_WriteVehicleFile(StringTable *table, char *fileName);
 
 /**
- * @brief Writes a bus line to the given file.
+ * @brief Creates a bus line file from the given string table.
  * 
- * @param busLine 
- * @param destFile 
+ * @param table 
+ * @param fileName 
  */
-void CsvToBinary_WriteBusLine(const BusLine* busLine, FILE* destFile);
-
 void CsvToBinary_WriteBusLineFile(StringTable *table, char *fileName);
-void CsvToBinary_WriteVehicleFile(StringTable *table, char *fileName);
 
 #endif

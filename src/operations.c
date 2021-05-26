@@ -61,12 +61,12 @@ void Op_SelectVehicles() {
     scanf("%s", binFile);
 
     // Reads binary file from disk
-    int n_vehicles;
-    Vehicle** vehicles = ReadBinary_Vehicle(&n_vehicles, binFile);
+    int vehiclesCount;
+    Vehicle** vehicles = BinaryReader_Vehicles(&vehiclesCount, binFile);
     
     // Prints all vehicles
-    printf("NUMERO DE VEICULOS: %d\n", n_vehicles);
-    for (int i = 0; i < n_vehicles; i++) {
+    printf("NUMERO DE VEICULOS: %d\n", vehiclesCount);
+    for (int i = 0; i < vehiclesCount; i++) {
         Printer_Vehicle(vehicles[i]);
         Vehicle_Free(vehicles[i]);
     }
@@ -80,12 +80,12 @@ void Op_SelectBusLines() {
     scanf("%s", binFile);
 
     // Reads binary file from disk
-    int n_busLines;
-    BusLine **buslines = ReadBinary_BusLines(&n_busLines, binFile);
+    int busLinesCount;
+    BusLine **buslines = BinaryReader_BusLines(&busLinesCount, binFile);
 
     // Prints all bus lines
-    printf("NUMERO DE LINHAS: %d\n", n_busLines);
-    for (int i = 0; i < n_busLines; i++) {
+    printf("NUMERO DE LINHAS: %d\n", busLinesCount);
+    for (int i = 0; i < busLinesCount; i++) {
         Printer_BusLine(buslines[i]);
         BusLine_Free(buslines[i]);
     }
@@ -99,8 +99,8 @@ void Op_SelectVehiclesWhere() {
     scanf("%s", binFile);
 
     // Reads binary file from disk
-    int n_vehicles;
-    Vehicle **vehicles = ReadBinary_Vehicle(&n_vehicles, binFile);
+    int vehiclesCount;
+    Vehicle **vehicles = BinaryReader_Vehicles(&vehiclesCount, binFile);
 
     // Reads field name
     char fieldName[64] = { '\0' };
@@ -109,11 +109,11 @@ void Op_SelectVehiclesWhere() {
     // Calls our generic function that selects by an arbitrary field
     void *functionPt = SelectWhere_SetCondition(fieldName);
     void *pattern = SelectWhere_SetPattern(fieldName);
-    vehicles = SelectWhere_SelectVehicles(functionPt, pattern, &vehicles, &n_vehicles);
+    vehicles = SelectWhere_SelectVehicles(functionPt, pattern, &vehicles, &vehiclesCount);
 
     // Linearly searches for the right vehicle
-    printf("NUMERO DE VEICULOS: %d\n", n_vehicles);
-    for (int i = 0; i < n_vehicles; i++) {
+    printf("NUMERO DE VEICULOS: %d\n", vehiclesCount);
+    for (int i = 0; i < vehiclesCount; i++) {
         Printer_Vehicle(vehicles[i]);
         Vehicle_Free(vehicles[i]);
     }
@@ -127,8 +127,8 @@ void Op_SelectBuslinesWhere() {
     scanf("%s", binFile);
 
     // Reads binary file from disk
-    int n_busLines;
-    BusLine **buslines = ReadBinary_BusLines(&n_busLines, binFile);
+    int busLinesCount;
+    BusLine **buslines = BinaryReader_BusLines(&busLinesCount, binFile);
 
     // Reads field name
     char fieldName[64] = { '\0' };
@@ -137,11 +137,11 @@ void Op_SelectBuslinesWhere() {
     // Calls our generic function that selects by an arbitrary field
     void* functionPt = SelectWhere_SetCondition(fieldName);
     void* pattern = SelectWhere_SetPattern(fieldName);
-    buslines = SelectWhere_SelectBusLines(functionPt, pattern, &buslines, &n_busLines);
+    buslines = SelectWhere_SelectBusLines(functionPt, pattern, &buslines, &busLinesCount);
 
     // Linearly searches for the right bus line
-    printf("NUMERO DE LINHAS: %d\n", n_busLines);
-    for (int i = 0; i < n_busLines; i++) {
+    printf("NUMERO DE LINHAS: %d\n", busLinesCount);
+    for (int i = 0; i < busLinesCount; i++) {
         Printer_BusLine(buslines[i]);
         BusLine_Free(buslines[i]);
     }
@@ -171,6 +171,18 @@ void ScanQuoteString(char *str) {
 }
 
 void Op_PushVehicles() {
+    // Reads file name
+    char binFile[128] = { '\0' };
+    scanf("%s", binFile);
+
+    // Reads binary file from disk
+    int vehiclesCount;
+    Vehicle** vehicles = BinaryReader_Vehicles(&vehiclesCount, binFile);
+
+    // Reads field name
+    char fieldName[64] = { '\0' };
+    scanf("%s", fieldName);
+    
     // Format: prefixo1 data1 quantidadeLugares1 codLinha1 modelo1 categoria1
 
     // Scans prefix, date, numSeats and lineCode (all fixed-length fields)
@@ -193,7 +205,14 @@ void Op_PushVehicles() {
     ScanQuoteString(model);
     ScanQuoteString(category);
 
-    
+    Vehicle* newVehicle = Vehicle_Create(0, prefix, date, numSeats, lineCode, model, category);
+
+    vehiclesCount += 1;
+    vehicles = (Vehicle**) realloc(vehicles, sizeof(Vehicle*) * vehiclesCount);
+    vehicles[vehiclesCount-1] = newVehicle;
+
+    free(model);
+    free(category);
 }
 
 void Op_PushBuslines() {

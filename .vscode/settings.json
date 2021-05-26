@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "binaryreader.h": "c",
+        "binarywriter.h": "c",
+        "binaryheaders.h": "c",
+        "stringtable.h": "c",
+        "selectwhere.h": "c"
+    }
+}

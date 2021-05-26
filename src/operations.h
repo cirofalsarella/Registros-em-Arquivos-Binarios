@@ -8,7 +8,7 @@
 #include "stringTable.h"
 #include "csvToBinary.h"
 #include "printer.h"
-#include "readBinary.h"
+#include "binaryReader.h"
 #include "selectWhere.h"
 #include "funcao-fornecida.h"
 
