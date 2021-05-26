@@ -4,15 +4,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-VehicleHeader* VehicleHeader_Create(char status, int64_t nextReg, int32_t numReg, int32_t numRegRemov, char* describePrefix,
-                    char* describeDate, char* describePlaces, char* describeLine, char* describeModel, char* describeCategory) {
+VehicleHeader* VehicleHeader_Create(char* describePrefix, char* describeDate, char* describePlaces, char* describeLine, char* describeModel, char* describeCategory) {
     // Describe lenghts: 18, 35, 42, 26, 17, 20
     VehicleHeader* header = (VehicleHeader*) malloc(sizeof(VehicleHeader));
     
-    header->status = status;
-    header->nextReg = nextReg;
-    header->numReg = numReg;
-    header->numRegRemov = numRegRemov;
+    header->status = '0';
+    header->nextReg = 0;
+    header->numReg = 0;
+    header->numRegRemov = 0;
 
     // Copies over fixed-length fields
     Utils_StrCopyToFixedLen(header->describePrefix, describePrefix, 18);
@@ -29,15 +28,14 @@ void VehicleHeader_Free(VehicleHeader* header) {
     free(header);
 }
 
-BusLineHeader* BusLineHeader_Create(char status, int64_t nextReg, int32_t numReg, int32_t numRegRemov, char* describeCode,
-                                    char* describeCard, char* describeName, char* describeLine) {
+BusLineHeader* BusLineHeader_Create(char* describeCode, char* describeCard, char* describeName, char* describeLine) {
     // Describe lenghts: 15, 13, 13, 24
     BusLineHeader* header = (BusLineHeader*) malloc(sizeof(BusLineHeader));
     
-    header->status = status;
-    header->nextReg = nextReg;
-    header->numReg = numReg;
-    header->numRegRemov = numRegRemov;
+    header->status = '0';
+    header->nextReg = 0;
+    header->numReg = 0;
+    header->numRegRemov = 0;
 
     // Copies over fixed-length fields
     Utils_StrCopyToFixedLen(header->describeCode, describeCode, 15);
@@ -53,8 +51,7 @@ void BusLineHeader_Free(BusLineHeader* header) {
 }
 
 VehicleHeader* VehicleHeader_CreateFromTable(StringTable* table) {
-    return VehicleHeader_Create('0', 0, 0, 0,
-                                StringTable_GetLabel(table, 0),
+    return VehicleHeader_Create(StringTable_GetLabel(table, 0),
                                 StringTable_GetLabel(table, 1),
                                 StringTable_GetLabel(table, 2),
                                 StringTable_GetLabel(table, 3),
@@ -63,8 +60,7 @@ VehicleHeader* VehicleHeader_CreateFromTable(StringTable* table) {
 }
 
 BusLineHeader* BusLineHeader_CreateFromTable(StringTable *table) {
-    return BusLineHeader_Create('0', 0, 0, 0,
-                                StringTable_GetLabel(table, 0),
+    return BusLineHeader_Create(StringTable_GetLabel(table, 0),
                                 StringTable_GetLabel(table, 1),
                                 StringTable_GetLabel(table, 2),
                                 StringTable_GetLabel(table, 3));

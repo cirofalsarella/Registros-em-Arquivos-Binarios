@@ -1,4 +1,5 @@
 #include "binaryWriter.h"
+#include "binaryHeaders.h"
 
 // MARK: Single-instance write
 
@@ -63,4 +64,85 @@ void BinaryWriter_WriteBusLineHeader(const BusLineHeader* header, FILE *destFile
     fwrite(&header->describeCard[0], sizeof(char), 13, destFile);
     fwrite(&header->describeName[0], sizeof(char), 13, destFile);
     fwrite(&header->describeLine[0], sizeof(char), 24, destFile);
+}
+
+
+void BinaryWriter_CreateVehicleFile(Vehicle** vehicles, int vehiclesCount, VehicleHeader* header, char* fileName) {
+    header->status = '1';
+    // These are adjusted throughout this function
+    header->numReg = vehiclesCount;
+    header->numRegRemov = 0;
+    header->nextReg = 0;
+
+    // First, calculates number of removed registers
+    for (int i = 0; i < vehiclesCount; i++) {
+        if (vehicles[i]->removed) {
+            header->numRegRemov++;
+            header->numReg--;
+        }
+    }
+
+    // Opens the file and writes the header
+    FILE* destFile = fopen(fileName, "wb");
+    BinaryWriter_WriteVehicleHeader(header, destFile);
+
+    for (int i = 0; i < vehiclesCount; i++){
+        BinaryWriter_WriteVehicle(vehicles[i], destFile);
+        Vehicle_Free(vehicles[i]);
+    }
+
+    // Calculates and writes nextReg
+    fseek(destFile, 0, SEEK_END);
+    header->nextReg = ftell(destFile);
+    fseek(destFile, 1, SEEK_SET);
+    fwrite(&header->nextReg, sizeof(int64_t), 1, destFile);
+
+    // Writes status
+    fseek(destFile, 0, SEEK_SET);
+    fwrite(&header->status, 1, 1, destFile);
+
+    // Frees and closes everything
+    fclose(destFile);
+    free(vehicles);
+    VehicleHeader_Free(header);
+}
+
+void BinaryWriter_CreateBusLineFile(BusLine** busLines, int busLinesCount, BusLineHeader* header, char* fileName) {
+    header->status = '1';
+    // These are adjusted throughout this function
+    header->numReg = busLinesCount;
+    header->numRegRemov = 0;
+    header->nextReg = 0;
+
+    // First, calculates number of removed registers
+    for (int i = 0; i < busLinesCount; i++) {
+        if (busLines[i]->removed) {
+            header->numRegRemov++;
+            header->numReg--;
+        }
+    }
+
+    // Opens the file and writes the header
+    FILE* destFile = fopen(fileName, "wb");
+    BinaryWriter_WriteBusLineHeader(header, destFile);
+
+    for (int i = 0; i < busLinesCount; i++){
+        BinaryWriter_WriteBusLine(busLines[i], destFile);
+        BusLine_Free(busLines[i]);
+    }
+
+    // Calculates and writes nextReg
+    fseek(destFile, 0, SEEK_END);
+    header->nextReg = ftell(destFile);
+    fseek(destFile, 1, SEEK_SET);
+    fwrite(&header->nextReg, sizeof(int64_t), 1, destFile);
+
+    // Writes status
+    fseek(destFile, 0, SEEK_SET);
+    fwrite(&header->status, 1, 1, destFile);
+
+    // Frees and closes everything
+    fclose(destFile);
+    free(busLines);
+    BusLineHeader_Free(header);
 }

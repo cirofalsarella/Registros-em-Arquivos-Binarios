@@ -7,10 +7,6 @@
 /**
  * @brief Creates a new vehicle header.
  * 
- * @param status 
- * @param nextReg 
- * @param numReg 
- * @param numRegRemov 
  * @param describePrefix 
  * @param describeDate 
  * @param describePlaces 
@@ -19,8 +15,7 @@
  * @param describeCategory 
  * @return VehicleHeader* 
  */
-VehicleHeader* VehicleHeader_Create(char status, int64_t nextReg, int32_t numReg, int32_t numRegRemov, char* describePrefix,
-                    char* describeDate, char* describePlaces, char* describeLine, char* describeModel, char* describeCategory);
+VehicleHeader* VehicleHeader_Create(char* describePrefix, char* describeDate, char* describePlaces, char* describeLine, char* describeModel, char* describeCategory);
 
 /**
  * @brief Frees the given vehicle header.
@@ -31,18 +26,14 @@ void VehicleHeader_Free(VehicleHeader* header);
 /**
  * @brief Creates a new bus line header.
  * 
- * @param status 
- * @param nextReg 
- * @param numReg 
- * @param numRegRemov 
  * @param describeCode 
  * @param describeCard 
  * @param describeName 
  * @param describeLine 
  * @return BusLineHeader* 
  */
-BusLineHeader* BusLineHeader_Create(char status, int64_t nextReg, int32_t numReg, int32_t numRegRemov, char* describeCode,
-                                    char* describeCard, char* describeName, char* describeLine);
+BusLineHeader* BusLineHeader_Create(char* describeCode, char* describeCard, char* describeName, char* describeLine);
+
 /**
  * @brief Frees the given bus line header.
  * @param header
