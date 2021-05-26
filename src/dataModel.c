@@ -38,6 +38,37 @@ Vehicle* Vehicle_Create(char removed, char* prefix, char* date, int32_t numSeats
     return vehicle;
 }
 
+Vehicle** Vehicle_Read(int n) {
+    Vehicle **vehicles = calloc (n, sizeof(Vehicle*));
+    
+    for (int i=0; i<n; i++){
+        // Scans prefix, date, numSeats and lineCode (all fixed-length fields)
+        char prefix[5] = { '\0' };
+        ScanQuoteString(prefix);
+
+        char date[10] = { '\0' };
+        ScanQuoteString(date);
+
+        char numSeats[64] = { '\0' };
+        scanf("%s", &numSeats[0]);
+
+        char lineCode[64] = { '\0' };
+        scanf("%s", &lineCode[0]);
+
+        // Scans model and category (not fixed-length)
+        char* model = calloc(100, sizeof(char));
+        char* category = calloc(100, sizeof(char));
+
+        ScanQuoteString(model);
+        ScanQuoteString(category);
+
+        // Creates a new vehicle and pushes it
+        vehicles[i] = Vehicle_Create('1', prefix, date, Utils_StrToInt(numSeats), Utils_StrToInt(lineCode), model, category);
+    }
+
+    return vehicles;
+}
+
 void Vehicle_Free(Vehicle* vehicle) {
     free(vehicle->model);
     free(vehicle->category);

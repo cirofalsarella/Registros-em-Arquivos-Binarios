@@ -52,7 +52,6 @@ void BinaryWriter_WriteBusLine(const BusLine* busLine, FILE* destFile) {
 }
 
 
-
 // MARK: Header writes
 
 void BinaryWriter_WriteVehicleHeader(const VehicleHeader* header, FILE *destFile) {
@@ -160,4 +159,34 @@ void BinaryWriter_CreateBusLineFile(BusLine** busLines, int busLinesCount, BusLi
     fclose(destFile);
     free(busLines);
     BusLineHeader_Free(header);
+}
+
+void BinaryWriter_IncrementVehicleFile(Vehicle** vehicles, int vehiclesCount, char* fileName) {
+    FILE *destFile = fopen(fileName, "rb+");
+    if (destFile == NULL){
+        return NULL;
+    }
+
+    // Set as editing mode
+    fwrite("1", sizeof(char), 1, destFile);
+
+    // Placing the pointer
+    int64_t proxReg;
+    fread(&proxReg, sizeof(int64_t), 1, destFile);
+    fseek(destFile, proxReg, SEEK_SET);
+
+    // Writing the registers
+    for (int i = 0; i < vehiclesCount; i++){
+        BinaryWriter_WriteVehicle(vehicles[i], destFile);
+        Vehicle_Free(vehicles[i]);
+    }
+
+    // adjusting the proxReg field
+    proxReg = ftell(destFile);
+    fseek(destFile, 1, SEEK_SET);
+    fwrite(&proxReg, sizeof(int64_t), 1, destFile);
+
+    // Set as default mode
+    fseek(destFile, 0, SEEK_SET);
+    fwrite("0", sizeof(char), 1, destFile);
 }

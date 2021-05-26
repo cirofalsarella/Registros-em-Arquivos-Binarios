@@ -46,6 +46,8 @@ void Utils_StrCopyToFixedLen(char* from, char* to, int length);
  */
 void Utils_StrPrintWithFixedLen(const char* str, int maxLength);
 
+void Utils_ScanQuoteString(char *str);
+
 /**
  * @brief Returns the given str converted to an integer. If str is "NULO", the integer returned is -1.
  * 

@@ -87,6 +87,8 @@ typedef struct {
  */
 Vehicle* Vehicle_Create(char removed, char* prefix, char* date, int32_t numPlaces, int32_t lineCode, char* model, char* category);
 
+Vehicle** Vehicle_Read(int n);
+
 /**
  * @brief Frees the memory allocated for the given vehicle.
  * 

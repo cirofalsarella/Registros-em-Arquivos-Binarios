@@ -60,4 +60,7 @@ void BinaryWriter_CreateVehicleFile(Vehicle** vehicles, int vehiclesCount, Vehic
  */
 void BinaryWriter_CreateBusLineFile(BusLine** busLines, int busLinesCount, BusLineHeader* header, char* fileName);
 
+
+void BinaryWriter_IncrementVehicleFile(Vehicle** vehicles, int vehiclesCount, char* fileName);
+
 #endif

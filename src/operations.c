@@ -2,7 +2,6 @@
 #include "binaryWriter.h"
 #include "binaryHeaders.h"
 #include "utils.h"
-#include <ctype.h>
 
 /**
  * @brief Prints a hash of the given binary file (aka binarioNaTela).
@@ -198,66 +197,20 @@ void Op_SelectBuslinesWhere() {
     free(buslines);
 }
 
-void ScanQuoteString(char *str) {
-	char R;
-
-	while ((R = getchar()) != EOF && isspace(R));
-
-	if (R == 'N' || R == 'n') {
-		getchar(); getchar(); getchar();
-		strcpy(str, "");
-	} else if(R == '\"') {
-		if(scanf("%[^\"]", str) != 1) {
-			strcpy(str, "");
-		}
-		getchar();
-	} else if(R != EOF) {
-		str[0] = R;
-		scanf("%s", &str[1]);
-	} else {
-		strcpy(str, "");
-	}
-}
-
 void Op_PushVehicles() {
     // Reads file name
     char binFile[128] = { '\0' };
     scanf("%s", binFile);
 
-    // Reads binary file from disk
-    VehicleHeader* header = NULL;
-    Vehicle** vehicles = BinaryReader_Vehicles(&header, binFile);
+    // Reads vehicles from stdin
+    int n;
+    scanf("%d", &n);
+    Vehicle** vehicles = Vehicle_Read(n);
 
-    // Format: prefixo1 data1 quantidadeLugares1 codLinha1 modelo1 categoria1
-
-    // Scans prefix, date, numSeats and lineCode (all fixed-length fields)
-    char prefix[5] = { '\0' };
-    ScanQuoteString(prefix);
-
-    char date[10] = { '\0' };
-    ScanQuoteString(date);
-
-    char numSeats[64] = { '\0' };
-    scanf("%s", &numSeats[0]);
-
-    char lineCode[64] = { '\0' };
-    scanf("%s", &lineCode[0]);
-
-    // Scans model and category (not fixed-length)
-    char* model = calloc(100, sizeof(char));
-    char* category = calloc(100, sizeof(char));
-
-    ScanQuoteString(model);
-    ScanQuoteString(category);
-
-    // Creates a new vehicle and pushes it
-    Vehicle* newVehicle = Vehicle_Create('1', prefix, date, Utils_StrToInt(numSeats), Utils_StrToInt(lineCode), model, category);
-    header->numReg += 1;
-    vehicles = (Vehicle**) realloc(vehicles, sizeof(Vehicle*) * header->numReg);
-    vehicles[header->numReg-1] = newVehicle;
-
-    // Writes to file
-    BinaryWriter_CreateVehicleFile(vehicles, header->numReg, header, binFile);
+    // Updates the binary file
+    BinaryWriter_IncrementVehicleFile(vehicles, n, binFile);
+    
+    free(vehicles);
     PrintHash(binFile);
 }
 

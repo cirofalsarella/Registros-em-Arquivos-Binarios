@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 char* Utils_StrSplit(char **stringp, const char *delim) {
     char *rv = *stringp;
@@ -61,6 +62,27 @@ void Utils_StrPrintWithFixedLen(const char* str, int maxLength) {
         printf("%c", str[i]);
     }
     printf("\n");
+}
+
+void Utils_ScanQuoteString(char *str) {
+	char R;
+
+	while ((R = getchar()) != EOF && isspace(R));
+
+	if (R == 'N' || R == 'n') {
+		getchar(); getchar(); getchar();
+		strcpy(str, "");
+	} else if(R == '\"') {
+		if(scanf("%[^\"]", str) != 1) {
+			strcpy(str, "");
+		}
+		getchar();
+	} else if(R != EOF) {
+		str[0] = R;
+		scanf("%s", &str[1]);
+	} else {
+		strcpy(str, "");
+	}
 }
 
 int32_t Utils_StrToInt(const char* str) {
