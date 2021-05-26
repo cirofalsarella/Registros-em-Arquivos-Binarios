@@ -4,6 +4,7 @@
         "binarywriter.h": "c",
         "binaryheaders.h": "c",
         "stringtable.h": "c",
-        "selectwhere.h": "c"
+        "selectwhere.h": "c",
+        "stdlib.h": "c"
     }
 }

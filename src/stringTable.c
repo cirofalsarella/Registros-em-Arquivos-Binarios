@@ -1,48 +1,8 @@
-/**
- * @file stringTable.c
- * @author Pedro Martelleto
- * @brief String table implementation
- */
-
 #include "stringTable.h"
+#include "utils.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-/**
- * @brief Helper function used to split strings.
- * 
- * @param stringp 
- * @param delim 
- * @return char* 
- */
-char* StrSplit(char **stringp, const char *delim) {
-    char *rv = *stringp;
-    if (rv) {
-        *stringp += strcspn(*stringp, delim);
-        if (**stringp) *(*stringp)++ = '\0';
-        else *stringp = 0;
-    }
-    return rv;
-}
-
-/**
- * @brief Helper function used to copy strings.
- * 
- * @param str 
- * @return char* 
- */
-char* CopyStr(const char* str) {
-    int length = strlen(str);
-
-    if (length <= 0) return NULL;
-
-    char* newStr = calloc(length + 1, sizeof(char));
-    for (int i = 0; i < length; ++i) {
-        newStr[i] = str[i];
-    }
-    return newStr;
-}
 
 StringTable* StringTable_Create() {
     // Inits everything to either 0 or NULL.
@@ -53,7 +13,6 @@ StringTable* StringTable_Create() {
     newTable->allocatedCellCount = 0;
     return newTable;
 }
-
 
 /**
  * @brief Our strings have length N * REALLOC_BUFFER, where N is a natural number greater or equal to 1.
@@ -133,10 +92,10 @@ StringTable* StringTable_FromCsv(const char* fileName, char sep) {
         int col = 0;
 
         // For each string delimited by "sep"...
-        while ((token = StrSplit(&line, sepStr)) != NULL) {
+        while ((token = Utils_StrSplit(&line, sepStr)) != NULL) {
             if (col >= table->columnCount) break;
 
-            char* cellContent = CopyStr(token);
+            char* cellContent = Utils_StrCopy(token);
             if (token[0] != '\0') {
                 int len = strlen(cellContent);
                 // Trims right
