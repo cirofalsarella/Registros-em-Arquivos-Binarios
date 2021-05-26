@@ -28,6 +28,20 @@ Vehicle* CsvToBinary_CreateVehicleFromRow(StringTable* table, int row) {
     return Vehicle_Create(removed, prefix, date, Utils_StrToInt(numSeats), Utils_StrToInt(lineCode), strdup(model), strdup(category));
 }
 
+void CsvToBinary_WriteVehicleFile(StringTable *table, char *fileName) {
+    // Creates a list of vehicles
+    Vehicle** vehicles = (Vehicle**) malloc((table->rowCount - 1) * sizeof(Vehicle*));
+    VehicleHeader* header = VehicleHeader_CreateFromTable(table);
+    int vehiclesCount = table->rowCount-1;
+
+    for (int i = 0; i < vehiclesCount; i++) {
+        vehicles[i] = CsvToBinary_CreateVehicleFromRow(table, i);
+    }
+
+    // Creates the binary file
+    BinaryWriter_CreateVehicleFile(vehicles, vehiclesCount, header, fileName);
+}
+
 
 //  BusLine
 
@@ -50,20 +64,6 @@ BusLine* CsvToBinary_CreateBusLineFromRow(StringTable* table, int row) {
     }
 
     return BusLine_Create(removed, Utils_StrToInt(lineCode), acceptsCreditCard[0], strdup(name), strdup(color));
-}
-
-void CsvToBinary_WriteVehicleFile(StringTable *table, char *fileName) {
-    // Creates a list of vehicles
-    Vehicle** vehicles = (Vehicle**) malloc((table->rowCount - 1) * sizeof(Vehicle*));
-    VehicleHeader* header = VehicleHeader_CreateFromTable(table);
-    int vehiclesCount = table->rowCount-1;
-
-    for (int i = 0; i < vehiclesCount; i++) {
-        vehicles[i] = CsvToBinary_CreateVehicleFromRow(table, i);
-    }
-
-    // Creates the binary file
-    BinaryWriter_CreateVehicleFile(vehicles, vehiclesCount, header, fileName);
 }
 
 void CsvToBinary_WriteBusLineFile(StringTable *table, char *fileName) {
