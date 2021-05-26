@@ -56,5 +56,5 @@ void CsvToBinary_WriteBusLineFile(StringTable *table, char *fileName) {
     }
 
     // Creates binary file
-    BinaryWriter_CreateVehicleFile(busLines, busLinesCount, header, fileName);
+    BinaryWriter_CreateBusLineFile(busLines, busLinesCount, header, fileName);
 }

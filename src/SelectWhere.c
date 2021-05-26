@@ -59,7 +59,7 @@ Vehicle** SelectWhere_SelectVehicles(void *functionPt(void*, Vehicle*), void *pa
         }
     }
 
-    Vehicle **selectedVehicles = calloc (n, sizeof(Vehicle*));
+    Vehicle** selectedVehicles = calloc(n, sizeof(Vehicle*));
     n = 0;
     for (int i = 0; i < *vehiclesCount; i++) {
         if (*vehicles[i] != NULL) {

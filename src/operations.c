@@ -1,4 +1,6 @@
 #include "operations.h"
+#include "binaryWriter.h"
+#include "binaryHeaders.h"
 #include <ctype.h>
 
 void binarioNaTela(char* nomeArquivoBinario) {
@@ -61,12 +63,12 @@ void Op_SelectVehicles() {
     scanf("%s", binFile);
 
     // Reads binary file from disk
-    int vehiclesCount;
-    Vehicle** vehicles = BinaryReader_Vehicles(&vehiclesCount, binFile);
+    VehicleHeader* header = NULL;
+    Vehicle** vehicles = BinaryReader_Vehicles(&header, binFile);
     
     // Prints all vehicles
-    printf("NUMERO DE VEICULOS: %d\n", vehiclesCount);
-    for (int i = 0; i < vehiclesCount; i++) {
+    printf("NUMERO DE VEICULOS: %d\n", header->numReg);
+    for (int i = 0; i < header->numReg; i++) {
         Printer_Vehicle(vehicles[i]);
         Vehicle_Free(vehicles[i]);
     }
@@ -80,12 +82,12 @@ void Op_SelectBusLines() {
     scanf("%s", binFile);
 
     // Reads binary file from disk
-    int busLinesCount;
-    BusLine **buslines = BinaryReader_BusLines(&busLinesCount, binFile);
+    BusLineHeader* header = NULL;
+    BusLine** buslines = BinaryReader_BusLines(&header, binFile);
 
     // Prints all bus lines
-    printf("NUMERO DE LINHAS: %d\n", busLinesCount);
-    for (int i = 0; i < busLinesCount; i++) {
+    printf("NUMERO DE LINHAS: %d\n", header->numReg);
+    for (int i = 0; i < header->numReg; i++) {
         Printer_BusLine(buslines[i]);
         BusLine_Free(buslines[i]);
     }
@@ -99,8 +101,8 @@ void Op_SelectVehiclesWhere() {
     scanf("%s", binFile);
 
     // Reads binary file from disk
-    int vehiclesCount;
-    Vehicle **vehicles = BinaryReader_Vehicles(&vehiclesCount, binFile);
+    VehicleHeader* header = NULL;
+    Vehicle** vehicles = BinaryReader_Vehicles(&header, binFile);
 
     // Reads field name
     char fieldName[64] = { '\0' };
@@ -109,11 +111,11 @@ void Op_SelectVehiclesWhere() {
     // Calls our generic function that selects by an arbitrary field
     void *functionPt = SelectWhere_SetCondition(fieldName);
     void *pattern = SelectWhere_SetPattern(fieldName);
-    vehicles = SelectWhere_SelectVehicles(functionPt, pattern, &vehicles, &vehiclesCount);
+    vehicles = SelectWhere_SelectVehicles(functionPt, pattern, &vehicles, &header->numReg);
 
     // Linearly searches for the right vehicle
-    printf("NUMERO DE VEICULOS: %d\n", vehiclesCount);
-    for (int i = 0; i < vehiclesCount; i++) {
+    printf("NUMERO DE VEICULOS: %d\n", header->numReg);
+    for (int i = 0; i < header->numReg; i++) {
         Printer_Vehicle(vehicles[i]);
         Vehicle_Free(vehicles[i]);
     }
@@ -127,8 +129,8 @@ void Op_SelectBuslinesWhere() {
     scanf("%s", binFile);
 
     // Reads binary file from disk
-    int busLinesCount;
-    BusLine **buslines = BinaryReader_BusLines(&busLinesCount, binFile);
+    BusLineHeader* header = NULL;
+    BusLine **buslines = BinaryReader_BusLines(&header, binFile);
 
     // Reads field name
     char fieldName[64] = { '\0' };
@@ -137,11 +139,11 @@ void Op_SelectBuslinesWhere() {
     // Calls our generic function that selects by an arbitrary field
     void* functionPt = SelectWhere_SetCondition(fieldName);
     void* pattern = SelectWhere_SetPattern(fieldName);
-    buslines = SelectWhere_SelectBusLines(functionPt, pattern, &buslines, &busLinesCount);
+    buslines = SelectWhere_SelectBusLines(functionPt, pattern, &buslines, &header->numReg);
 
     // Linearly searches for the right bus line
-    printf("NUMERO DE LINHAS: %d\n", busLinesCount);
-    for (int i = 0; i < busLinesCount; i++) {
+    printf("NUMERO DE LINHAS: %d\n", header->numReg);
+    for (int i = 0; i < header->numReg; i++) {
         Printer_BusLine(buslines[i]);
         BusLine_Free(buslines[i]);
     }
@@ -176,13 +178,9 @@ void Op_PushVehicles() {
     scanf("%s", binFile);
 
     // Reads binary file from disk
-    int vehiclesCount;
-    Vehicle** vehicles = BinaryReader_Vehicles(&vehiclesCount, binFile);
+    VehicleHeader* header = NULL;
+    Vehicle** vehicles = BinaryReader_Vehicles(&header, binFile);
 
-    // Reads field name
-    char fieldName[64] = { '\0' };
-    scanf("%s", fieldName);
-    
     // Format: prefixo1 data1 quantidadeLugares1 codLinha1 modelo1 categoria1
 
     // Scans prefix, date, numSeats and lineCode (all fixed-length fields)
@@ -205,17 +203,49 @@ void Op_PushVehicles() {
     ScanQuoteString(model);
     ScanQuoteString(category);
 
+    // Creates a new vehicle and pushes it
     Vehicle* newVehicle = Vehicle_Create(0, prefix, date, numSeats, lineCode, model, category);
+    header->numReg += 1;
+    vehicles = (Vehicle**) realloc(vehicles, sizeof(Vehicle*) * header->numReg);
+    vehicles[header->numReg-1] = newVehicle;
 
-    vehiclesCount += 1;
-    vehicles = (Vehicle**) realloc(vehicles, sizeof(Vehicle*) * vehiclesCount);
-    vehicles[vehiclesCount-1] = newVehicle;
-
-    free(model);
-    free(category);
+    // Writes to file
+    BinaryWriter_CreateVehicleFile(vehicles, header->numReg, header, binFile);
 }
 
 void Op_PushBuslines() {
     // Format: codLinha1 aceitaCartao1 nomeLinha1 corLinha1
-    
+
+    // Reads file name
+    char binFile[128] = { '\0' };
+    scanf("%s", binFile);
+
+    // Reads binary file from disk
+    BusLineHeader* header = NULL;
+    BusLine** busLines = BinaryReader_BusLines(&header, binFile);
+
+    // Format: codLinha1 aceitaCartao1 nomeLinha1 corLinha1
+
+    // Scans lineCode, acceptsCreditCard (all fixed-length fields)
+    char lineCode[4] = { '\0' };
+    ScanQuoteString(lineCode);
+
+    char acceptsCreditCard[1] = { '\0' };
+    ScanQuoteString(acceptsCreditCard);
+
+    // Scans name and color (not fixed-length)
+    char* name = calloc(100, sizeof(char));
+    char* color = calloc(100, sizeof(char));
+
+    ScanQuoteString(name);
+    ScanQuoteString(color);
+
+    // Creates a new vehicle and pushes it
+    BusLine* newBusLine = BusLine_Create(0, lineCode, acceptsCreditCard[0], name, color);
+    header->numReg += 1;
+    busLines = (BusLine**) realloc(busLines, sizeof(BusLine*) * header->numReg);
+    busLines[header->numReg-1] = newBusLine;
+
+    // Writes to file
+    BinaryWriter_CreateBusLineFile(busLines, header->numReg, header, binFile);
 }

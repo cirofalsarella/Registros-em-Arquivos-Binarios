@@ -90,13 +90,13 @@ BusLine* ReadBusLine(FILE *srcFile) {
     return busLine;
 }
 
-Vehicle** BinaryReader_Vehicles(int* vehiclesCount, char* fileName) {
+Vehicle** BinaryReader_Vehicles(VehicleHeader** header, char* fileName) {
     FILE* srcFile = fopen(fileName, "rb");
 
     // Reads the header
-    VehicleHeader* header = ReadVehicleHeader(srcFile);
+    *header = ReadVehicleHeader(srcFile);
 
-    int validRegisters = header->numReg - header->numRegRemov;
+    int validRegisters = (*header)->numReg - (*header)->numRegRemov;
     assert(validRegisters > 0);
 
     // Allocates space for the vehicles
@@ -113,19 +113,16 @@ Vehicle** BinaryReader_Vehicles(int* vehiclesCount, char* fileName) {
     }
 
     fclose(srcFile);
-
-    *vehiclesCount = validRegisters;
-    free(header);
     return vehicles;
 }
 
-BusLine** BinaryReader_BusLines(int* busLinesCount, char* fileName) {
+BusLine** BinaryReader_BusLines(BusLineHeader** header, char* fileName) {
     FILE* srcFile = fopen(fileName, "rb");
 
     // Reads the header
-    BusLineHeader* header = ReadBusLineHeader(srcFile);
+    *header = ReadBusLineHeader(srcFile);
 
-    int validRegisters = header->numReg - header->numRegRemov;
+    int validRegisters = (*header)->numReg - (*header)->numRegRemov;
     assert(validRegisters > 0);
 
     // Allocates space for the bus lines
@@ -142,8 +139,5 @@ BusLine** BinaryReader_BusLines(int* busLinesCount, char* fileName) {
     }
 
     fclose(srcFile);
-
-    *busLinesCount = validRegisters;
-    free(header);
     return busLines;
 }
