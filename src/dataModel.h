@@ -30,7 +30,7 @@ typedef struct {
     char describeLine[24];
 } BusLineHeader;
 
-#define VEHICLE_VAR_OFFSET 28 // 28 bytes until the variable-length fields start
+#define VEHICLE_VAR_OFFSET 23 // 23 bytes until the variable-length fields start (IGNORES 'REMOVED' AND 'REGSIZE')
 
 typedef struct {
     // '0' if this register has been removed, '1' otherwise
@@ -51,7 +51,7 @@ typedef struct {
     char* category;
 } Vehicle;
 
-#define BUS_LINE_VAR_OFFSET 10 // 10 bytes until the variable-length fields start
+#define BUS_LINE_VAR_OFFSET 5 // 5 bytes until the variable-length fields start (IGNORES 'REMOVED' AND 'REGSIZE')
 
 typedef struct {
     // '0' if this register has been removed, '1' otherwise
