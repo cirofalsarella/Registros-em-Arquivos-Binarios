@@ -1,6 +1,8 @@
 #ifndef _UTILS_H_
 #define _UTILS_H_
 
+#include <stdint.h>
+
 /**
  * @brief Helper function used to split strings.
  * 
@@ -43,5 +45,13 @@ void Utils_StrCopyToFixedLen(char* from, char* to, int length);
  * @param maxLength 
  */
 void Utils_StrPrintWithFixedLen(const char* str, int maxLength);
+
+/**
+ * @brief Returns the given str converted to an integer. If str is "NULO", the integer returned is -1.
+ * 
+ * @param str 
+ * @return int32_t 
+ */
+int32_t Utils_StrToInt(const char* str);
 
 #endif

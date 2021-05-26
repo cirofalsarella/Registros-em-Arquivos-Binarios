@@ -1,6 +1,7 @@
 #include "operations.h"
 #include "binaryWriter.h"
 #include "binaryHeaders.h"
+#include "utils.h"
 #include <ctype.h>
 
 /**
@@ -194,11 +195,11 @@ void Op_PushVehicles() {
     char date[10] = { '\0' };
     ScanQuoteString(date);
 
-    int32_t numSeats;
-    scanf("%d", &numSeats);
+    char numSeats[64] = { '\0' };
+    scanf("%s", &numSeats[0]);
 
-    char lineCode[4] = { '\0' };
-    ScanQuoteString(lineCode);
+    char lineCode[64] = { '\0' };
+    scanf("%s", &lineCode[0]);
 
     // Scans model and category (not fixed-length)
     char* model = calloc(100, sizeof(char));
@@ -208,7 +209,7 @@ void Op_PushVehicles() {
     ScanQuoteString(category);
 
     // Creates a new vehicle and pushes it
-    Vehicle* newVehicle = Vehicle_Create('1', prefix, date, numSeats, atoi(lineCode), model, category);
+    Vehicle* newVehicle = Vehicle_Create('1', prefix, date, Utils_StrToInt(numSeats), Utils_StrToInt(lineCode), model, category);
     header->numReg += 1;
     vehicles = (Vehicle**) realloc(vehicles, sizeof(Vehicle*) * header->numReg);
     vehicles[header->numReg-1] = newVehicle;
@@ -245,7 +246,7 @@ void Op_PushBuslines() {
     ScanQuoteString(color);
 
     // Creates a new vehicle and pushes it
-    BusLine* newBusLine = BusLine_Create('1', atoi(lineCode), acceptsCreditCard[0], name, color);
+    BusLine* newBusLine = BusLine_Create('1', Utils_StrToInt(lineCode), acceptsCreditCard[0], name, color);
     header->numReg += 1;
     busLines = (BusLine**) realloc(busLines, sizeof(BusLine*) * header->numReg);
     busLines[header->numReg-1] = newBusLine;

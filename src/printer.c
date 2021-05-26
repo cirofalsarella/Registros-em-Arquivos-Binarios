@@ -10,7 +10,7 @@
 void PrettyPrintInt(const char* label, int value) {
     printf("%s: ", label);
     
-    if (value == 0) {
+    if (value == -1) {
         printf("campo com valor nulo\n");
     } else {
         printf("%d\n", value);
@@ -26,7 +26,7 @@ void PrettyPrintInt(const char* label, int value) {
 void PrettyPrint(const char* label, const char* str) {
     printf("%s: ", label);
     
-    if (str == NULL) {
+    if (str == NULL || strlen(str) == 0) {
         printf("campo com valor nulo\n");
     } else {
         printf("%s\n", str);
@@ -44,7 +44,7 @@ void PrettyPrint(const char* label, const char* str) {
 void PrettyPrintWithMaxLength(const char* label, const char* str, int maxLength) {
     printf("%s: ", label);
     
-    if (str == NULL) {
+    if (str == NULL || strlen(str) == 0) {
         printf("campo com valor nulo\n");
     } else {
         // Prints each char from the string, and ensures we don't print unallocated memory

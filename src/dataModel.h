@@ -10,6 +10,7 @@ typedef struct {
     int32_t numReg;
     int32_t numRegRemov;
     
+    // Labels
     char describePrefix[18];
     char describeDate[35];
     char describePlaces[42];
@@ -25,13 +26,14 @@ typedef struct {
     int32_t numReg;
     int32_t numRegRemov;
     
+    // Labels
     char describeCode[15];
     char describeCard[13];
     char describeName[13];
     char describeLine[24];
 } BusLineHeader;
 
-#define VEHICLE_VAR_OFFSET 23 // 23 bytes until the variable-length fields start (IGNORES 'REMOVED' AND 'REGSIZE')
+#define VEHICLE_FIXED_LENGTH 31 // 31 bytes of fixed length (IGNORES 'REMOVED' AND 'REGSIZE')
 
 typedef struct {
     // '0' if this register has been removed, '1' otherwise
@@ -52,7 +54,7 @@ typedef struct {
     char* category;
 } Vehicle;
 
-#define BUS_LINE_VAR_OFFSET 5 // 5 bytes until the variable-length fields start (IGNORES 'REMOVED' AND 'REGSIZE')
+#define BUSLINE_FIXED_LENGTH 13 // 13 bytes of fixed length (IGNORES 'REMOVED' AND 'REGSIZE')
 
 typedef struct {
     // '0' if this register has been removed, '1' otherwise

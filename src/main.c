@@ -4,6 +4,8 @@
 
 #include "operations.h"
 
+// TODO: Ciro - Colocar msg de erro quando arquivo nao existe para op 1 (ver se tem mais alguma q precisa tb)
+
 int main() {
     // Gets op number
     int op;

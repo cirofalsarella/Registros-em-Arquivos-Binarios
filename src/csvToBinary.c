@@ -25,7 +25,7 @@ Vehicle* CsvToBinary_CreateVehicleFromRow(StringTable* table, int row) {
         free(prefixCopy);
     }
 
-    return Vehicle_Create(removed, prefix, date, atoi(numSeats), atoi(lineCode), strdup(model), strdup(category));
+    return Vehicle_Create(removed, prefix, date, Utils_StrToInt(numSeats), Utils_StrToInt(lineCode), strdup(model), strdup(category));
 }
 
 
@@ -49,7 +49,7 @@ BusLine* CsvToBinary_CreateBusLineFromRow(StringTable* table, int row) {
         free(lineCodeCopy);
     }
 
-    return BusLine_Create(removed, atoi(lineCode), acceptsCreditCard[0], strdup(name), strdup(color));
+    return BusLine_Create(removed, Utils_StrToInt(lineCode), acceptsCreditCard[0], strdup(name), strdup(color));
 }
 
 void CsvToBinary_WriteVehicleFile(StringTable *table, char *fileName) {

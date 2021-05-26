@@ -4,15 +4,12 @@
 #include <stdlib.h>
 
 Vehicle* Vehicle_Create(char removed, char* prefix, char* date, int32_t numSeats, int32_t lineCode, char* model, char* category) {    
-    int modelLength = strlen(model);
-    int categoryLength = strlen(category);
-
     // This code is basically just copying fields
     Vehicle* vehicle = malloc(sizeof(Vehicle));
 
-    vehicle->modelLength = modelLength;
+    vehicle->modelLength = model == NULL ? 0 : strlen(model);
     vehicle->model = model;
-    vehicle->categoryLength = categoryLength;
+    vehicle->categoryLength = category == NULL ? 0 : strlen(category);
     vehicle->category = category;
 
     // Checks for NULL
@@ -30,8 +27,8 @@ Vehicle* Vehicle_Create(char removed, char* prefix, char* date, int32_t numSeats
     }
 
     vehicle->removed = removed;
-    // Reg size = Variable fields offset + 2x 4-byte integers + length of the two strings
-    vehicle->regSize = VEHICLE_VAR_OFFSET + sizeof(int32_t)*2 + modelLength + categoryLength;
+    // Reg size = Fixed length + Length of the two strings
+    vehicle->regSize = VEHICLE_FIXED_LENGTH + vehicle->modelLength + vehicle->categoryLength;
     Utils_StrCopyToFixedLen(&vehicle->prefix[0], prefix, 5);
     Utils_StrCopyToFixedLen(&vehicle->date[0], date, 10);
 
@@ -48,15 +45,12 @@ void Vehicle_Free(Vehicle* vehicle) {
 }
 
 BusLine* BusLine_Create(char removed, int32_t lineCode, char acceptsCreditCard, char* name, char* color) {
-    int nameLength = strlen(name);
-    int colorLength = strlen(color);
-
     // This code is basically just copying fields
     BusLine* busLine = malloc(sizeof(BusLine));
 
-    busLine->nameLength = nameLength;
+    busLine->nameLength = name == NULL ? 0 : strlen(name);
     busLine->name = name;
-    busLine->colorLength = colorLength;
+    busLine->colorLength = color == NULL ? 0 : strlen(color);
     busLine->color = color;
 
     // Checks for NULL
@@ -75,7 +69,7 @@ BusLine* BusLine_Create(char removed, int32_t lineCode, char acceptsCreditCard, 
 
     busLine->removed = removed;
     // Reg size = Variable fields offset + 2x 4-byte integers + length of the two strings
-    busLine->regSize = BUS_LINE_VAR_OFFSET + sizeof(int32_t)*2 + nameLength + colorLength;
+    busLine->regSize = BUSLINE_FIXED_LENGTH + busLine->nameLength + busLine->colorLength;
     busLine->lineCode = lineCode;
     busLine->acceptsCreditCard = acceptsCreditCard;
     
