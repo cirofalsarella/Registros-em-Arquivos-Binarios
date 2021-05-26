@@ -86,13 +86,16 @@ void Op_SelectVehicles() {
     }
     
     // Prints all vehicles
-    if (header->numReg > 0){ }
-    printf("NUMERO DE VEICULOS: %d\n", header->numReg);
-    for (int i = 0; i < header->numReg; i++) {
-        Printer_Vehicle(vehicles[i]);
-        Vehicle_Free(vehicles[i]);
+    if (header->numReg > 0) {
+        for (int i = 0; i < header->numReg; i++) {
+            Printer_Vehicle(vehicles[i]);
+            Vehicle_Free(vehicles[i]);
+        }
+    } else {
+        printf("Registro inexistente.\n");
     }
 
+    free(header);
     free(vehicles);
 }
 
@@ -110,12 +113,16 @@ void Op_SelectBusLines() {
     }
 
     // Prints all bus lines
-    printf("NUMERO DE LINHAS: %d\n", header->numReg);
-    for (int i = 0; i < header->numReg; i++) {
-        Printer_BusLine(buslines[i]);
-        BusLine_Free(buslines[i]);
+    if (header->numReg > 0) {
+        for (int i = 0; i < header->numReg; i++) {
+            Printer_BusLine(buslines[i]);
+            BusLine_Free(buslines[i]);
+        }
+    } else {
+        printf("Registro inexistente.\n");
     }
 
+    free(header);
     free(buslines);
 }
 
@@ -142,12 +149,16 @@ void Op_SelectVehiclesWhere() {
     vehicles = SelectWhere_SelectVehicles(functionPt, pattern, &vehicles, &header->numReg);
 
     // Linearly searches for the right vehicle
-    printf("NUMERO DE VEICULOS: %d\n", header->numReg);
-    for (int i = 0; i < header->numReg; i++) {
-        Printer_Vehicle(vehicles[i]);
-        Vehicle_Free(vehicles[i]);
+    if (header->numReg > 0) {
+        for (int i = 0; i < header->numReg; i++) {
+            Printer_Vehicle(vehicles[i]);
+            Vehicle_Free(vehicles[i]);
+        }
+    } else {
+        printf("Registro inexistente.\n");
     }
 
+    free(header);
     free(vehicles);
 }
 
@@ -174,12 +185,16 @@ void Op_SelectBuslinesWhere() {
     buslines = SelectWhere_SelectBusLines(functionPt, pattern, &buslines, &header->numReg);
 
     // Linearly searches for the right bus line
-    printf("NUMERO DE LINHAS: %d\n", header->numReg);
-    for (int i = 0; i < header->numReg; i++) {
-        Printer_BusLine(buslines[i]);
-        BusLine_Free(buslines[i]);
+    if (header->numReg > 0) {
+        for (int i = 0; i < header->numReg; i++) {
+            Printer_BusLine(buslines[i]);
+            BusLine_Free(buslines[i]);
+        }
+    } else {
+        printf("Registro inexistente.\n");
     }
 
+    free(header);
     free(buslines);
 }
 

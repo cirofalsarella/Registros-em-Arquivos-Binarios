@@ -24,11 +24,12 @@ Vehicle* ReadVehicle(FILE *srcFile) {
     Vehicle* vehicle = calloc(1, sizeof(Vehicle));
 
     fread(&vehicle->removed, sizeof(char), 1, srcFile);
-    fread(&vehicle->regSize, sizeof(int32_t), 1, srcFile);
-    fread(&vehicle->prefix[0], sizeof(char), 5, srcFile);
-    fread(&vehicle->date[0], sizeof(char), 10, srcFile);
-    fread(&vehicle->numSeats, sizeof(int32_t), 1, srcFile);
-    fread(&vehicle->lineCode, sizeof(int32_t), 1, srcFile);
+    
+    fread(&vehicle->regSize, sizeof(int32_t), 1, srcFile);  // 4
+    fread(&vehicle->prefix[0], sizeof(char), 5, srcFile);   // 5
+    fread(&vehicle->date[0], sizeof(char), 10, srcFile);    // 10
+    fread(&vehicle->numSeats, sizeof(int32_t), 1, srcFile); // 4
+    fread(&vehicle->lineCode, sizeof(int32_t), 1, srcFile); // 4
 
     // Variable-length fields
     fread(&vehicle->modelLength, sizeof(int32_t), 1, srcFile);
@@ -89,19 +90,21 @@ Vehicle** BinaryReader_Vehicles(VehicleHeader** header, char* fileName) {
     // Reads the header
     *header = ReadVehicleHeader(srcFile);
 
-    int validRegisters = (*header)->numReg - (*header)->numRegRemov;
-    assert(validRegisters > 0);
-
     // Allocates space for the vehicles
-    Vehicle** vehicles = calloc(validRegisters, sizeof(Vehicle*));
+    Vehicle** vehicles = calloc((*header)->numReg, sizeof(Vehicle*));
+    int n_registers = (*header)->numReg + (*header)->numRegRemov;
 
     // Gets the vehicles from the file
-    int i = 0;
-    while (i < validRegisters) {
+    int j = 0;
+    for (int i=0; i < n_registers; i++) {
         Vehicle* aux = ReadVehicle(srcFile);
         if (aux != NULL) {
-            vehicles[i] = aux;
-            i++;
+            if (aux->removed == '0') {
+                Vehicle_Free(aux);
+            } else {
+                vehicles[j] = aux;
+                j++;
+            }
         }
     }
 
@@ -118,19 +121,21 @@ BusLine** BinaryReader_BusLines(BusLineHeader** header, char* fileName) {
     // Reads the header
     *header = ReadBusLineHeader(srcFile);
 
-    int validRegisters = (*header)->numReg - (*header)->numRegRemov;
-    assert(validRegisters > 0);
-
     // Allocates space for the bus lines
-    BusLine** busLines = calloc(validRegisters, sizeof(BusLine*));
+    BusLine** busLines = calloc((*header)->numReg, sizeof(BusLine*));
+    int n_registers = (*header)->numReg + (*header)->numRegRemov;
 
     // Gets the bus lines from the file
-    int i = 0;
-    while (i < validRegisters) {
+    int j = 0;
+    for (int i=0; i < n_registers; i++) {
         BusLine* aux = ReadBusLine(srcFile);
         if (aux != NULL) {
-            busLines[i] = aux;
-            i++;
+            if (aux->removed == '0') {
+                BusLine_Free(aux);
+            } else {
+                busLines[j] = aux;
+                j++;
+            }
         }
     }
 

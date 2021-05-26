@@ -52,12 +52,44 @@ void PrettyPrintWithMaxLength(const char* label, const char* str, int maxLength)
     }
 }
 
+void PrettyPrintDate(const char *date) {
+    if (date == NULL || strlen(date) == 0) {
+        printf("campo com valor nulo\n");
+    } else {
+        char mes[32];
+        switch (date[6]) {
+            case '1':   strcpy(mes, ( (date[5] == '0') ? "janeiro" : "novembro"));
+                break;
+            case '2':   strcpy(mes, ( (date[5] == '0') ? "fevereiro" : "dezembro"));
+                break;
+            case '3':   strcpy(mes, "março");
+                break;
+            case '4':   strcpy(mes, "abril");
+                break;
+            case '5':   strcpy(mes, "maio");
+                break;
+            case '6':   strcpy(mes, "junho");
+                break;
+            case '7':   strcpy(mes, "julho");
+                break;
+            case '8':   strcpy(mes, "agosto");
+                break;
+            case '9':   strcpy(mes, "setembro");
+                break;
+            case '0':   strcpy(mes, "outubro");
+                break;
+        }
+        printf("%c%c de %s de %c%c%c%c\n", date[8], date[9], mes, date[0], date[1], date[2], date[3]);
+    }
+}
+
 
 void Printer_Vehicle(Vehicle *vehicle) {
     PrettyPrintWithMaxLength("Prefixo do veiculo", vehicle->prefix, 5);
     PrettyPrint("Modelo do veiculo", vehicle->model);
     PrettyPrint("Categoria do veiculo", vehicle->category);
-    PrettyPrintWithMaxLength("Data de entrada do veiculo na frota", vehicle->date, 10);
+    printf("Data de entrada do veiculo na frota: ");
+    PrettyPrintDate(vehicle->date);
     PrettyPrintInt("Quantidade de lugares sentados disponiveis", vehicle->numSeats);
     printf("\n");
 }

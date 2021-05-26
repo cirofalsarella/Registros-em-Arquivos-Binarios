@@ -69,7 +69,6 @@ void BinaryWriter_WriteVehicleHeader(const VehicleHeader* header, FILE *destFile
     fwrite(&header->describeCategory[0], sizeof(char), 20, destFile);
 }
 
-
 void BinaryWriter_WriteBusLineHeader(const BusLineHeader* header, FILE *destFile) {
     fwrite(&header->status, sizeof(char), 1, destFile);
     fwrite(&header->nextReg, sizeof(int64_t), 1, destFile);
