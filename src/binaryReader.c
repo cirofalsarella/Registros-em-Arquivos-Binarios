@@ -39,11 +39,6 @@ Vehicle* ReadVehicle(FILE *srcFile) {
     vehicle->category = calloc(vehicle->categoryLength+1, sizeof(char));
     fread(vehicle->category, sizeof(char), vehicle->categoryLength, srcFile);
 
-    if (vehicle->removed == '1') {
-        Vehicle_Free(vehicle);
-        vehicle = NULL;
-    }
-
     return vehicle;
 }
 
@@ -81,11 +76,6 @@ BusLine* ReadBusLine(FILE *srcFile) {
     fread(&busLine->colorLength, sizeof(int32_t), 1, srcFile);
     busLine->color = calloc(busLine->colorLength+1, sizeof(char));
     fread(busLine->color, sizeof(char), busLine->colorLength, srcFile);
-
-    if (busLine->removed == '1') {
-        BusLine_Free(busLine);
-        busLine = NULL;
-    }
 
     return busLine;
 }

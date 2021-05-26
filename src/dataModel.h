@@ -33,6 +33,7 @@ typedef struct {
 #define VEHICLE_VAR_OFFSET 28 // 28 bytes until the variable-length fields start
 
 typedef struct {
+    // '0' if this register has been removed, '1' otherwise
     char removed;
     // Size of this register
     int32_t regSize;
@@ -53,6 +54,7 @@ typedef struct {
 #define BUS_LINE_VAR_OFFSET 10 // 10 bytes until the variable-length fields start
 
 typedef struct {
+    // '0' if this register has been removed, '1' otherwise
     char removed;
     // Size of this register
     int32_t regSize;

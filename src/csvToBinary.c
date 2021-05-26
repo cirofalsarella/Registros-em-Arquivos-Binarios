@@ -13,7 +13,7 @@ Vehicle* CsvToBinary_CreateVehicleFromRow(StringTable* table, int row) {
     char* model = StringTable_GetCellAt(table, 4, row);
     char* category = StringTable_GetCellAt(table, 5, row);
 
-    char removed = prefix[0] == '*' ? '1' : '0';
+    char removed = prefix[0] == '*' ? '0' : '1';
     return Vehicle_Create(removed, prefix, date, atoi(numSeats), lineCode, strdup(model), strdup(category));
 }
 
@@ -27,7 +27,7 @@ BusLine* CsvToBinary_CreateBusLineFromRow(StringTable* table, int row) {
     char* name = StringTable_GetCellAt(table, 2, row);
     char* color = StringTable_GetCellAt(table, 3, row);
 
-    char removed = lineCode[0] == '*' ? '1' : '0';
+    char removed = lineCode[0] == '*' ? '0' : '1';
     return BusLine_Create(removed, lineCode, acceptsCreditCard[0], strdup(name), strdup(color));
 }
 

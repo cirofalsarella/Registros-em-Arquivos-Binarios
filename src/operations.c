@@ -208,7 +208,7 @@ void Op_PushVehicles() {
     ScanQuoteString(category);
 
     // Creates a new vehicle and pushes it
-    Vehicle* newVehicle = Vehicle_Create(0, prefix, date, numSeats, lineCode, model, category);
+    Vehicle* newVehicle = Vehicle_Create('1', prefix, date, numSeats, lineCode, model, category);
     header->numReg += 1;
     vehicles = (Vehicle**) realloc(vehicles, sizeof(Vehicle*) * header->numReg);
     vehicles[header->numReg-1] = newVehicle;
@@ -245,7 +245,7 @@ void Op_PushBuslines() {
     ScanQuoteString(color);
 
     // Creates a new vehicle and pushes it
-    BusLine* newBusLine = BusLine_Create(0, lineCode, acceptsCreditCard[0], name, color);
+    BusLine* newBusLine = BusLine_Create('1', lineCode, acceptsCreditCard[0], name, color);
     header->numReg += 1;
     busLines = (BusLine**) realloc(busLines, sizeof(BusLine*) * header->numReg);
     busLines[header->numReg-1] = newBusLine;
