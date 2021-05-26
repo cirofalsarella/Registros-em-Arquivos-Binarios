@@ -3,14 +3,19 @@
 #include "binaryHeaders.h"
 #include <ctype.h>
 
-void binarioNaTela(char* nomeArquivoBinario) {
+/**
+ * @brief Prints a hash of the given binary file (binarioNaTela).
+ * 
+ * @param nomeArquivoBinario 
+ */
+void PrintHash(char* nomeArquivoBinario) {
 	unsigned long i, cs;
 	unsigned char *mb;
 	size_t fl;
 	FILE *fs;
 
 	if (nomeArquivoBinario == NULL || !(fs = fopen(nomeArquivoBinario, "rb"))) {
-		fprintf(stderr, "ERRO AO ESCREVER O BINARIO NA TELA (função binarioNaTela): não foi possível abrir o arquivo que me passou para leitura. Ele existe e você tá passando o nome certo? Você lembrou de fechar ele com fclose depois de usar?\n");
+		fprintf(stderr, "ERRO AO ESCREVER O BINARIO NA TELA (função PrintHash): não foi possível abrir o arquivo que me passou para leitura. Ele existe e você tá passando o nome certo? Você lembrou de fechar ele com fclose depois de usar?\n");
 		return;
 	}
 	
@@ -40,7 +45,7 @@ void Op_CreateTableVehicles() {
     CsvToBinary_WriteVehicleFile(Table, binFile);
 
     StringTable_Free(Table);
-    binarioNaTela(binFile);
+    PrintHash(binFile);
 }
 
 void Op_CreateTableBuslines() {
@@ -53,9 +58,8 @@ void Op_CreateTableBuslines() {
     CsvToBinary_WriteBusLineFile(Table, binFile);
 
     StringTable_Free(Table);
-    binarioNaTela(binFile);
+    PrintHash(binFile);
 }
-
 
 void Op_SelectVehicles() {
     // Reads file name
