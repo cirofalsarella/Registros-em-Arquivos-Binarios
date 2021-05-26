@@ -4,7 +4,7 @@
 #include <ctype.h>
 
 /**
- * @brief Prints a hash of the given binary file (binarioNaTela).
+ * @brief Prints a hash of the given binary file (aka binarioNaTela).
  * 
  * @param nomeArquivoBinario 
  */

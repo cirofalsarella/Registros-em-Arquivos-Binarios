@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-// TODO: Deal with NULOs
+// TODO: NULOS + Fix hashes (nextReg is different)
 
 Vehicle* Vehicle_Create(char removed, char* prefix, char* date, int32_t numSeats, char* lineCode, char* model, char* category) {    
     int modelLength = strlen(model);

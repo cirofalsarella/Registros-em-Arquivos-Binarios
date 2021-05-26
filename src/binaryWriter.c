@@ -76,7 +76,7 @@ void BinaryWriter_CreateVehicleFile(Vehicle** vehicles, int vehiclesCount, Vehic
 
     // First, calculates number of removed registers
     for (int i = 0; i < vehiclesCount; i++) {
-        if (vehicles[i]->removed) {
+        if (vehicles[i]->removed == '1') {
             header->numRegRemov++;
             header->numReg--;
         }
@@ -116,7 +116,7 @@ void BinaryWriter_CreateBusLineFile(BusLine** busLines, int busLinesCount, BusLi
 
     // First, calculates number of removed registers
     for (int i = 0; i < busLinesCount; i++) {
-        if (busLines[i]->removed) {
+        if (busLines[i]->removed == '1') {
             header->numRegRemov++;
             header->numReg--;
         }
