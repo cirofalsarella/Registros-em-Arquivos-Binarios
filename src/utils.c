@@ -29,7 +29,7 @@ int Utils_MinNumber(int x, int y) {
     return x < y ? x : y;
 }
 
-void Utils_StrCopyToFixedLen(char* from, char* to, int length) {
+void Utils_StrCopyToFixedLen(char* to, char* from, int length) {
     // Safely copies a string with varying length to a string with fixed length (ensures that we don't copy unalloacted memory)
     int lenToCopy = Utils_MinNumber(length, strlen(from));
     for (int i = 0; i < lenToCopy; ++i) {

@@ -147,6 +147,10 @@ char* StringTable_GetCell(StringTable* table, const char* columnName, int row) {
     return StringTable_GetCellAt(table, column, row);
 }
 
+char* StringTable_GetLabel(StringTable* table, int col) {
+    return table->cells[col];
+}
+
 void StringTable_SetCell(StringTable* table, const char* columnName, int row, char* newValue) {
     if (row < 0 || row >= table->rowCount) return;
 

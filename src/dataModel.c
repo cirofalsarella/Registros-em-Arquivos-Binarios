@@ -14,10 +14,10 @@ Vehicle* Vehicle_Create(char removed, char* prefix, char* date, int32_t numSeats
     vehicle->removed = removed;
     // Reg size = Variable fields offset + 2x 4-byte integers + length of the two strings
     vehicle->regSize = VEHICLE_VAR_OFFSET + sizeof(int32_t)*2 + modelLength + categoryLength;
-    Utils_StrCopyToFixedLen(prefix, &vehicle->prefix[0], 5);
-    Utils_StrCopyToFixedLen(date, &vehicle->date[0], 10);
+    Utils_StrCopyToFixedLen(&vehicle->prefix[0], prefix, 5);
+    Utils_StrCopyToFixedLen(&vehicle->date[0], date, 10);
     vehicle->numSeats = numSeats;
-    Utils_StrCopyToFixedLen(lineCode, &vehicle->lineCode[0], 4);
+    Utils_StrCopyToFixedLen(&vehicle->lineCode[0], lineCode, 4);
     vehicle->modelLength = modelLength;
     vehicle->model = model;
     vehicle->categoryLength = categoryLength;
@@ -40,7 +40,7 @@ BusLine* BusLine_Create(char removed, char* lineCode, char acceptsCreditCard, ch
     busLine->removed = removed;
     // Reg size = Variable fields offset + 2x 4-byte integers + length of the two strings
     busLine->regSize = BUS_LINE_VAR_OFFSET + sizeof(int32_t)*2 + nameLength + colorLength;
-    Utils_StrCopyToFixedLen(lineCode, &busLine->lineCode[0], 4);
+    Utils_StrCopyToFixedLen(&busLine->lineCode[0], lineCode, 4);
     busLine->acceptsCreditCard = acceptsCreditCard;
     busLine->nameLength = nameLength;
     busLine->name = name;

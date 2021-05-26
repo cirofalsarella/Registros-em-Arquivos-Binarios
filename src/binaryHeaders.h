@@ -5,6 +5,51 @@
 #include "stringTable.h"
 
 /**
+ * @brief Creates a new vehicle header.
+ * 
+ * @param status 
+ * @param nextReg 
+ * @param numReg 
+ * @param numRegRemov 
+ * @param describePrefix 
+ * @param describeDate 
+ * @param describePlaces 
+ * @param describeLine 
+ * @param describeModel 
+ * @param describeCategory 
+ * @return VehicleHeader* 
+ */
+VehicleHeader* VehicleHeader_Create(char status, int64_t nextReg, int32_t numReg, int32_t numRegRemov, char* describePrefix,
+                    char* describeDate, char* describePlaces, char* describeLine, char* describeModel, char* describeCategory);
+
+/**
+ * @brief Frees the given vehicle header.
+ * @param header 
+ */
+void VehicleHeader_Free(VehicleHeader* header);
+
+/**
+ * @brief Creates a new bus line header.
+ * 
+ * @param status 
+ * @param nextReg 
+ * @param numReg 
+ * @param numRegRemov 
+ * @param describeCode 
+ * @param describeCard 
+ * @param describeName 
+ * @param describeLine 
+ * @return BusLineHeader* 
+ */
+BusLineHeader* BusLineHeader_Create(char status, int64_t nextReg, int32_t numReg, int32_t numRegRemov, char* describeCode,
+                                    char* describeCard, char* describeName, char* describeLine);
+/**
+ * @brief Frees the given bus line header.
+ * @param header
+ */
+void BusLineHeader_Free(BusLineHeader* header);
+
+/**
  * @brief Creates a vehicle header from the given string table.
  * 
  * @param table 

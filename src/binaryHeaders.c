@@ -1,38 +1,71 @@
 #include "binaryHeaders.h"
+#include "utils.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-VehicleHeader* VehicleHeader_CreateFromTable(StringTable* table) {
+VehicleHeader* VehicleHeader_Create(char status, int64_t nextReg, int32_t numReg, int32_t numRegRemov, char* describePrefix,
+                    char* describeDate, char* describePlaces, char* describeLine, char* describeModel, char* describeCategory) {
+    // Describe lenghts: 18, 35, 42, 26, 17, 20
     VehicleHeader* header = (VehicleHeader*) malloc(sizeof(VehicleHeader));
     
-    strcpy(header->describePrefix, table->cells[0 + (0) * table->columnCount]);
-    strcpy(header->describeDate, table->cells[1 + (0) * table->columnCount]);
-    strcpy(header->describePlaces, table->cells[2 + (0) * table->columnCount]);
-    strcpy(header->describeLine, table->cells[3 + (0) * table->columnCount]);
-    strcpy(header->describeModel, table->cells[4 + (0) * table->columnCount]);
-    strcpy(header->describeCategory, table->cells[5 + (0) * table->columnCount]);
+    header->status = status;
+    header->nextReg = nextReg;
+    header->numReg = numReg;
+    header->numRegRemov = numRegRemov;
 
-    header->numRegRemov = 0;
-    header->status = '0';
-
-    // TODO: Nem tudo esta inicializado?
+    // Copies over fixed-length fields
+    Utils_StrCopyToFixedLen(header->describePrefix, describePrefix, 18);
+    Utils_StrCopyToFixedLen(header->describeDate, describeDate, 35);
+    Utils_StrCopyToFixedLen(header->describePlaces, describePlaces, 42);
+    Utils_StrCopyToFixedLen(header->describeLine, describeLine, 26);
+    Utils_StrCopyToFixedLen(header->describeModel, describeModel, 17);
+    Utils_StrCopyToFixedLen(header->describeCategory, describeCategory, 20);
 
     return header;
 }
 
-BusLineHeader* BusLineHeader_CreateFromTable(StringTable *table) {
+void VehicleHeader_Free(VehicleHeader* header) {
+    free(header);
+}
+
+BusLineHeader* BusLineHeader_Create(char status, int64_t nextReg, int32_t numReg, int32_t numRegRemov, char* describeCode,
+                                    char* describeCard, char* describeName, char* describeLine) {
+    // Describe lenghts: 15, 13, 13, 24
     BusLineHeader* header = (BusLineHeader*) malloc(sizeof(BusLineHeader));
     
-    strcpy(header->describeCard, StringTable_GetCellAt(table, 0, 0));
-    strcpy(header->describeCode, StringTable_GetCellAt(table, 1, 0));
-    strcpy(header->describeName, StringTable_GetCellAt(table, 2, 0));
-    strcpy(header->describeLine, StringTable_GetCellAt(table, 3, 0));
-    
-    header->numRegRemov = 0;
-    header->status = 0;
-    
-    // TODO: Nem tudo esta inicializado?
+    header->status = status;
+    header->nextReg = nextReg;
+    header->numReg = numReg;
+    header->numRegRemov = numRegRemov;
 
-    return header;
+    // Copies over fixed-length fields
+    Utils_StrCopyToFixedLen(header->describeCode, describeCode, 15);
+    Utils_StrCopyToFixedLen(header->describeCard, describeCard, 13);
+    Utils_StrCopyToFixedLen(header->describeName, describeName, 13);
+    Utils_StrCopyToFixedLen(header->describeLine, describeLine, 24);
+
+    return header;                        
+}
+
+void BusLineHeader_Free(BusLineHeader* header) {
+    free(header);
+}
+
+VehicleHeader* VehicleHeader_CreateFromTable(StringTable* table) {
+    return VehicleHeader_Create('0', 0, 0, 0,
+                                StringTable_GetLabel(table, 0),
+                                StringTable_GetLabel(table, 1),
+                                StringTable_GetLabel(table, 2),
+                                StringTable_GetLabel(table, 3),
+                                StringTable_GetLabel(table, 4),
+                                StringTable_GetLabel(table, 5));
+}
+
+BusLineHeader* BusLineHeader_CreateFromTable(StringTable *table) {
+    return BusLineHeader_Create('0', 0, 0, 0,
+                                StringTable_GetLabel(table, 0),
+                                StringTable_GetLabel(table, 1),
+                                StringTable_GetLabel(table, 2),
+                                StringTable_GetLabel(table, 3));
 }

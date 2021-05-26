@@ -10,7 +10,6 @@
 #include "printer.h"
 #include "binaryReader.h"
 #include "selectWhere.h"
-#include "funcao-fornecida.h"
 
 
 /**

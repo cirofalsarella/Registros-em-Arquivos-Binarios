@@ -54,6 +54,15 @@ char* StringTable_GetCellAt(StringTable* table, int column, int row);
 char* StringTable_GetCell(StringTable* table, const char* columnName, int row);
 
 /**
+ * @brief Returns the label at column.
+ * 
+ * @param table 
+ * @param col 
+ * @return char* 
+ */
+char* StringTable_GetLabel(StringTable* table, int col);
+
+/**
  * @brief Sets cells at the column with the given columnName and row.
  * 
  * @param table 
