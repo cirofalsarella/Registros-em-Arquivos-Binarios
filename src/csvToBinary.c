@@ -14,7 +14,17 @@ Vehicle* CsvToBinary_CreateVehicleFromRow(StringTable* table, int row) {
     char* model = StringTable_GetCellAt(table, 4, row);
     char* category = StringTable_GetCellAt(table, 5, row);
 
-    char removed = prefix[0] == '*' ? '0' : '1';
+    char removed = '1';
+    if (prefix[0] == '*') {
+        removed = '0';
+        // Removes '*' from name
+        char* prefixCopy = Utils_StrCopy(prefix+1); // Copies without the '*'
+        int prefixCopyLen = strlen(prefixCopy);
+        strcpy(prefix, prefixCopy);
+        prefix[prefixCopyLen] = '\0';
+        free(prefixCopy);
+    }
+
     return Vehicle_Create(removed, prefix, date, atoi(numSeats), atoi(lineCode), strdup(model), strdup(category));
 }
 
@@ -28,7 +38,17 @@ BusLine* CsvToBinary_CreateBusLineFromRow(StringTable* table, int row) {
     char* name = StringTable_GetCellAt(table, 2, row);
     char* color = StringTable_GetCellAt(table, 3, row);
 
-    char removed = lineCode[0] == '*' ? '0' : '1';
+    char removed = '1';
+    if (lineCode[0] == '*') {
+        removed = '0';
+        // Removes '*' from name
+        char* lineCodeCopy = Utils_StrCopy(lineCode+1); // Copies without the '*'
+        int lineCodeLen = strlen(lineCodeCopy);
+        strcpy(lineCode, lineCodeCopy);
+        lineCode[lineCodeLen] = '\0';
+        free(lineCodeCopy);
+    }
+
     return BusLine_Create(removed, atoi(lineCode), acceptsCreditCard[0], strdup(name), strdup(color));
 }
 
