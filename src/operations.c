@@ -145,11 +145,13 @@ void Op_SelectVehiclesWhere() {
     // Calls our generic function that selects by an arbitrary field
     void *functionPt = SelectWhere_SetCondition(fieldName);
     void *pattern = SelectWhere_SetPattern(fieldName);
-    vehicles = SelectWhere_SelectVehicles(functionPt, pattern, &vehicles, &header->numReg);
+
+    int nReg = header->numReg + header->numRegRemov;
+    vehicles = SelectWhere_SelectVehicles(functionPt, pattern, &vehicles, nReg);
 
     // Linearly searches for the right vehicle
-    if (header->numReg > 0) {
-        for (int i = 0; i < header->numReg; i++) {
+    if (nReg > 0) {
+        for (int i = 0; i < nReg; i++) {
             Printer_Vehicle(vehicles[i]);
             Vehicle_Free(vehicles[i]);
         }
