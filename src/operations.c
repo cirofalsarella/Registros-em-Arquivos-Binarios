@@ -121,7 +121,7 @@ void Op_SelectBusLines() {
         printf("Registro inexistente.\n");
     }
 
-    VehicleHeader_Free(header);
+    BusLineHeader_Free(header);
     free(buslines);
 }
 
@@ -193,7 +193,7 @@ void Op_SelectBuslinesWhere() {
         printf("Registro inexistente.\n");
     }
 
-    VehicleHeader_Free(header);
+    BusLineHeader_Free(header);
     free(buslines);
 }
 
@@ -229,17 +229,17 @@ void Op_PushBuslines() {
 
     // Scans lineCode, acceptsCreditCard (all fixed-length fields)
     char lineCode[4] = { '\0' };
-    ScanQuoteString(lineCode);
+    Utils_ScanQuoteString(lineCode);
 
     char acceptsCreditCard[1] = { '\0' };
-    ScanQuoteString(acceptsCreditCard);
+    Utils_ScanQuoteString(acceptsCreditCard);
 
     // Scans name and color (not fixed-length)
     char* name = calloc(100, sizeof(char));
     char* color = calloc(100, sizeof(char));
 
-    ScanQuoteString(name);
-    ScanQuoteString(color);
+    Utils_ScanQuoteString(name);
+    Utils_ScanQuoteString(color);
 
     // Creates a new vehicle and pushes it
     BusLine* newBusLine = BusLine_Create('1', Utils_StrToInt(lineCode), acceptsCreditCard[0], name, color);

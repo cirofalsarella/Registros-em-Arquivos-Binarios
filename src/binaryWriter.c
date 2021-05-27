@@ -164,11 +164,12 @@ void BinaryWriter_CreateBusLineFile(BusLine** busLines, int busLinesCount, BusLi
 void BinaryWriter_IncrementVehicleFile(Vehicle** vehicles, int vehiclesCount, char* fileName) {
     FILE *destFile = fopen(fileName, "rb+");
     if (destFile == NULL){
-        return NULL;
+        return;
     }
 
     // Set as editing mode
-    fwrite("1", sizeof(char), 1, destFile);
+    char status = '0';
+    fwrite(&status, sizeof(char), 1, destFile);
 
     // Placing the pointer
     int64_t proxReg;
@@ -187,6 +188,9 @@ void BinaryWriter_IncrementVehicleFile(Vehicle** vehicles, int vehiclesCount, ch
     fwrite(&proxReg, sizeof(int64_t), 1, destFile);
 
     // Set as default mode
+    status = '1';
     fseek(destFile, 0, SEEK_SET);
-    fwrite("0", sizeof(char), 1, destFile);
+    fwrite(&status, sizeof(char), 1, destFile);
+
+    fclose(destFile);
 }

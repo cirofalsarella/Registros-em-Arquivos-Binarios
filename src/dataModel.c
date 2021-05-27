@@ -1,7 +1,9 @@
-#include "dataModel.h"
-#include "utils.h"
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
+#include "dataModel.h"
+#include "utils.h"
 
 Vehicle* Vehicle_Create(char removed, char* prefix, char* date, int32_t numSeats, int32_t lineCode, char* model, char* category) {    
     // This code is basically just copying fields
@@ -44,10 +46,10 @@ Vehicle** Vehicle_Read(int n) {
     for (int i=0; i<n; i++){
         // Scans prefix, date, numSeats and lineCode (all fixed-length fields)
         char prefix[5] = { '\0' };
-        ScanQuoteString(prefix);
+        Utils_ScanQuoteString(prefix);
 
         char date[10] = { '\0' };
-        ScanQuoteString(date);
+        Utils_ScanQuoteString(date);
 
         char numSeats[64] = { '\0' };
         scanf("%s", &numSeats[0]);
@@ -59,8 +61,8 @@ Vehicle** Vehicle_Read(int n) {
         char* model = calloc(100, sizeof(char));
         char* category = calloc(100, sizeof(char));
 
-        ScanQuoteString(model);
-        ScanQuoteString(category);
+        Utils_ScanQuoteString(model);
+        Utils_ScanQuoteString(category);
 
         // Creates a new vehicle and pushes it
         vehicles[i] = Vehicle_Create('1', prefix, date, Utils_StrToInt(numSeats), Utils_StrToInt(lineCode), model, category);
