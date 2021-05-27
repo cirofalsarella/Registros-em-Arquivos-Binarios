@@ -67,6 +67,7 @@ StringTable* StringTable_FromCsv(const char* fileName, char sep) {
 
         // If the line is empty, just ignore it
         if (line == NULL || strchr(line, sep) == NULL || line[0] == '\0') {
+            free(line);
             continue;
         }
 

@@ -239,7 +239,7 @@ void Op_PushBuslines() {
     }
 
     // Updates the binary file
-    if ( BinaryWriter_IncrementBusLineFile(buslines, n, binFile) ) {
+    if (BinaryWriter_IncrementBusLineFile(buslines, n, binFile)) {
         printf("Falha no processamento do arquivo.\n");
         free(buslines);
         return;
