@@ -252,4 +252,6 @@ void Op_PushBuslines() {
     // Writes to file
     BinaryWriter_CreateBusLineFile(busLines, header->numReg, header, binFile);
     PrintHash(binFile);
+
+    BusLineHeader_Free(header);
 }
