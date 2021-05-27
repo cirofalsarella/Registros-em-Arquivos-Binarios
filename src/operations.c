@@ -147,7 +147,7 @@ void Op_SelectVehiclesWhere() {
     void *pattern = SelectWhere_SetPattern(fieldName);
 
     int nReg = header->numReg + header->numRegRemov;
-    vehicles = SelectWhere_SelectVehicles(functionPt, pattern, &vehicles, nReg);
+    vehicles = SelectWhere_SelectVehicles(functionPt, pattern, &vehicles, &nReg);
 
     // Linearly searches for the right vehicle
     if (nReg > 0) {
