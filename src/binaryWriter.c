@@ -171,23 +171,33 @@ void BinaryWriter_IncrementVehicleFile(Vehicle** vehicles, int vehiclesCount, ch
     char status = '0';
     fwrite(&status, sizeof(char), 1, destFile);
 
-    // TODO: Incrementar numero de veiculos no header
-
-    // Placing the pointer
+    // getting the header intel
     int64_t proxReg;
     fread(&proxReg, sizeof(int64_t), 1, destFile);
-    fseek(destFile, proxReg, SEEK_SET);
+    int32_t numReg, numRegRem;
+    fread(&numReg, sizeof(int32_t), 1, destFile);
+    fread(&numRegRem, sizeof(int32_t), 1, destFile);
+
 
     // Writing the registers
+    fseek(destFile, proxReg, SEEK_SET);
     for (int i = 0; i < vehiclesCount; i++){
         BinaryWriter_WriteVehicle(vehicles[i], destFile);
+        if (vehicles[i]->removed) {
+            numRegRem++;
+        } else {
+            numReg++;
+        }
         Vehicle_Free(vehicles[i]);
     }
-
-    // Adjusting the proxReg field
     proxReg = ftell(destFile);
+
+
+    // Adjusting the header fields
     fseek(destFile, 1, SEEK_SET);
     fwrite(&proxReg, sizeof(int64_t), 1, destFile);
+    fwrite(&numReg, sizeof(int32_t), 1, destFile);
+    fwrite(&numRegRem, sizeof(int32_t), 1, destFile);
 
     // Set as default mode
     status = '1';
