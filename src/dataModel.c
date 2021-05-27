@@ -41,9 +41,9 @@ Vehicle* Vehicle_Create(char removed, char* prefix, char* date, int32_t numSeats
 }
 
 Vehicle** Vehicle_Read(int n) {
-    Vehicle **vehicles = calloc (n, sizeof(Vehicle*));
+    Vehicle** vehicles = calloc(n, sizeof(Vehicle*));
     
-    for (int i=0; i<n; i++){
+    for (int i = 0; i < n; i++) {
         // Scans prefix, date, numSeats and lineCode (all fixed-length fields)
         char prefix[5] = { '\0' };
         Utils_ScanQuoteString(prefix);
