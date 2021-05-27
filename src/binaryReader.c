@@ -85,6 +85,14 @@ Vehicle** BinaryReader_Vehicles(VehicleHeader** header, char* fileName) {
     FILE* srcFile = fopen(fileName, "rb");
     if (srcFile == NULL) {
         return NULL;
+    } else {
+        char status;
+        fread(&status, sizeof(char), 1, srcFile);
+        if (status == '0'){
+            fclose(srcFile);
+            return NULL;
+        }
+        fseek(srcFile, 0, SEEK_SET);
     }
 
     // Reads the header
@@ -116,6 +124,14 @@ BusLine** BinaryReader_BusLines(BusLineHeader** header, char* fileName) {
     FILE* srcFile = fopen(fileName, "rb");
     if (srcFile == NULL) {
         return NULL;
+    } else {
+        char status;
+        fread(&status, sizeof(char), 1, srcFile);
+        if (status == '0'){
+            fclose(srcFile);
+            return NULL;
+        }
+        fseek(srcFile, 0, SEEK_SET);
     }
     
     // Reads the header

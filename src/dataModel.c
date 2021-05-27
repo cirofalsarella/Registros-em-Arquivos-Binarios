@@ -137,15 +137,6 @@ BusLine** BusLine_Read(int n) {
         Utils_ScanQuoteString(nomeLinha);
         Utils_ScanQuoteString(corLinha);
 
-        // the lineCode must not be NULL
-//        if ( !strcmp(lineCode, "NULO")) {
-//            for (int j=0; j<i; j++) {
-//                BusLine_Free(buslines[i]);
-//            }
-//            free(buslines);
-//            return NULL;
-//        }
-
         // Creates a new vehicle and pushes it
         buslines[i] = BusLine_Create('1', lineCode, aceitaCartao[0], nomeLinha, corLinha);
     }

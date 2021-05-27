@@ -162,10 +162,18 @@ void BinaryWriter_CreateBusLineFile(BusLine** busLines, int busLinesCount, BusLi
     BusLineHeader_Free(header);
 }
 
-void BinaryWriter_IncrementVehicleFile(Vehicle** vehicles, int vehiclesCount, char* fileName) {
+int BinaryWriter_IncrementVehicleFile(Vehicle** vehicles, int vehiclesCount, char* fileName) {
     FILE *destFile = fopen(fileName, "rb+");
     if (destFile == NULL) {
-        return;
+        return 1;
+    }  else {
+        char status;
+        fread(&status, sizeof(char), 1, destFile);
+        if (status == '0'){
+            fclose(destFile);
+            return 1;
+        }
+        fseek(destFile, 0, SEEK_SET);
     }
 
     // Set as editing mode
@@ -206,12 +214,21 @@ void BinaryWriter_IncrementVehicleFile(Vehicle** vehicles, int vehiclesCount, ch
     fwrite(&status, sizeof(char), 1, destFile);
 
     fclose(destFile);
+    return 0;
 }
 
-void BinaryWriter_IncrementBusLineFile(BusLine** buslines, int buslinesCount, char* fileName) {
+int BinaryWriter_IncrementBusLineFile(BusLine** buslines, int buslinesCount, char* fileName) {
     FILE *destFile = fopen(fileName, "rb+");
     if (destFile == NULL) {
-        return;
+        return 1;
+    } else {
+        char status;
+        fread(&status, sizeof(char), 1, destFile);
+        if (status == '0'){
+            fclose(destFile);
+            return 1;
+        }
+        fseek(destFile, 0, SEEK_SET);
     }
 
     // Set as editing mode
@@ -252,4 +269,5 @@ void BinaryWriter_IncrementBusLineFile(BusLine** buslines, int buslinesCount, ch
     fwrite(&status, sizeof(char), 1, destFile);
 
     fclose(destFile);
+    return 0;
 }

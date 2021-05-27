@@ -214,7 +214,11 @@ void Op_PushVehicles() {
     }
 
     // Updates the binary file
-    BinaryWriter_IncrementVehicleFile(vehicles, n, binFile);
+    if (BinaryWriter_IncrementVehicleFile(vehicles, n, binFile)) {
+        printf("Falha no processamento do arquivo.\n");
+        free(vehicles);
+        return;
+    }
     
     free(vehicles);
     PrintHash(binFile);
@@ -235,7 +239,11 @@ void Op_PushBuslines() {
     }
 
     // Updates the binary file
-    BinaryWriter_IncrementBusLineFile(buslines, n, binFile);
+    if ( BinaryWriter_IncrementBusLineFile(buslines, n, binFile) ) {
+        printf("Falha no processamento do arquivo.\n");
+        free(buslines);
+        return;
+    }
     
     free(buslines);
     PrintHash(binFile);
