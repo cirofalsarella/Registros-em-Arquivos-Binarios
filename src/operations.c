@@ -208,6 +208,10 @@ void Op_PushVehicles() {
     int n;
     scanf("%d", &n);
     Vehicle** vehicles = Vehicle_Read(n);
+    if (vehicles == NULL) {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
 
     // Updates the binary file
     BinaryWriter_IncrementVehicleFile(vehicles, n, binFile);

@@ -57,6 +57,15 @@ Vehicle** Vehicle_Read(int n) {
         char lineCode[64] = { '\0' };
         scanf("%s", &lineCode[0]);
 
+        // the lineCode must not be NULL
+        if ( !strcmp(lineCode, "NULO")) {
+            for (int j=0; j<i; j++) {
+                Vehicle_Free(vehicles[i]);
+            }
+            free(vehicles);
+            return NULL;
+        }
+
         // Scans model and category (not fixed-length)
         char* model = calloc(100, sizeof(char));
         char* category = calloc(100, sizeof(char));
@@ -65,8 +74,9 @@ Vehicle** Vehicle_Read(int n) {
         Utils_ScanQuoteString(category);
 
         // Creates a new vehicle and pushes it
-        vehicles[i] = Vehicle_Create('1', prefix, date, Utils_StrToInt(numSeats), Utils_StrToInt(lineCode), model, category);
+        vehicles[i] = Vehicle_Create('1', prefix, date, Utils_StrToInt(numSeats), Utils_StrToInt(lineCode), model, category);        
     }
+
 
     return vehicles;
 }
