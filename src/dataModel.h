@@ -108,6 +108,8 @@ void Vehicle_Free(Vehicle* vehicle);
  */
 BusLine* BusLine_Create(char removed, int32_t lineCode, char acceptsCreditCard, char* name, char* color);
 
+BusLine** BusLine_Read(int n);
+
 /**
  * @brief Frees the memory allocated for the given vehicle.
  * 

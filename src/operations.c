@@ -221,39 +221,22 @@ void Op_PushVehicles() {
 }
 
 void Op_PushBuslines() {
-    // Format: codLinha1 aceitaCartao1 nomeLinha1 corLinha1
-
     // Reads file name
     char binFile[128] = { '\0' };
     scanf("%s", binFile);
 
-    // Reads binary file from disk
-    BusLineHeader* header = NULL;
-    BusLine** busLines = BinaryReader_BusLines(&header, binFile);
+    // Reads buslines from stdin
+    int n;
+    scanf("%d", &n);
+    BusLine** buslines = BusLine_Read(n);
+    if (buslines == NULL) {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
 
-    // Format: codLinha1 aceitaCartao1 nomeLinha1 corLinha1
-
-    // Scans lineCode, acceptsCreditCard (all fixed-length fields)
-    char lineCode[4] = { '\0' };
-    Utils_ScanQuoteString(lineCode);
-
-    char acceptsCreditCard[1] = { '\0' };
-    Utils_ScanQuoteString(acceptsCreditCard);
-
-    // Scans name and color (not fixed-length)
-    char* name = calloc(100, sizeof(char));
-    char* color = calloc(100, sizeof(char));
-
-    Utils_ScanQuoteString(name);
-    Utils_ScanQuoteString(color);
-
-    // Creates a new vehicle and pushes it
-    BusLine* newBusLine = BusLine_Create('1', Utils_StrToInt(lineCode), acceptsCreditCard[0], name, color);
-    header->numReg += 1;
-    busLines = (BusLine**) realloc(busLines, sizeof(BusLine*) * header->numReg);
-    busLines[header->numReg-1] = newBusLine;
-
-    // Writes to file
-    BinaryWriter_CreateBusLineFile(busLines, header->numReg, header, binFile);
+    // Updates the binary file
+    BinaryWriter_IncrementBusLineFile(buslines, n, binFile);
+    
+    free(buslines);
     PrintHash(binFile);
 }

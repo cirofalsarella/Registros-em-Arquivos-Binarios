@@ -119,8 +119,45 @@ BusLine* BusLine_Create(char removed, int32_t lineCode, char acceptsCreditCard, 
     return busLine;
 }
 
+BusLine** BusLine_Read(int n) {
+    BusLine** buslines = calloc(n, sizeof(BusLine*));
+    
+    for (int i = 0; i < n; i++) {
+        // Scans lineCode, date, numSeats and lineCode (all fixed-length fields)
+        int lineCode;
+        scanf("%d", &lineCode);
+
+        char aceitaCartao[1] = { '\0' };
+        Utils_ScanQuoteString(aceitaCartao);
+        
+        // variable len fields
+        char* nomeLinha = calloc(100, sizeof(char));
+        char* corLinha = calloc(100, sizeof(char));
+
+        Utils_ScanQuoteString(nomeLinha);
+        Utils_ScanQuoteString(corLinha);
+
+        // the lineCode must not be NULL
+//        if ( !strcmp(lineCode, "NULO")) {
+//            for (int j=0; j<i; j++) {
+//                BusLine_Free(buslines[i]);
+//            }
+//            free(buslines);
+//            return NULL;
+//        }
+
+        // Creates a new vehicle and pushes it
+        buslines[i] = BusLine_Create('1', lineCode, aceitaCartao[0], nomeLinha, corLinha);
+    }
+
+    return buslines;
+}
+
 void BusLine_Free(BusLine* busLine) {
-    free(busLine->name);
-    free(busLine->color);
-    free(busLine);
+    if (busLine != NULL){
+        if (busLine->name != NULL)  free(busLine->name);
+        if (busLine->color != NULL) free(busLine->color);
+        free(busLine);
+        busLine = NULL;
+    }
 }

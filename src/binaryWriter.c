@@ -1,5 +1,6 @@
 #include "binaryWriter.h"
 #include "binaryHeaders.h"
+#include "printer.h"
 
 // MARK: Single-instance write
 
@@ -189,6 +190,52 @@ void BinaryWriter_IncrementVehicleFile(Vehicle** vehicles, int vehiclesCount, ch
             numReg++;
         }
         Vehicle_Free(vehicles[i]);
+    }
+    proxReg = ftell(destFile);
+
+
+    // Adjusting the header fields
+    fseek(destFile, 1, SEEK_SET);
+    fwrite(&proxReg, sizeof(int64_t), 1, destFile);
+    fwrite(&numReg, sizeof(int32_t), 1, destFile);
+    fwrite(&numRegRem, sizeof(int32_t), 1, destFile);
+
+    // Set as default mode
+    status = '1';
+    fseek(destFile, 0, SEEK_SET);
+    fwrite(&status, sizeof(char), 1, destFile);
+
+    fclose(destFile);
+}
+
+void BinaryWriter_IncrementBusLineFile(BusLine** buslines, int buslinesCount, char* fileName) {
+    FILE *destFile = fopen(fileName, "rb+");
+    if (destFile == NULL) {
+        return;
+    }
+
+    // Set as editing mode
+    char status = '0';
+    fwrite(&status, sizeof(char), 1, destFile);
+
+    // getting the header intel
+    int64_t proxReg;
+    fread(&proxReg, sizeof(int64_t), 1, destFile);
+    int32_t numReg, numRegRem;
+    fread(&numReg, sizeof(int32_t), 1, destFile);
+    fread(&numRegRem, sizeof(int32_t), 1, destFile);
+
+
+    // Writing the registers
+    fseek(destFile, proxReg, SEEK_SET);
+    for (int i = 0; i < buslinesCount; i++){
+        BinaryWriter_WriteBusLine(buslines[i], destFile);
+        if (buslines[i]->removed) {
+            numRegRem++;
+        } else {
+            numReg++;
+        }
+        BusLine_Free(buslines[i]);
     }
     proxReg = ftell(destFile);
 

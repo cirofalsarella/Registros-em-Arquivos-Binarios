@@ -62,5 +62,6 @@ void BinaryWriter_CreateBusLineFile(BusLine** busLines, int busLinesCount, BusLi
 
 
 void BinaryWriter_IncrementVehicleFile(Vehicle** vehicles, int vehiclesCount, char* fileName);
+void BinaryWriter_IncrementBusLineFile(BusLine** luslines, int buslinesCount, char* fileName);
 
 #endif
