@@ -1,11 +1,14 @@
 #include "selectWhere.h"
 #include "utils.h"
 
+// *((tipo*) pattern) -> cast pra patern ser um ponteiro de tipo definido e vou para o endereço apontado
+
+
 int BusLine_codLinha(void *pattern, BusLine *busLine){
-    return (busLine->lineCode != (int32_t) pattern );
+    return (busLine->lineCode != *( (int32_t*) pattern ) );
 }
 int BusLine_aceitaCartao(void *pattern, BusLine *busLine){
-    return (busLine->acceptsCreditCard != (char) pattern);
+    return (busLine->acceptsCreditCard != *( (char*) pattern ) );
 }
 int BusLine_nomeLinha(void *pattern, BusLine *busLine){
     return strcmp(busLine->name, (char*) pattern);
@@ -21,10 +24,10 @@ int Vehicle_data(void *pattern, Vehicle *vehicle){
     return strcmp(vehicle->date, (char*) pattern);   
 }
 int Vehicle_quantidadeLugares(void *pattern, Vehicle *vehicle){
-    return (vehicle->numSeats != (int32_t) pattern);
+    return (vehicle->numSeats != *( (int32_t*) pattern ));
 }
 int Vehicle_modelo(void *pattern, Vehicle *vehicle){
-    return srtcmp(vehicle->model, (char*) pattern);   
+    return strcmp(vehicle->model, (char*) pattern);   
 }
 int Vehicle_categoria(void *pattern, Vehicle *vehicle){
     return strcmp(vehicle->category, (char*) pattern);
@@ -50,16 +53,22 @@ void *SelectWhere_SetPattern(char *fieldName) {
     if (!strcmp(fieldName, "nomeLinha") || !strcmp(fieldName, "corLinha")
      || !strcmp(fieldName, "prefixo") || !strcmp(fieldName, "data")
      || !strcmp(fieldName, "modelo") || !strcmp(fieldName, "categoria") ) {
-            Utils_ScanQuoteString(pattern);
+        char aux[128];
+        Utils_ScanQuoteString(aux);
+        pattern = &aux;
     } else {
         if (!strcmp(fieldName, "codLinha") || !strcmp(fieldName, "quantidadeLugares") ) {
-            scanf("%d", (int32_t*) pattern);
+            int32_t aux;
+            scanf("%d", &aux);
+            pattern = &aux;
         } else {
-            scanf("%c", (char*) pattern);
+            char aux;
+            scanf("%c", &aux);
+            pattern = &aux;
         }
     }
 
-    return NULL;
+    return pattern;
 }
 
 
