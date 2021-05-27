@@ -1,32 +1,33 @@
 #include "selectWhere.h"
+#include "utils.h"
 
 int BusLine_codLinha(void *pattern, BusLine *busLine){
-    return 0;
+    return (busLine->lineCode != (int32_t) pattern );
 }
 int BusLine_aceitaCartao(void *pattern, BusLine *busLine){
-    return 0;
+    return (busLine->acceptsCreditCard != (char) pattern);
 }
 int BusLine_nomeLinha(void *pattern, BusLine *busLine){
-    return 0;
+    return strcmp(busLine->name, (char*) pattern);
 }
 int BusLine_corLinha(void *pattern, BusLine *busLine){
-    return 0;
+    return strcmp(busLine->color, (char*) pattern);
 }
 
 int Vehicle_prefixo(void *pattern, Vehicle *vehicle){
-    return 0;   
+    return strcmp(vehicle->prefix, (char*) pattern);
 }
 int Vehicle_data(void *pattern, Vehicle *vehicle){
-    return 0;   
+    return strcmp(vehicle->date, (char*) pattern);   
 }
 int Vehicle_quantidadeLugares(void *pattern, Vehicle *vehicle){
-    return 0;   
+    return (vehicle->numSeats != (int32_t) pattern);
 }
 int Vehicle_modelo(void *pattern, Vehicle *vehicle){
-    return 0;   
+    return srtcmp(vehicle->model, (char*) pattern);   
 }
 int Vehicle_categoria(void *pattern, Vehicle *vehicle){
-    return 0;   
+    return strcmp(vehicle->category, (char*) pattern);
 }
 
 void* SelectWhere_SetCondition(char *fieldName) {
@@ -45,6 +46,19 @@ void* SelectWhere_SetCondition(char *fieldName) {
 }
 
 void *SelectWhere_SetPattern(char *fieldName) {
+    void *pattern;
+    if (!strcmp(fieldName, "nomeLinha") || !strcmp(fieldName, "corLinha")
+     || !strcmp(fieldName, "prefixo") || !strcmp(fieldName, "data")
+     || !strcmp(fieldName, "modelo") || !strcmp(fieldName, "categoria") ) {
+            Utils_ScanQuoteString(pattern);
+    } else {
+        if (!strcmp(fieldName, "codLinha") || !strcmp(fieldName, "quantidadeLugares") ) {
+            scanf("%d", (int32_t*) pattern);
+        } else {
+            scanf("%c", (char*) pattern);
+        }
+    }
+
     return NULL;
 }
 
