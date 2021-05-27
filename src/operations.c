@@ -239,6 +239,4 @@ void Op_PushBuslines() {
     
     free(buslines);
     PrintHash(binFile);
-
-    BusLineHeader_Free(header);
 }
