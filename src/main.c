@@ -1,3 +1,8 @@
+/* * * * * * * * * * * * * * * * * * * * 
+ *  11795593   Ciro Grossi Falsarella  *
+ *  11795641   Pedro Martelleto        *
+ * * * * * * * * * * * * * * * * * * * */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,11 +10,11 @@
 #include "operations.h"
 
 int main() {
-    // Gets op number
+    // Pega o número da Operação
     int op;
     scanf("%d", &op);
 
-    // Depending on the requested op, executes a specific function
+    // Seleciona qual a operação que sera realizada
     switch (op) {
     case 1:
         Op_CreateTableVehicles();
