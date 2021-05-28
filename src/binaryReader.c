@@ -67,7 +67,7 @@ Vehicle** binaryReader_Vehicles(VehicleHeader** header, char* fileName) {
     Vehicle** vehicles = calloc((*header)->numReg, sizeof(Vehicle*));
     int n_registers = (*header)->numReg + (*header)->numRegRemov;
 
-    // Gets the vehicles from the file
+    // Gets the vehicles that arent removed from the file
     int j = 0;
     for (int i=0; i < n_registers; i++) {
         Vehicle* aux = ReadVehicle(srcFile);
@@ -146,7 +146,7 @@ BusLine** binaryReader_BusLines(BusLineHeader** header, char* fileName) {
     BusLine** busLines = calloc((*header)->numReg, sizeof(BusLine*));
     int n_registers = (*header)->numReg + (*header)->numRegRemov;
 
-    // Gets the bus lines from the file
+    // Gets the bus lines that arent removed from the file
     int j = 0;
     for (int i=0; i < n_registers; i++) {
         BusLine* aux = ReadBusLine(srcFile);

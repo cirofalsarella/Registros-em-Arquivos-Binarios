@@ -88,7 +88,7 @@ void Op_SelectVehicles() {
     char binFile[128];
     scanf("%s", binFile);
 
-    //  lê o arquivo binário e salva registros
+    //  lê o arquivo binário e salva registros não removidos
     VehicleHeader* header = NULL;
     Vehicle** vehicles = binaryReader_Vehicles(&header, binFile);
     if (vehicles == NULL) {
@@ -116,7 +116,7 @@ void Op_SelectBusLines() {
     char binFile[128] = { '\0' };
     scanf("%s", binFile);
 
-    //  lê o arquivo binário e salva registros
+    //  lê o arquivo binário e salva registros não removidos
     BusLineHeader* header = NULL;
     BusLine** buslines = binaryReader_BusLines(&header, binFile);
     if (buslines == NULL) {
@@ -145,7 +145,7 @@ void Op_SelectVehiclesWhere() {
     char binFile[128] = { '\0' };
     scanf("%s", binFile);
 
-    //  lê o arquivo binário e salva registros
+    //  lê o arquivo binário e salva registros não removidos
     VehicleHeader* header = NULL;
     Vehicle** vehicles = binaryReader_Vehicles(&header, binFile);
     if (vehicles == NULL) {
@@ -191,7 +191,7 @@ void Op_SelectBuslinesWhere() {
     char binFile[128] = { '\0' };
     scanf("%s", binFile);
 
-    //  lê o arquivo binário e salva registros
+    //  lê o arquivo binário e salva registros não removidos
     BusLineHeader* header = NULL;
     BusLine** buslines = binaryReader_BusLines(&header, binFile);
     if (buslines == NULL) {
