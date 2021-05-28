@@ -4,14 +4,28 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+// This is an implementation of strsep
 char* Utils_StrSplit(char **stringp, const char *delim) {
-    char *rv = *stringp;
-    if (rv) {
-        *stringp += strcspn(*stringp, delim);
-        if (**stringp) *(*stringp)++ = '\0';
-        else *stringp = 0;
+    char *begin, *end;
+    begin = *stringp;
+    
+    if (begin == NULL) {
+        return NULL;
     }
-    return rv;
+
+    // Find the end of the token.
+    end = begin + strcspn(begin, delim);
+    
+    if (*end) {
+        // Terminate the token and set *STRINGP past NUL character.
+        *end++ = '\0';
+        *stringp = end;
+    } else {
+        // No more delimiters; this is the last token.
+        *stringp = NULL;
+    }
+
+    return begin;
 }
 
 char* Utils_StrCopy(const char* str) {
