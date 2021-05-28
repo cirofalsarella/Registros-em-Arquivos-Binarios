@@ -52,6 +52,11 @@ void PrettyPrintWithMaxLength(const char* label, const char* str, int maxLength)
     }
 }
 
+/**
+ * @brief Prints a date showing the months as strings instead of numbers.
+ * 
+ * @param date 
+ */
 void PrettyPrintDate(const char *date) {
     if (date == NULL || strlen(date) == 0) {
         printf("campo com valor nulo\n");
@@ -83,7 +88,11 @@ void PrettyPrintDate(const char *date) {
     }
 }
 
-
+/**
+ * @brief Prints a vehicle nicely formatted.
+ * 
+ * @param vehicle 
+ */
 void Printer_Vehicle(Vehicle *vehicle) {
     PrettyPrintWithMaxLength("Prefixo do veiculo", vehicle->prefix, 5);
     PrettyPrint("Modelo do veiculo", vehicle->model);
@@ -94,6 +103,11 @@ void Printer_Vehicle(Vehicle *vehicle) {
     printf("\n");
 }
 
+/**
+ * @brief Prints a bus line nicely formatted.
+ * 
+ * @param busLine 
+ */
 void Printer_BusLine(BusLine *busLine) {
     PrettyPrintInt("Codigo da linha", busLine->lineCode);
     PrettyPrint("Nome da linha", busLine->name);
@@ -101,7 +115,7 @@ void Printer_BusLine(BusLine *busLine) {
 
     // Converts accepts credit card char to a string
     char* acceptsCardStr = calloc(100, sizeof(char));
-
+    
     if (busLine->acceptsCreditCard == 'S') {
         strcpy(acceptsCardStr, "PAGAMENTO SOMENTE COM CARTAO SEM PRESENCA DE COBRADOR");        
     } else if (busLine->acceptsCreditCard == 'N') {
