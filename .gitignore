@@ -2,3 +2,4 @@ programaTrab.exe
 *.zip
 *.bin
 out
+.vscode
