@@ -200,7 +200,7 @@ int BinaryWriter_IncrementVehicleFile(Vehicle** vehicles, int vehiclesCount, cha
     fseek(destFile, proxReg, SEEK_SET);
     for (int i = 0; i < vehiclesCount; i++){
         WriteVehicle(vehicles[i], destFile);
-        if (vehicles[i]->removed) {
+        if (vehicles[i]->removed == '0') {
             numRegRem++;
         } else {
             numReg++;
@@ -239,9 +239,11 @@ int BinaryWriter_IncrementBusLineFile(BusLine** buslines, int buslinesCount, cha
         fseek(destFile, 0, SEEK_SET);
     }
 
+
     // Set as editing mode
     char status = '0';
     fwrite(&status, sizeof(char), 1, destFile);
+
 
     // getting the header intel
     int64_t proxReg;
@@ -255,7 +257,7 @@ int BinaryWriter_IncrementBusLineFile(BusLine** buslines, int buslinesCount, cha
     fseek(destFile, proxReg, SEEK_SET);
     for (int i = 0; i < buslinesCount; i++){
         WriteBusLine(buslines[i], destFile);
-        if (buslines[i]->removed) {
+        if (buslines[i]->removed == '0') {
             numRegRem++;
         } else {
             numReg++;
