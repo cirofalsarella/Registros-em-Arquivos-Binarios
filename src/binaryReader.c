@@ -1,6 +1,7 @@
-#include "binaryReader.h"
-#include "printer.h"
-#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "dataModel.h"
 
 VehicleHeader* ReadVehicleHeader(FILE *srcFile) {
     VehicleHeader* header = calloc(1, sizeof(VehicleHeader));
@@ -23,6 +24,7 @@ VehicleHeader* ReadVehicleHeader(FILE *srcFile) {
 Vehicle* ReadVehicle(FILE *srcFile) {
     Vehicle* vehicle = calloc(1, sizeof(Vehicle));
 
+    //  Fixed length fields
     fread(&vehicle->removed, sizeof(char), 1, srcFile);
     
     fread(&vehicle->regSize, sizeof(int32_t), 1, srcFile);  // 4
@@ -31,7 +33,8 @@ Vehicle* ReadVehicle(FILE *srcFile) {
     fread(&vehicle->numSeats, sizeof(int32_t), 1, srcFile); // 4
     fread(&vehicle->lineCode, sizeof(int32_t), 1, srcFile); // 4
 
-    // Variable-length fields
+
+    // Variable length fields
     fread(&vehicle->modelLength, sizeof(int32_t), 1, srcFile);
     vehicle->model = calloc(vehicle->modelLength+1, sizeof(char));
     fread(vehicle->model, sizeof(char), vehicle->modelLength, srcFile);
@@ -43,45 +46,7 @@ Vehicle* ReadVehicle(FILE *srcFile) {
     return vehicle;
 }
 
-BusLineHeader* ReadBusLineHeader(FILE *srcFile) {
-    BusLineHeader* header = calloc(1, sizeof(VehicleHeader));
-
-    // freads the fields stored in the binary file, in order
-    fread(&header->status, sizeof(char), 1, srcFile);
-    fread(&header->nextReg, sizeof(int64_t), 1, srcFile);
-    fread(&header->numReg, sizeof(int32_t), 1, srcFile);
-    fread(&header->numRegRemov, sizeof(int32_t), 1, srcFile);
-
-    fread(&header->describeCode, sizeof(char), 15, srcFile);
-    fread(&header->describeCard, sizeof(char), 13, srcFile);
-    fread(&header->describeName, sizeof(char), 13, srcFile);
-    fread(&header->describeLine, sizeof(char), 24, srcFile);
-
-    return header;
-}
-
-BusLine* ReadBusLine(FILE *srcFile) {
-    BusLine* busLine = calloc(1, sizeof(BusLine));
-
-    // freads the fields stored in the binary file, in order
-    fread(&busLine->removed, sizeof(char), 1, srcFile);
-    fread(&busLine->regSize, sizeof(int32_t), 1, srcFile);
-
-    fread(&busLine->lineCode, sizeof(int32_t), 1, srcFile);
-    fread(&busLine->acceptsCreditCard, sizeof(char), 1, srcFile);
-
-    fread(&busLine->nameLength, sizeof(int32_t), 1, srcFile);
-    busLine->name = calloc(busLine->nameLength+1, sizeof(char));
-    fread(busLine->name, sizeof(char), busLine->nameLength, srcFile);
-
-    fread(&busLine->colorLength, sizeof(int32_t), 1, srcFile);
-    busLine->color = calloc(busLine->colorLength+1, sizeof(char));
-    fread(busLine->color, sizeof(char), busLine->colorLength, srcFile);
-
-    return busLine;
-}
-
-Vehicle** BinaryReader_Vehicles(VehicleHeader** header, char* fileName) {
+Vehicle** binaryReader_Vehicles(VehicleHeader** header, char* fileName) {
     FILE* srcFile = fopen(fileName, "rb");
     if (srcFile == NULL) {
         return NULL;
@@ -120,7 +85,47 @@ Vehicle** BinaryReader_Vehicles(VehicleHeader** header, char* fileName) {
     return vehicles;
 }
 
-BusLine** BinaryReader_BusLines(BusLineHeader** header, char* fileName) {
+
+BusLineHeader* ReadBusLineHeader(FILE *srcFile) {
+    BusLineHeader* header = calloc(1, sizeof(VehicleHeader));
+
+    fread(&header->status, sizeof(char), 1, srcFile);
+    fread(&header->nextReg, sizeof(int64_t), 1, srcFile);
+    fread(&header->numReg, sizeof(int32_t), 1, srcFile);
+    fread(&header->numRegRemov, sizeof(int32_t), 1, srcFile);
+
+    fread(&header->describeCode, sizeof(char), 15, srcFile);
+    fread(&header->describeCard, sizeof(char), 13, srcFile);
+    fread(&header->describeName, sizeof(char), 13, srcFile);
+    fread(&header->describeLine, sizeof(char), 24, srcFile);
+
+    return header;
+}
+
+BusLine* ReadBusLine(FILE *srcFile) {
+    BusLine* busLine = calloc(1, sizeof(BusLine));
+
+    //  Fixed length fields
+    fread(&busLine->removed, sizeof(char), 1, srcFile);
+    fread(&busLine->regSize, sizeof(int32_t), 1, srcFile);
+
+    fread(&busLine->lineCode, sizeof(int32_t), 1, srcFile);
+    fread(&busLine->acceptsCreditCard, sizeof(char), 1, srcFile);
+
+
+    // Variable length fields
+    fread(&busLine->nameLength, sizeof(int32_t), 1, srcFile);
+    busLine->name = calloc(busLine->nameLength+1, sizeof(char));
+    fread(busLine->name, sizeof(char), busLine->nameLength, srcFile);
+
+    fread(&busLine->colorLength, sizeof(int32_t), 1, srcFile);
+    busLine->color = calloc(busLine->colorLength+1, sizeof(char));
+    fread(busLine->color, sizeof(char), busLine->colorLength, srcFile);
+
+    return busLine;
+}
+
+BusLine** binaryReader_BusLines(BusLineHeader** header, char* fileName) {
     FILE* srcFile = fopen(fileName, "rb");
     if (srcFile == NULL) {
         return NULL;
@@ -158,3 +163,4 @@ BusLine** BinaryReader_BusLines(BusLineHeader** header, char* fileName) {
     fclose(srcFile);
     return busLines;
 }
+
