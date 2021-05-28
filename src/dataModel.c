@@ -177,7 +177,7 @@ BusLine** BusLine_Read(int n) {
         Utils_ScanQuoteString(corLinha);
 
         // Creates a new vehicle and pushes it
-        buslines[i] = BusLine_Create('1', lineCode, aceitaCartao[0], nomeLinha, corLinha);
+        buslines[i] = BusLine_Create(removed, lineCode, aceitaCartao[0], nomeLinha, corLinha);
     }
 
     return buslines;
