@@ -140,9 +140,31 @@ BusLine** BusLine_Read(int n) {
     BusLine** buslines = calloc(n, sizeof(BusLine*));
     
     for (int i = 0; i < n; i++) {
-        // Scans lineCode, date, numSeats and lineCode (all fixed-length fields)
-        int lineCode;
-        scanf("%d", &lineCode);
+
+        // Lê o código da linha como string, confere se é removido
+        char removed = '1';
+        char lineCodeStr[32] = { '\0' };
+        Utils_ScanQuoteString(lineCodeStr);
+        if (lineCodeStr[0] == '*') {
+            removed = '0';
+            // Removes '*' from linecode
+            char* lineCodeStrCopy = Utils_StrCopy(lineCodeStr+1); // Copies without the '*'
+            int lineCodeStrCopyLen = strlen(lineCodeStrCopy);
+            strcpy(lineCodeStr, lineCodeStrCopy);
+            lineCodeStr[lineCodeStrCopyLen] = '\0';
+            free(lineCodeStrCopy);
+        }
+
+        // Confere se é NULO
+        if ( !strcmp(lineCodeStr, "NULO")) {
+            for (int j=0; j<i; j++) {
+                BusLine_Free(buslines[i]);
+            }
+            free(buslines);
+            return NULL;
+        }
+
+        int lineCode = atoi(lineCodeStr);
 
         char aceitaCartao[1] = { '\0' };
         Utils_ScanQuoteString(aceitaCartao);
