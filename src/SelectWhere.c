@@ -1,9 +1,14 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "dataModel.h"
 #include "selectWhere.h"
 #include "utils.h"
 #include "printer.h"
 
 
-// *((tipo*) pattern) -> cast pra patern ser um ponteiro de tipo definido e vou para o endereço apontado
+// Funções que serão usadas para executar comparações
 
 int BusLine_codLinha(void *pattern, Vehicle* v, BusLine *busLine) {
     return (busLine->lineCode == *((int32_t*)pattern));
@@ -34,6 +39,8 @@ int Vehicle_categoria(void *pattern, Vehicle *vehicle, BusLine *b) {
     return strcmp(vehicle->category, (char*) pattern) == 0;
 }
 
+
+//  Retorna o ponteiro para alguma das funções acima
 SelectWhereFnType SelectWhere_SetCondition(char *fieldName) {
     if (strcmp(fieldName, "codLinha") == 0)     return BusLine_codLinha;
     if (strcmp(fieldName, "aceitaCartao") == 0) return BusLine_aceitaCartao;
@@ -49,6 +56,7 @@ SelectWhereFnType SelectWhere_SetCondition(char *fieldName) {
     return NULL;
 }
 
+//  Salva o modelo em uma variável
 void* SelectWhere_SetPattern(char *fieldName) {
     void *pattern = NULL;
 
@@ -73,6 +81,9 @@ void* SelectWhere_SetPattern(char *fieldName) {
     return pattern;
 }
 
+
+
+//  Seleciona os Registros
 
 Vehicle** SelectWhere_SelectVehicles(SelectWhereFnType shouldSelectFunc, void* pattern, Vehicle **vehicles, int nReg, int *nSelectedReg) {
     Vehicle** selectedVehicles = NULL;
