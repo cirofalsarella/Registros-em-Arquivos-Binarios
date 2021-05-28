@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #include "dataModel.h"
 #include "utils.h"
+
 
 Vehicle* Vehicle_Create(char removed, char* prefix, char* date, int32_t numSeats, int32_t lineCode, char* model, char* category) {    
     // This code is basically just copying fields
@@ -86,6 +88,8 @@ void Vehicle_Free(Vehicle* vehicle) {
     free(vehicle->category);
     free(vehicle);
 }
+
+
 
 BusLine* BusLine_Create(char removed, int32_t lineCode, char acceptsCreditCard, char* name, char* color) {
     // This code is basically just copying fields

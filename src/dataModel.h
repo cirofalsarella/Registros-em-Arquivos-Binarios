@@ -1,9 +1,18 @@
 #ifndef _DATA_MODEL_H_
 #define _DATA_MODEL_H_
 
-#include <stdint.h>
 
-typedef struct {
+//  FUNCIONALIDADES RESPONSÁVEIS POR ESTRUTURAR OS REGISTROS
+
+
+#define VEHICLE_FIXED_LENGTH 31 // 31 bytes of fixed length (IGNORES 'REMOVED' AND 'REGSIZE')
+#define BUSLINE_FIXED_LENGTH 13 // 13 bytes of fixed length (IGNORES 'REMOVED' AND 'REGSIZE')
+
+
+
+//  Header dos arquivos Binários
+
+typedef struct VehicleHeader {
     char status;
     int64_t nextReg;
 
@@ -19,7 +28,7 @@ typedef struct {
     char describeCategory[20];
 } VehicleHeader;
 
-typedef struct {
+typedef struct BusLineHeader {
     char status;
     int64_t nextReg;
 
@@ -33,13 +42,13 @@ typedef struct {
     char describeLine[24];
 } BusLineHeader;
 
-#define VEHICLE_FIXED_LENGTH 31 // 31 bytes of fixed length (IGNORES 'REMOVED' AND 'REGSIZE')
 
-typedef struct {
-    // '0' if this register has been removed, '1' otherwise
-    char removed;
-    // Size of this register
-    int32_t regSize;
+
+//  Registros
+
+typedef struct Vehicle {
+    char removed;       // '0' if this register has been removed, '1' otherwise
+    int32_t regSize;    // Size of this register
 
     // Fixed-length fields
     char prefix[5];
@@ -54,9 +63,7 @@ typedef struct {
     char* category;
 } Vehicle;
 
-#define BUSLINE_FIXED_LENGTH 13 // 13 bytes of fixed length (IGNORES 'REMOVED' AND 'REGSIZE')
-
-typedef struct {
+typedef struct BusLine {
     // '0' if this register has been removed, '1' otherwise
     char removed;
     // Size of this register
@@ -73,48 +80,30 @@ typedef struct {
     char* color;
 } BusLine;
 
-/**
- * @brief Creates a new Vehicle. Automatically calculates regSize.
- * 
- * @param removed 
- * @param prefix 
- * @param date 
- * @param numPlaces 
- * @param lineCode 
- * @param model 
- * @param category 
- * @return Vehicle* 
- */
+
+
+//  Cria um novo Registro a partir de seus campos
+
 Vehicle* Vehicle_Create(char removed, char* prefix, char* date, int32_t numPlaces, int32_t lineCode, char* model, char* category);
+
+BusLine* BusLine_Create(char removed, int32_t lineCode, char acceptsCreditCard, char* name, char* color);
+
+
+
+//  Lê n registros do stdin
 
 Vehicle** Vehicle_Read(int n);
 
-/**
- * @brief Frees the memory allocated for the given vehicle.
- * 
- * @param vehicle 
- */
-void Vehicle_Free(Vehicle* vehicle);
-
-/**
- * @brief Creates a new bus line. Automatically calculates regSize.
- * 
- * @param removed 
- * @param lineCode 
- * @param acceptsCreditCard 
- * @param name 
- * @param color 
- * @return BusLine* 
- */
-BusLine* BusLine_Create(char removed, int32_t lineCode, char acceptsCreditCard, char* name, char* color);
-
 BusLine** BusLine_Read(int n);
 
-/**
- * @brief Frees the memory allocated for the given vehicle.
- * 
- * @param busLine 
- */
+
+
+// Libera a memória alocada por um Registro
+
+void Vehicle_Free(Vehicle* vehicle);
+
 void BusLine_Free(BusLine* busLine);
+
+
 
 #endif
