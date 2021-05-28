@@ -50,7 +50,7 @@ Vehicle** Vehicle_Read(int n) {
         char prefix[5] = { '\0' };
         Utils_ScanQuoteString(prefix);
         
-        //  checks if the register is removed
+        // Checks if the register is removed
         char removed = '1';
         if (prefix[0] == '*') {
             removed = '0';
@@ -73,7 +73,7 @@ Vehicle** Vehicle_Read(int n) {
         scanf("%s", &lineCode[0]);
 
         // the lineCode must not be NULL
-        if ( !strcmp(lineCode, "NULO")) {
+        if (!strcmp(lineCode, "NULO")) {
             for (int j=0; j<i; j++) {
                 Vehicle_Free(vehicles[i]);
             }
@@ -143,8 +143,10 @@ BusLine** BusLine_Read(int n) {
 
         // Lê o código da linha como string, confere se é removido
         char removed = '1';
+
         char lineCodeStr[32] = { '\0' };
         Utils_ScanQuoteString(lineCodeStr);
+
         if (lineCodeStr[0] == '*') {
             removed = '0';
             // Removes '*' from linecode
@@ -155,8 +157,8 @@ BusLine** BusLine_Read(int n) {
             free(lineCodeStrCopy);
         }
 
-        // Confere se é NULO
-        if ( !strcmp(lineCodeStr, "NULO")) {
+        // Checks if NULL
+        if (!strcmp(lineCodeStr, "NULO")) {
             for (int j=0; j<i; j++) {
                 BusLine_Free(buslines[i]);
             }
@@ -169,7 +171,7 @@ BusLine** BusLine_Read(int n) {
         char aceitaCartao[1] = { '\0' };
         Utils_ScanQuoteString(aceitaCartao);
         
-        // variable len fields
+        // Variable len fields
         char* nomeLinha = calloc(100, sizeof(char));
         char* corLinha = calloc(100, sizeof(char));
 
