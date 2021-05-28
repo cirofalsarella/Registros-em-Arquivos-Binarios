@@ -1,12 +1,14 @@
-#include "printer.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "dataModel.h"
 #include "utils.h"
 
-/**
- * @brief Prints an integer with the given label. Also handles the case when the field is NULL.
- * 
- * @param label 
- * @param value 
- */
+
+// Printa um campo e seu label
+// Conferem se o valor do campo é nulo
+
 void PrettyPrintInt(const char* label, int value) {
     printf("%s: ", label);
     
@@ -17,13 +19,7 @@ void PrettyPrintInt(const char* label, int value) {
     }
 }
 
-/**
- * @brief Prints a string with the given label. Also handles the case when the field is NULL.
- * 
- * @param label 
- * @param str 
- */
-void PrettyPrint(const char* label, const char* str) {
+void PrettyPrintStr(const char* label, const char* str) {
     printf("%s: ", label);
     
     if (str == NULL || strlen(str) == 0) {
@@ -33,30 +29,6 @@ void PrettyPrint(const char* label, const char* str) {
     }
 }
 
-/**
- * @brief Prints a string that may not have a null terminator. For this to work, a maxLength needs to be specified.
- *        Also handles the case when str is NULL.
- * 
- * @param label 
- * @param str 
- * @param maxLength 
- */
-void PrettyPrintWithMaxLength(const char* label, const char* str, int maxLength) {
-    printf("%s: ", label);
-    
-    if (str == NULL || strlen(str) == 0) {
-        printf("campo com valor nulo\n");
-    } else {
-        // Prints each char from the string, and ensures we don't print unallocated memory
-        Utils_StrPrintWithFixedLen(str, maxLength);
-    }
-}
-
-/**
- * @brief Prints a date showing the months as strings instead of numbers.
- * 
- * @param date 
- */
 void PrettyPrintDate(const char *date) {
     if (date == NULL || strlen(date) == 0) {
         printf("campo com valor nulo\n");
@@ -88,30 +60,35 @@ void PrettyPrintDate(const char *date) {
     }
 }
 
-/**
- * @brief Prints a vehicle nicely formatted.
- * 
- * @param vehicle 
- */
+// Printa uma string de tamanho fixo (sem \0 no final)
+void PrettyPrintWithMaxLength(const char* label, const char* str, int maxLength) {
+    printf("%s: ", label);
+    
+    if (str == NULL || strlen(str) == 0) {
+        printf("campo com valor nulo\n");
+    } else {
+        // Prints each char from the string, and ensures we don't print unallocated memory
+        Utils_StrPrintWithFixedLen(str, maxLength);
+    }
+}
+
+
+//  Printam um registro seguindo as normas
+
 void Printer_Vehicle(Vehicle *vehicle) {
     PrettyPrintWithMaxLength("Prefixo do veiculo", vehicle->prefix, 5);
-    PrettyPrint("Modelo do veiculo", vehicle->model);
-    PrettyPrint("Categoria do veiculo", vehicle->category);
+    PrettyPrintStr("Modelo do veiculo", vehicle->model);
+    PrettyPrintStr("Categoria do veiculo", vehicle->category);
     printf("Data de entrada do veiculo na frota: ");
     PrettyPrintDate(vehicle->date);
     PrettyPrintInt("Quantidade de lugares sentados disponiveis", vehicle->numSeats);
     printf("\n");
 }
 
-/**
- * @brief Prints a bus line nicely formatted.
- * 
- * @param busLine 
- */
 void Printer_BusLine(BusLine *busLine) {
     PrettyPrintInt("Codigo da linha", busLine->lineCode);
-    PrettyPrint("Nome da linha", busLine->name);
-    PrettyPrint("Cor que descreve a linha", busLine->color);
+    PrettyPrintStr("Nome da linha", busLine->name);
+    PrettyPrintStr("Cor que descreve a linha", busLine->color);
 
     // Converts accepts credit card char to a string
     char* acceptsCardStr = calloc(100, sizeof(char));
@@ -127,8 +104,9 @@ void Printer_BusLine(BusLine *busLine) {
         acceptsCardStr = NULL;
     }
 
-    PrettyPrint("Aceita cartao", acceptsCardStr);
+    PrettyPrintStr("Aceita cartao", acceptsCardStr);
 
     if (acceptsCardStr != NULL) free(acceptsCardStr);
     printf("\n");
 }
+

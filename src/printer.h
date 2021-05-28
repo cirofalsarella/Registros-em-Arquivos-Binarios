@@ -1,13 +1,9 @@
 #ifndef _PRINTER_H_
 #define _PRINTER_H_
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+// FUNÇÕES RESPONSÁVEIS PELA FORMATAÇÃO DOS PRINTS
 
-#include "csvToBinary.h"
-
-
+//  Printam um registro seguindo as normas
 void Printer_Vehicle(Vehicle *vehicle);
 void Printer_BusLine(BusLine *busLine);
 
