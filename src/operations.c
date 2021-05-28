@@ -1,13 +1,18 @@
-#include "operations.h"
-#include "binaryWriter.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "stringTable.h"
+#include "dataModel.h"
+#include "csvToBinary.h"
 #include "binaryHeaders.h"
+#include "binaryReader.h"
+#include "binaryWriter.h"
+#include "selectWhere.h"
+#include "printer.h"
 #include "utils.h"
 
-/**
- * @brief Prints a hash of the given binary file (aka binarioNaTela).
- * 
- * @param nomeArquivoBinario 
- */
+//  Printa uma Hash do arquivo (leBinario)
 void PrintHash(char* nomeArquivoBinario) {
 	unsigned long i, cs;
 	unsigned char *mb;
@@ -35,56 +40,63 @@ void PrintHash(char* nomeArquivoBinario) {
 	fclose(fs);
 }
 
+
+
 void Op_CreateTableVehicles() {
-    // Reads csv and binary
+    //  lê o nome dos arquivos
     char csvFile[128], binFile[128];
     scanf("%s %s", csvFile, binFile);
 
-    // Converts csv to binary and saves to disk
+    //  lê o arquivo csv
     StringTable* Table = StringTable_FromCsv(csvFile, ',');
     if (Table == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
     }
 
+    //  transforma o arquivo csv em binário e libéra memória
     CsvToBinary_WriteVehicleFile(Table, binFile);
-
     StringTable_Free(Table);
+
+    //  confere se o binário está correto
     PrintHash(binFile);
 }
 
 void Op_CreateTableBuslines() {
-    // Reads csv and binary
+    //  lê o nome dos arquivos
     char csvFile[128], binFile[128];
     scanf("%s %s", csvFile, binFile);
 
-    // Converts csv to binary and saves to disk
+    //  lê o arquivo csv
     StringTable* Table = StringTable_FromCsv(csvFile, ',');
         if (Table == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
     }
 
+    //  transforma o arquivo csv em binário e libéra memória
     CsvToBinary_WriteBusLineFile(Table, binFile);
-
     StringTable_Free(Table);
+
+    //  confere se o binário está correto
     PrintHash(binFile);
 }
 
+
 void Op_SelectVehicles() {
-    // Reads file name
+    //  lê o nome do arquivo
     char binFile[128];
     scanf("%s", binFile);
 
-    // Reads binary file from disk
+    //  lê o arquivo binário e salva registros
     VehicleHeader* header = NULL;
-    Vehicle** vehicles = BinaryReader_Vehicles(&header, binFile);
+    Vehicle** vehicles = binaryReader_Vehicles(&header, binFile);
     if (vehicles == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
     }
     
-    // Prints all vehicles
+    //  imprime todos os registros
     if (header->numReg > 0) {
         for (int i = 0; i < header->numReg; i++) {
             Printer_Vehicle(vehicles[i]);
@@ -94,24 +106,25 @@ void Op_SelectVehicles() {
         printf("Registro inexistente.\n");
     }
 
-    VehicleHeader_Free(header);
+    //  libera memória
+    binaryHeaders_FreeVehicleHeader(header);
     free(vehicles);
 }
 
 void Op_SelectBusLines() {
-    // Reads file name
+    //  lê o nome do arquivo
     char binFile[128] = { '\0' };
     scanf("%s", binFile);
 
-    // Reads binary file from disk
+    //  lê o arquivo binário e salva registros
     BusLineHeader* header = NULL;
-    BusLine** buslines = BinaryReader_BusLines(&header, binFile);
+    BusLine** buslines = binaryReader_BusLines(&header, binFile);
     if (buslines == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
     }
 
-    // Prints all bus lines
+    //  imprime todos os registros
     if (header->numReg > 0) {
         for (int i = 0; i < header->numReg; i++) {
             Printer_BusLine(buslines[i]);
@@ -121,36 +134,38 @@ void Op_SelectBusLines() {
         printf("Registro inexistente.\n");
     }
 
-    BusLineHeader_Free(header);
+    //  libera memória
+    binaryHeaders_FreeBusLineHeader(header);
     free(buslines);
 }
 
+
 void Op_SelectVehiclesWhere() {
-    // Reads file name
+    //  lê o nome do arquivo
     char binFile[128] = { '\0' };
     scanf("%s", binFile);
 
-    // Reads binary file from disk
+    //  lê o arquivo binário e salva registros
     VehicleHeader* header = NULL;
-    Vehicle** vehicles = BinaryReader_Vehicles(&header, binFile);
+    Vehicle** vehicles = binaryReader_Vehicles(&header, binFile);
     if (vehicles == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
     }
 
-    // Reads field name
+    //  lê o nome do campo
     char fieldName[64] = { '\0' };
     scanf("%s", fieldName);
 
-    // Calls our generic function that selects by an arbitrary field
+    //  seleciona a condição e modelo
     SelectWhereFnType functionPt = SelectWhere_SetCondition(fieldName);
     void* pattern = SelectWhere_SetPattern(fieldName);
 
-    // Select the vehicles
+
+    // Seleciona e imprime os registros
     int32_t nSelectedReg;
     Vehicle** selectedVehicles = SelectWhere_SelectVehicles(functionPt, pattern, vehicles, header->numReg, &nSelectedReg);
 
-    // prints the vehicles
     if (nSelectedReg > 0) {
         for (int i = 0; i < nSelectedReg; i++) {
             Printer_Vehicle(selectedVehicles[i]);
@@ -159,44 +174,44 @@ void Op_SelectVehiclesWhere() {
         printf("Registro inexistente.\n");
     }
 
-    free(pattern);
 
-    // Free the vehicles
+    // Libera a memória
     for (int i=0; i<header->numReg; i++) {
         Vehicle_Free(vehicles[i]);
     }
 
-    VehicleHeader_Free(header);
+    binaryHeaders_FreeVehicleHeader(header);
     free(selectedVehicles);
     free(vehicles);
+    free(pattern);
 }
 
 void Op_SelectBuslinesWhere() {
-    // Reads file name
+    //  lê o nome do arquivo
     char binFile[128] = { '\0' };
     scanf("%s", binFile);
 
-    // Reads binary file from disk
+    //  lê o arquivo binário e salva registros
     BusLineHeader* header = NULL;
-    BusLine** buslines = BinaryReader_BusLines(&header, binFile);
+    BusLine** buslines = binaryReader_BusLines(&header, binFile);
     if (buslines == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
     }
 
-    // Reads field name
+    //  lê o nome do campo
     char fieldName[64] = { '\0' };
     scanf("%s", fieldName);
 
-    // Calls our generic function that selects by an arbitrary field
+    //  seleciona a condição e modelo
     void *functionPt = SelectWhere_SetCondition(fieldName);
     void *pattern = SelectWhere_SetPattern(fieldName);
 
-    // Select the buslines
+
+    // Seleciona e imprime os registros
     int32_t nSelectedReg;
     BusLine** selectedBuslines = SelectWhere_SelectBusLines(functionPt, pattern, buslines, header->numReg, &nSelectedReg);
 
-    // prints the buslines
     if (nSelectedReg > 0) {
         for (int i = 0; i < nSelectedReg; i++) {
             Printer_BusLine(selectedBuslines[i]);
@@ -205,24 +220,25 @@ void Op_SelectBuslinesWhere() {
         printf("Registro inexistente.\n");
     }
 
-    free(pattern);
 
-    // Free the vehicles
+    // Libera a memória
     for (int i=0; i<header->numReg; i++) {
         BusLine_Free(buslines[i]);
     }
 
-    BusLineHeader_Free(header);
+    binaryHeaders_FreeBusLineHeader(header);
     free(selectedBuslines);
     free(buslines);
+    free(pattern);
 }
 
+
 void Op_PushVehicles() {
-    // Reads file name
+    //  lê o nome do arquivo
     char binFile[128] = { '\0' };
     scanf("%s", binFile);
 
-    // Reads vehicles from stdin
+    //  lê os registros do stdin
     int n;
     scanf("%d", &n);
     Vehicle** vehicles = Vehicle_Read(n);
@@ -231,23 +247,24 @@ void Op_PushVehicles() {
         return;
     }
 
-    // Updates the binary file
+    //  atualiza o arquivo binário
     if (BinaryWriter_IncrementVehicleFile(vehicles, n, binFile)) {
         printf("Falha no processamento do arquivo.\n");
         free(vehicles);
         return;
     }
     
+    //  libera a memória alocada
     free(vehicles);
     PrintHash(binFile);
 }
 
 void Op_PushBuslines() {
-    // Reads file name
+    //  lê o nome do arquivo
     char binFile[128] = { '\0' };
     scanf("%s", binFile);
 
-    // Reads buslines from stdin
+    //  lê os registros do stdin
     int n;
     scanf("%d", &n);
     BusLine** buslines = BusLine_Read(n);
@@ -256,13 +273,14 @@ void Op_PushBuslines() {
         return;
     }
 
-    // Updates the binary file
+    //  atualiza o arquivo binário
     if (BinaryWriter_IncrementBusLineFile(buslines, n, binFile)) {
         printf("Falha no processamento do arquivo.\n");
         free(buslines);
         return;
     }
     
+    //  libera a memória alocada
     free(buslines);
     PrintHash(binFile);
 }
