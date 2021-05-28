@@ -1,8 +1,8 @@
-#include "utils.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <stdint.h>
 
 char* Utils_StrSplit(char **stringp, const char *delim) {
     char *rv = *stringp;

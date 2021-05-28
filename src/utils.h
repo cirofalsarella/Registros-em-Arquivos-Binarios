@@ -1,7 +1,6 @@
 #ifndef _UTILS_H_
 #define _UTILS_H_
 
-#include <stdint.h>
 
 /**
  * @brief Helper function used to split strings.
