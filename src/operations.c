@@ -146,20 +146,26 @@ void Op_SelectVehiclesWhere() {
     void *functionPt = SelectWhere_SetCondition(fieldName);
     void *pattern = SelectWhere_SetPattern(fieldName);
 
-    int nReg = header->numReg + header->numRegRemov;
-    vehicles = SelectWhere_SelectVehicles(functionPt, pattern, &vehicles, &nReg);
+    // Select the vehicles
+    int32_t nSelectedReg;
+    Vehicle** selectedVehicles = SelectWhere_SelectVehicles(functionPt, pattern, vehicles, header->numReg, &nSelectedReg);
 
-    // Linearly searches for the right vehicle
-    if (nReg > 0) {
-        for (int i = 0; i < nReg; i++) {
-            Printer_Vehicle(vehicles[i]);
-            Vehicle_Free(vehicles[i]);
+    // prints the vehicles
+    if (nSelectedReg > 0) {
+        for (int i = 0; i < nSelectedReg; i++) {
+            Printer_Vehicle(selectedVehicles[i]);
         }
     } else {
         printf("Registro inexistente.\n");
     }
 
+    // Free the vehicles
+    for (int i=0; i<header->numReg; i++) {
+        Vehicle_Free(vehicles[i]);
+    }
+
     VehicleHeader_Free(header);
+    free(selectedVehicles);
     free(vehicles);
 }
 
@@ -170,7 +176,7 @@ void Op_SelectBuslinesWhere() {
 
     // Reads binary file from disk
     BusLineHeader* header = NULL;
-    BusLine **buslines = BinaryReader_BusLines(&header, binFile);
+    BusLine** buslines = BinaryReader_BusLines(&header, binFile);
     if (buslines == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
@@ -181,21 +187,30 @@ void Op_SelectBuslinesWhere() {
     scanf("%s", fieldName);
 
     // Calls our generic function that selects by an arbitrary field
-    void* functionPt = SelectWhere_SetCondition(fieldName);
-    void* pattern = SelectWhere_SetPattern(fieldName);
-    buslines = SelectWhere_SelectBusLines(functionPt, pattern, &buslines, &header->numReg);
+    void *functionPt = SelectWhere_SetCondition(fieldName);
+    void *pattern = SelectWhere_SetPattern(fieldName);
+    printf("pattern = %s\n", (char*) pattern);
 
-    // Linearly searches for the right bus line
-    if (header->numReg > 0) {
-        for (int i = 0; i < header->numReg; i++) {
-            Printer_BusLine(buslines[i]);
-            BusLine_Free(buslines[i]);
+    // Select the buslines
+    int32_t nSelectedReg;
+    BusLine** selectedBuslines = SelectWhere_SelectBusLines(functionPt, pattern, buslines, header->numReg, &nSelectedReg);
+
+    // prints the buslines
+    if (nSelectedReg > 0) {
+        for (int i = 0; i < nSelectedReg; i++) {
+            Printer_BusLine(selectedBuslines[i]);
         }
     } else {
         printf("Registro inexistente.\n");
     }
 
+    // Free the vehicles
+    for (int i=0; i<header->numReg; i++) {
+        BusLine_Free(buslines[i]);
+    }
+
     BusLineHeader_Free(header);
+    free(selectedBuslines);
     free(buslines);
 }
 

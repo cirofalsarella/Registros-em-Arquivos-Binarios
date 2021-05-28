@@ -8,6 +8,7 @@
         "stdlib.h": "c",
         "operations.h": "c",
         "datamodel.h": "c",
-        "sstream": "c"
+        "sstream": "c",
+        "string.h": "c"
     }
 }

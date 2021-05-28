@@ -10,7 +10,7 @@
 void *SelectWhere_SetCondition(char *fieldName);
 void *SelectWhere_SetPattern(char *fieldName);
 
-BusLine **SelectWhere_SelectBusLines(void *functionPt(void*, BusLine*), void *pattern, BusLine ***busLines, int *busLinesCount);
-Vehicle **SelectWhere_SelectVehicles(void *functionPt(void*, Vehicle*), void *pattern, Vehicle ***vehicles, int *vehiclesCount);
+BusLine **SelectWhere_SelectBusLines(void *functionPt(void*, BusLine*), void *pattern, BusLine **busLines, int nReg, int *nSelectedReg);
+Vehicle **SelectWhere_SelectVehicles(void *functionPt(void*, Vehicle*), void *pattern, Vehicle **vehicles, int nReg, int *nSelectedReg);
 
 #endif

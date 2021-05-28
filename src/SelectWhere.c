@@ -1,8 +1,9 @@
 #include "selectWhere.h"
 #include "utils.h"
+#include "printer.h"
+
 
 // *((tipo*) pattern) -> cast pra patern ser um ponteiro de tipo definido e vou para o endereço apontado
-
 
 int BusLine_codLinha(void *pattern, BusLine *busLine){
     return (busLine->lineCode != *( (int32_t*) pattern ) );
@@ -18,7 +19,7 @@ int BusLine_corLinha(void *pattern, BusLine *busLine){
 }
 
 int Vehicle_prefixo(void *pattern, Vehicle *vehicle){
-    return strcmp(vehicle->prefix, (char*) pattern);
+    return strcmp(vehicle->prefix, *((char**) pattern));
 }
 int Vehicle_data(void *pattern, Vehicle *vehicle){
     return strcmp(vehicle->date, (char*) pattern);   
@@ -50,6 +51,7 @@ void* SelectWhere_SetCondition(char *fieldName) {
 
 void *SelectWhere_SetPattern(char *fieldName) {
     void *pattern;
+
     if (!strcmp(fieldName, "nomeLinha") || !strcmp(fieldName, "corLinha")
      || !strcmp(fieldName, "prefixo") || !strcmp(fieldName, "data")
      || !strcmp(fieldName, "modelo") || !strcmp(fieldName, "categoria") ) {
@@ -72,50 +74,36 @@ void *SelectWhere_SetPattern(char *fieldName) {
 }
 
 
-Vehicle** SelectWhere_SelectVehicles(void *functionPt(void*, Vehicle*), void *pattern, Vehicle ***vehicles, int* vehiclesCount) {
-    int n = *vehiclesCount;
-    for (int i = 0; i < *vehiclesCount; i++) {
-        if (functionPt(pattern, *vehicles[i])){
-            Vehicle_Free(*vehicles[i]);
-            *vehicles[i] = NULL;
-            n--;
+Vehicle** SelectWhere_SelectVehicles(void *functionPt(void*, Vehicle*), void *pattern, Vehicle **vehicles, int nReg, int *nSelectedReg) {
+    Vehicle** selectedVehicles = NULL;
+
+    int k = 0;
+    for (int i=0; i<nReg; i++) {
+        void *aux = pattern;
+        if ( ! functionPt(aux, vehicles[i]) ) {
+            selectedVehicles = realloc (selectedVehicles, (k+1)*sizeof(Vehicle*));
+            selectedVehicles[k] = vehicles[i];
+            k++;
         }
     }
 
-    Vehicle** selectedVehicles = calloc(n, sizeof(Vehicle*));
-    n = 0;
-    for (int i = 0; i < *vehiclesCount; i++) {
-        if (*vehicles[i] != NULL) {
-            selectedVehicles[n] = *vehicles[i];
-            n++;
-        }
-    }
-
-    free(*vehicles);
-    *vehiclesCount = n;
+    *nSelectedReg = k;
     return selectedVehicles;
 }
 
-BusLine **SelectWhere_SelectBusLines(void *functionPt(void*, BusLine*), void *pattern, BusLine*** busLines, int* busLinesCount) {
-    int n = *busLinesCount;
-    for (int i = 0; i < *busLinesCount; i++) {
-        if (functionPt(pattern, *busLines[i])){
-            BusLine_Free(*busLines[i]);
-            *busLines[i] = NULL;
-            n--;
+BusLine **SelectWhere_SelectBusLines(void *functionPt(void*, BusLine*), void *pattern, BusLine** busLines, int nReg, int *nSelectedReg) {
+    BusLine** selectedBusLines = NULL;
+
+    int k = 0;
+    for (int i=0; i<nReg; i++) {
+        void *aux = pattern;
+        if ( ! functionPt(aux, busLines[i]) ) {
+            selectedBusLines = realloc (selectedBusLines, (k+1)*sizeof(Vehicle*));
+            selectedBusLines[k] = busLines[i];
+            k++;
         }
     }
 
-    BusLine **selectedBusLines = calloc(n, sizeof(BusLine*));
-    n = 0;
-    for (int i = 0; i < *busLinesCount; i++) {
-        if (*busLines[i] != NULL) {
-            selectedBusLines[n] = *busLines[i];
-            n++;
-        }
-    }
-
-    free(*busLines);
-    *busLinesCount = n;
+    *nSelectedReg = k;
     return selectedBusLines;
 }
