@@ -49,6 +49,19 @@ Vehicle** Vehicle_Read(int n) {
         // Scans prefix, date, numSeats and lineCode (all fixed-length fields)
         char prefix[5] = { '\0' };
         Utils_ScanQuoteString(prefix);
+        
+        //  checks if the register is removed
+        char removed = '1';
+        if (prefix[0] == '*') {
+            removed = '0';
+            // Removes '*' from prefix
+            char* prefixCopy = Utils_StrCopy(prefix+1); // Copies without the '*'
+            int prefixCopyLen = strlen(prefixCopy);
+            strcpy(prefix, prefixCopy);
+            prefix[prefixCopyLen] = '\0';
+            free(prefixCopy);
+        }
+
 
         char date[10] = { '\0' };
         Utils_ScanQuoteString(date);
@@ -76,7 +89,7 @@ Vehicle** Vehicle_Read(int n) {
         Utils_ScanQuoteString(category);
 
         // Creates a new vehicle and pushes it
-        vehicles[i] = Vehicle_Create('1', prefix, date, Utils_StrToInt(numSeats), Utils_StrToInt(lineCode), model, category);        
+        vehicles[i] = Vehicle_Create(removed, prefix, date, Utils_StrToInt(numSeats), Utils_StrToInt(lineCode), model, category);        
     }
 
 
