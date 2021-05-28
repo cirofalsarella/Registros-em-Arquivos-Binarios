@@ -39,6 +39,15 @@ int Utils_MinNumber(int x, int y);
 void Utils_StrCopyToFixedLen(char* from, char* to, int length);
 
 /**
+ * @brief Returns true if strA == strB.
+ * 
+ * @param strA 
+ * @param strB 
+ * @param length 
+ */
+int Utils_StrEqualsFixedLen(char* strA, char* strB, int length);
+
+/**
  * @brief Prints str in terminal.
  * 
  * @param str 

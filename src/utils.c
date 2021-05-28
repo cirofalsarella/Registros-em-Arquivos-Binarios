@@ -56,6 +56,15 @@ void Utils_StrCopyToFixedLen(char* to, char* from, int length) {
     }
 }
 
+int Utils_StrEqualsFixedLen(char* strA, char* strB, int length) {
+    for (int i = 0; i < length; ++i) {
+        if (strA[i] != strB[i]) return 0;
+        if (strA[i] == '\0' || strB[i] == '\0') return 1;
+    }
+
+    return 1;
+}
+
 void Utils_StrPrintWithFixedLen(const char* str, int maxLength) {
     int strLen = strlen(str);
     for (int i = 0; i < (strLen < maxLength ? strLen : maxLength); ++i) {

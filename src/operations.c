@@ -143,7 +143,7 @@ void Op_SelectVehiclesWhere() {
     scanf("%s", fieldName);
 
     // Calls our generic function that selects by an arbitrary field
-    void* functionPt = SelectWhere_SetCondition(fieldName);
+    SelectWhereFnType functionPt = SelectWhere_SetCondition(fieldName);
     void* pattern = SelectWhere_SetPattern(fieldName);
 
     // Select the vehicles
@@ -191,7 +191,6 @@ void Op_SelectBuslinesWhere() {
     // Calls our generic function that selects by an arbitrary field
     void *functionPt = SelectWhere_SetCondition(fieldName);
     void *pattern = SelectWhere_SetPattern(fieldName);
-    printf("pattern = %s\n", (char*) pattern);
 
     // Select the buslines
     int32_t nSelectedReg;

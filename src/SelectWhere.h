@@ -7,10 +7,12 @@
 
 #include "dataModel.h"
 
-void *SelectWhere_SetCondition(char *fieldName);
+typedef int (*SelectWhereFnType)(void*, Vehicle*, BusLine*);
+
+SelectWhereFnType SelectWhere_SetCondition(char *fieldName);
 void *SelectWhere_SetPattern(char *fieldName);
 
-BusLine **SelectWhere_SelectBusLines(void *functionPt(void*, BusLine*), void *pattern, BusLine **busLines, int nReg, int *nSelectedReg);
-Vehicle **SelectWhere_SelectVehicles(void *functionPt(void*, Vehicle*), void *pattern, Vehicle **vehicles, int nReg, int *nSelectedReg);
+BusLine **SelectWhere_SelectBusLines(SelectWhereFnType shouldSelect, void *pattern, BusLine **busLines, int nReg, int *nSelectedReg);
+Vehicle **SelectWhere_SelectVehicles(SelectWhereFnType shouldSelect, void *pattern, Vehicle **vehicles, int nReg, int *nSelectedReg);
 
 #endif

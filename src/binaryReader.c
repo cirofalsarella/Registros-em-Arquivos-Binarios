@@ -6,9 +6,9 @@ VehicleHeader* ReadVehicleHeader(FILE *srcFile) {
     VehicleHeader* header = calloc(1, sizeof(VehicleHeader));
 
     fread(&header->status, sizeof(char), 1, srcFile);
-    fread(&header->nextReg, sizeof(long), 1, srcFile);
-    fread(&header->numReg, sizeof(int), 1, srcFile);
-    fread(&header->numRegRemov, sizeof(int), 1, srcFile);
+    fread(&header->nextReg, sizeof(int64_t), 1, srcFile);
+    fread(&header->numReg, sizeof(int32_t), 1, srcFile);
+    fread(&header->numRegRemov, sizeof(int32_t), 1, srcFile);
 
     fread(&header->describePrefix, sizeof(char), 18, srcFile);
     fread(&header->describeDate, sizeof(char), 35, srcFile);
