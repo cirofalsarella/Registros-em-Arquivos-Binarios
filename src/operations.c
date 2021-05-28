@@ -143,8 +143,8 @@ void Op_SelectVehiclesWhere() {
     scanf("%s", fieldName);
 
     // Calls our generic function that selects by an arbitrary field
-    void *functionPt = SelectWhere_SetCondition(fieldName);
-    void *pattern = SelectWhere_SetPattern(fieldName);
+    void* functionPt = SelectWhere_SetCondition(fieldName);
+    void* pattern = SelectWhere_SetPattern(fieldName);
 
     // Select the vehicles
     int32_t nSelectedReg;
@@ -158,6 +158,8 @@ void Op_SelectVehiclesWhere() {
     } else {
         printf("Registro inexistente.\n");
     }
+
+    free(pattern);
 
     // Free the vehicles
     for (int i=0; i<header->numReg; i++) {
@@ -203,6 +205,8 @@ void Op_SelectBuslinesWhere() {
     } else {
         printf("Registro inexistente.\n");
     }
+
+    free(pattern);
 
     // Free the vehicles
     for (int i=0; i<header->numReg; i++) {

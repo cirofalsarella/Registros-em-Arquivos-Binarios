@@ -4,7 +4,8 @@ all:
 	gcc src/main.c ${OBJECTS} -o programaTrab.exe -Wall
 	
 run:
-	./programaTrab.exe
+	make all
+	programaTrab.exe
 
 clean:
 	rm ./*bin ./*csv programaTrab.exe
