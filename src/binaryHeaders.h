@@ -1,6 +1,7 @@
 #ifndef _BINARY_HEADERS_H_
 #define _BINARY_HEADERS_H_
 
+
 // FUNÇÕES RESPONSÁVEIS PELA MANIPULAÇÃO DOS HEADERS
 
 //  Criam um cabeçalho a partir de uma tabela
