@@ -87,7 +87,7 @@ void WriteBusLineHeader(const BusLineHeader* header, FILE *destFile) {
 //  Escrevem um arquivo inteiro
 
 void BinaryWriter_CreateVehicleFile(Vehicle** vehicles, int vehiclesCount, VehicleHeader* header, char* fileName) {
-    header->status = '1';
+    header->status = '0';
     // These are adjusted throughout this function
     header->numReg = vehiclesCount;
     header->numRegRemov = 0;
@@ -118,6 +118,7 @@ void BinaryWriter_CreateVehicleFile(Vehicle** vehicles, int vehiclesCount, Vehic
 
     // Writes status
     fseek(destFile, 0, SEEK_SET);
+    header->status = '1';
     fwrite(&header->status, 1, 1, destFile);
 
     // Frees and closes everything
@@ -127,7 +128,7 @@ void BinaryWriter_CreateVehicleFile(Vehicle** vehicles, int vehiclesCount, Vehic
 }
 
 void BinaryWriter_CreateBusLineFile(BusLine** busLines, int busLinesCount, BusLineHeader* header, char* fileName) {
-    header->status = '1';
+    header->status = '0';
     // These are adjusted throughout this function
     header->numReg = busLinesCount;
     header->numRegRemov = 0;
@@ -158,6 +159,7 @@ void BinaryWriter_CreateBusLineFile(BusLine** busLines, int busLinesCount, BusLi
 
     // Writes status
     fseek(destFile, 0, SEEK_SET);
+    header->status = '1';
     fwrite(&header->status, 1, 1, destFile);
 
     // Frees and closes everything

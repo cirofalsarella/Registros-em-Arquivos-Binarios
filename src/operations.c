@@ -12,7 +12,7 @@
 #include "printer.h"
 #include "utils.h"
 
-//  Printa uma Hash do arquivo (leBinario)
+//  Printa uma Hash do arquivo (binário na tela)
 void PrintHash(char* nomeArquivoBinario) {
 	unsigned long i, cs;
 	unsigned char *mb;
@@ -39,7 +39,6 @@ void PrintHash(char* nomeArquivoBinario) {
 	free(mb);
 	fclose(fs);
 }
-
 
 
 void Op_CreateTableVehicles() {
