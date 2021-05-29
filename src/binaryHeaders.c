@@ -28,7 +28,7 @@ VehicleHeader* CreateVehicleHeader(char* describePrefix, char* describeDate, cha
     return header;
 }
 
-VehicleHeader* binaryHeaders_CreateVehicleHeader(StringTable* table) {
+VehicleHeader* BinaryHeaders_CreateVehicleHeader(StringTable* table) {
     return CreateVehicleHeader(StringTable_GetLabel(table, 0),
                                 StringTable_GetLabel(table, 1),
                                 StringTable_GetLabel(table, 2),
@@ -57,7 +57,7 @@ BusLineHeader* CreateBusLineHeader(char* describeCode, char* describeCard, char*
     return header;                        
 }
 
-BusLineHeader* binaryHeaders_CreateBusLineHeader(StringTable *table) {
+BusLineHeader* BinaryHeaders_CreateBusLineHeader(StringTable *table) {
     return CreateBusLineHeader(StringTable_GetLabel(table, 0),
                                 StringTable_GetLabel(table, 1),
                                 StringTable_GetLabel(table, 2),
@@ -66,10 +66,10 @@ BusLineHeader* binaryHeaders_CreateBusLineHeader(StringTable *table) {
 
 
 // Free the register header
-void binaryHeaders_FreeVehicleHeader(VehicleHeader* header) {
+void BinaryHeaders_FreeVehicleHeader(VehicleHeader* header) {
     free(header);
 }
 
-void binaryHeaders_FreeBusLineHeader(BusLineHeader* header) {
+void BinaryHeaders_FreeBusLineHeader(BusLineHeader* header) {
     free(header);
 }

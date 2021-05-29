@@ -124,7 +124,7 @@ void BinaryWriter_CreateVehicleFile(Vehicle** vehicles, int vehiclesCount, Vehic
     // Frees and closes everything
     fclose(destFile);
     free(vehicles);
-    binaryHeaders_FreeVehicleHeader(header);
+    BinaryHeaders_FreeVehicleHeader(header);
 }
 
 void BinaryWriter_CreateBusLineFile(BusLine** busLines, int busLinesCount, BusLineHeader* header, char* fileName) {
@@ -165,7 +165,7 @@ void BinaryWriter_CreateBusLineFile(BusLine** busLines, int busLinesCount, BusLi
     // Frees and closes everything
     fclose(destFile);
     free(busLines);
-    binaryHeaders_FreeBusLineHeader(header);
+    BinaryHeaders_FreeBusLineHeader(header);
 }
 
 

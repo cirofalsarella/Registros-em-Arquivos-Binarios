@@ -106,7 +106,7 @@ void Op_SelectVehicles() {
     }
 
     //  libera memória
-    binaryHeaders_FreeVehicleHeader(header);
+    BinaryHeaders_FreeVehicleHeader(header);
     free(vehicles);
 }
 
@@ -134,7 +134,7 @@ void Op_SelectBusLines() {
     }
 
     //  libera memória
-    binaryHeaders_FreeBusLineHeader(header);
+    BinaryHeaders_FreeBusLineHeader(header);
     free(buslines);
 }
 
@@ -179,7 +179,7 @@ void Op_SelectVehiclesWhere() {
         Vehicle_Free(vehicles[i]);
     }
 
-    binaryHeaders_FreeVehicleHeader(header);
+    BinaryHeaders_FreeVehicleHeader(header);
     free(selectedVehicles);
     free(vehicles);
     free(pattern);
@@ -225,7 +225,7 @@ void Op_SelectBuslinesWhere() {
         BusLine_Free(buslines[i]);
     }
 
-    binaryHeaders_FreeBusLineHeader(header);
+    BinaryHeaders_FreeBusLineHeader(header);
     free(selectedBuslines);
     free(buslines);
     free(pattern);

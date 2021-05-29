@@ -60,7 +60,7 @@ BusLine* CreateBusLineFromRow(StringTable* table, int row) {
 void CsvToBinary_WriteVehicleFile(StringTable *table, char *fileName) {
     // Creates a list of vehicles
     Vehicle** vehicles = (Vehicle**) malloc((table->rowCount - 1) * sizeof(Vehicle*));
-    VehicleHeader* header = binaryHeaders_CreateVehicleHeader(table);
+    VehicleHeader* header = BinaryHeaders_CreateVehicleHeader(table);
     int vehiclesCount = table->rowCount-1;
 
     for (int i = 0; i < vehiclesCount; i++) {
@@ -74,7 +74,7 @@ void CsvToBinary_WriteVehicleFile(StringTable *table, char *fileName) {
 void CsvToBinary_WriteBusLineFile(StringTable *table, char *fileName) {
     // Creates a list of bus lines
     BusLine** busLines = (BusLine**) malloc((table->rowCount - 1) * sizeof(BusLine*));
-    BusLineHeader* header = binaryHeaders_CreateBusLineHeader(table);
+    BusLineHeader* header = BinaryHeaders_CreateBusLineHeader(table);
     int busLinesCount = table->rowCount-1;
 
     for (int i = 0; i < busLinesCount; i++) {
