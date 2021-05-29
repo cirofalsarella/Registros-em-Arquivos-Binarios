@@ -47,15 +47,15 @@ void Op_CreateTableVehicles() {
     scanf("%s %s", csvFile, binFile);
 
     //  lê o arquivo csv
-    StringTable* Table = StringTable_FromCsv(csvFile, ',');
-    if (Table == NULL) {
+    StringTable* table = StringTable_FromCsv(csvFile, ',');
+    if (table == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
     }
 
     //  transforma o arquivo csv em binário e libéra memória
-    CsvToBinary_WriteVehicleFile(Table, binFile);
-    StringTable_Free(Table);
+    CsvToBinary_WriteVehicleFile(table, binFile);
+    StringTable_Free(table);
 
     //  confere se o binário está correto
     PrintHash(binFile);
