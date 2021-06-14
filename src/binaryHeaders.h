@@ -5,11 +5,11 @@
 // FUNÇÕES RESPONSÁVEIS PELA MANIPULAÇÃO DOS HEADERS
 
 //  Criam um cabeçalho a partir de uma tabela
-VehicleHeader* BinaryHeaders_CreateVehicleHeader(StringTable* table);
-BusLineHeader* BinaryHeaders_CreateBusLineHeader(StringTable *table);
+VehicleHeader_t* BinaryHeaders_CreateVehicleHeader(StringTable* table);
+BusLineHeader_t* BinaryHeaders_CreateBusLineHeader(StringTable *table);
 
 //  Liberam a memória ocupada pelo cabeçalho
-void BinaryHeaders_FreeVehicleHeader(VehicleHeader* header);
-void BinaryHeaders_FreeBusLineHeader(BusLineHeader* header);
+void BinaryHeaders_FreeVehicleHeader(VehicleHeader_t* header);
+void BinaryHeaders_FreeBusLineHeader(BusLineHeader_t* header);
 
 #endif

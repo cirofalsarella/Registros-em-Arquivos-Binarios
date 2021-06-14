@@ -26,7 +26,7 @@ typedef struct VehicleHeader {
     char describeLine[26];
     char describeModel[17];
     char describeCategory[20];
-} VehicleHeader;
+} VehicleHeader_t;
 
 typedef struct BusLineHeader {
     char status;
@@ -40,7 +40,7 @@ typedef struct BusLineHeader {
     char describeCard[13];
     char describeName[13];
     char describeLine[24];
-} BusLineHeader;
+} BusLineHeader_t;
 
 
 
@@ -61,7 +61,7 @@ typedef struct Vehicle {
     char* model;
     int32_t categoryLength;
     char* category;
-} Vehicle;
+} Vehicle_t;
 
 typedef struct BusLine {
     // '0' if this register has been removed, '1' otherwise
@@ -78,31 +78,31 @@ typedef struct BusLine {
     char* name;
     int32_t colorLength;
     char* color;
-} BusLine;
+} BusLine_t;
 
 
 
 //  Cria um novo Registro a partir de seus campos
 
-Vehicle* Vehicle_Create(char removed, char* prefix, char* date, int32_t numPlaces, int32_t lineCode, char* model, char* category);
+Vehicle_t* Vehicle_Create(char removed, char* prefix, char* date, int32_t numPlaces, int32_t lineCode, char* model, char* category);
 
-BusLine* BusLine_Create(char removed, int32_t lineCode, char acceptsCreditCard, char* name, char* color);
+BusLine_t* BusLine_Create(char removed, int32_t lineCode, char acceptsCreditCard, char* name, char* color);
 
 
 
 //  Lê n registros do stdin
 
-Vehicle** Vehicle_Read(int n);
+Vehicle_t** Vehicle_Read(int n);
 
-BusLine** BusLine_Read(int n);
+BusLine_t** BusLine_Read(int n);
 
 
 
 // Libera a memória alocada por um Registro
 
-void Vehicle_Free(Vehicle* vehicle);
+void Vehicle_Free(Vehicle_t* vehicle);
 
-void BusLine_Free(BusLine* busLine);
+void BusLine_Free(BusLine_t* busLine);
 
 
 

@@ -75,7 +75,7 @@ void PrettyPrintWithMaxLength(const char* label, const char* str, int maxLength)
 
 //  Printam um registro seguindo as normas
 
-void Printer_Vehicle(Vehicle *vehicle) {
+void Printer_Vehicle(Vehicle_t *vehicle) {
     PrettyPrintWithMaxLength("Prefixo do veiculo", vehicle->prefix, 5);
     PrettyPrintStr("Modelo do veiculo", vehicle->model);
     PrettyPrintStr("Categoria do veiculo", vehicle->category);
@@ -85,7 +85,7 @@ void Printer_Vehicle(Vehicle *vehicle) {
     printf("\n");
 }
 
-void Printer_BusLine(BusLine *busLine) {
+void Printer_BusLine(BusLine_t *busLine) {
     PrettyPrintInt("Codigo da linha", busLine->lineCode);
     PrettyPrintStr("Nome da linha", busLine->name);
     PrettyPrintStr("Cor que descreve a linha", busLine->color);

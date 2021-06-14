@@ -10,32 +10,32 @@
 
 // Funções que serão usadas para executar comparações
 
-int BusLine_codLinha(void *pattern, Vehicle* v, BusLine *busLine) {
+int BusLine_codLinha(void *pattern, Vehicle_t* v, BusLine_t* busLine) {
     return (busLine->lineCode == *((int32_t*)pattern));
 }
-int BusLine_aceitaCartao(void *pattern, Vehicle* v, BusLine *busLine) {
+int BusLine_aceitaCartao(void *pattern, Vehicle_t* v, BusLine_t* busLine) {
     return (busLine->acceptsCreditCard == *((char*)pattern));
 }
-int BusLine_nomeLinha(void *pattern, Vehicle* v, BusLine *busLine) {
+int BusLine_nomeLinha(void *pattern, Vehicle_t* v, BusLine_t* busLine) {
     return strcmp(busLine->name, (char*) pattern) == 0;
 }
-int BusLine_corLinha(void *pattern, Vehicle* v, BusLine *busLine) {
+int BusLine_corLinha(void *pattern, Vehicle_t* v, BusLine_t* busLine) {
     return strcmp(busLine->color, (char*) pattern) == 0;
 }
 
-int Vehicle_prefixo(void *pattern, Vehicle *vehicle, BusLine *b) {
+int Vehicle_prefixo(void *pattern, Vehicle_t* vehicle, BusLine_t* b) {
     return Utils_StrEqualsFixedLen(vehicle->prefix, (char*) pattern, 5);
 }
-int Vehicle_data(void *pattern, Vehicle *vehicle, BusLine *b) {
+int Vehicle_data(void *pattern, Vehicle_t* vehicle, BusLine_t* b) {
     return Utils_StrEqualsFixedLen(vehicle->date, (char*) pattern, 10);
 }
-int Vehicle_quantidadeLugares(void *pattern, Vehicle *vehicle, BusLine *b) {
+int Vehicle_quantidadeLugares(void *pattern, Vehicle_t* vehicle, BusLine_t* b) {
     return (vehicle->numSeats == *((int32_t*) pattern));
 }
-int Vehicle_modelo(void *pattern, Vehicle *vehicle, BusLine *b) {
+int Vehicle_modelo(void *pattern, Vehicle_t* vehicle, BusLine_t* b) {
     return strcmp(vehicle->model, (char*) pattern) == 0;   
 }
-int Vehicle_categoria(void *pattern, Vehicle *vehicle, BusLine *b) {
+int Vehicle_categoria(void *pattern, Vehicle_t* vehicle, BusLine_t* b) {
     return strcmp(vehicle->category, (char*) pattern) == 0;
 }
 
@@ -85,13 +85,13 @@ void* SelectWhere_SetPattern(char *fieldName) {
 
 //  Seleciona os Registros
 
-Vehicle** SelectWhere_SelectVehicles(SelectWhereFnType shouldSelectFunc, void* pattern, Vehicle **vehicles, int nReg, int *nSelectedReg) {
-    Vehicle** selectedVehicles = NULL;
+Vehicle_t** SelectWhere_SelectVehicles(SelectWhereFnType shouldSelectFunc, void* pattern, Vehicle_t* *vehicles, int nReg, int *nSelectedReg) {
+    Vehicle_t** selectedVehicles = NULL;
     
     int k = 0;
     for (int i = 0; i < nReg; i++) {
         if (shouldSelectFunc(pattern, vehicles[i], NULL)) {
-            selectedVehicles = realloc(selectedVehicles, (k+1)*sizeof(Vehicle*));
+            selectedVehicles = realloc(selectedVehicles, (k+1)*sizeof(Vehicle_t*));
             selectedVehicles[k] = vehicles[i];
             k++;
         }
@@ -101,13 +101,13 @@ Vehicle** SelectWhere_SelectVehicles(SelectWhereFnType shouldSelectFunc, void* p
     return selectedVehicles;
 }
 
-BusLine **SelectWhere_SelectBusLines(SelectWhereFnType shouldSelectFunc, void *pattern, BusLine** busLines, int nReg, int *nSelectedReg) {
-    BusLine** selectedBusLines = NULL;
+BusLine_t* *SelectWhere_SelectBusLines(SelectWhereFnType shouldSelectFunc, void *pattern, BusLine_t** busLines, int nReg, int *nSelectedReg) {
+    BusLine_t** selectedBusLines = NULL;
 
     int k = 0;
     for (int i = 0; i < nReg; i++) {
         if (shouldSelectFunc(pattern, NULL, busLines[i])) {
-            selectedBusLines = realloc(selectedBusLines, (k+1)*sizeof(Vehicle*));
+            selectedBusLines = realloc(selectedBusLines, (k+1)*sizeof(Vehicle_t*));
             selectedBusLines[k] = busLines[i];
             k++;
         }

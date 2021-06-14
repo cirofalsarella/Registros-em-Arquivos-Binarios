@@ -7,9 +7,9 @@
 #include "utils.h"
 
 
-Vehicle* Vehicle_Create(char removed, char* prefix, char* date, int32_t numSeats, int32_t lineCode, char* model, char* category) {    
+Vehicle_t* Vehicle_Create(char removed, char* prefix, char* date, int32_t numSeats, int32_t lineCode, char* model, char* category) {    
     // This code is basically just copying fields
-    Vehicle* vehicle = malloc(sizeof(Vehicle));
+    Vehicle_t* vehicle = malloc(sizeof(Vehicle_t));
 
     vehicle->modelLength = model == NULL ? 0 : strlen(model);
     vehicle->model = model;
@@ -42,8 +42,8 @@ Vehicle* Vehicle_Create(char removed, char* prefix, char* date, int32_t numSeats
     return vehicle;
 }
 
-Vehicle** Vehicle_Read(int n) {
-    Vehicle** vehicles = calloc(n, sizeof(Vehicle*));
+Vehicle_t** Vehicle_Read(int n) {
+    Vehicle_t** vehicles = calloc(n, sizeof(Vehicle_t*));
     
     for (int i = 0; i < n; i++) {
         // Scans prefix, date, numSeats and lineCode (all fixed-length fields)
@@ -96,7 +96,7 @@ Vehicle** Vehicle_Read(int n) {
     return vehicles;
 }
 
-void Vehicle_Free(Vehicle* vehicle) {
+void Vehicle_Free(Vehicle_t* vehicle) {
     free(vehicle->model);
     free(vehicle->category);
     free(vehicle);
@@ -104,9 +104,9 @@ void Vehicle_Free(Vehicle* vehicle) {
 
 
 
-BusLine* BusLine_Create(char removed, int32_t lineCode, char acceptsCreditCard, char* name, char* color) {
+BusLine_t* BusLine_Create(char removed, int32_t lineCode, char acceptsCreditCard, char* name, char* color) {
     // This code is basically just copying fields
-    BusLine* busLine = malloc(sizeof(BusLine));
+    BusLine_t* busLine = malloc(sizeof(BusLine_t));
 
     busLine->nameLength = name == NULL ? 0 : strlen(name);
     busLine->name = name;
@@ -136,8 +136,8 @@ BusLine* BusLine_Create(char removed, int32_t lineCode, char acceptsCreditCard, 
     return busLine;
 }
 
-BusLine** BusLine_Read(int n) {
-    BusLine** buslines = calloc(n, sizeof(BusLine*));
+BusLine_t** BusLine_Read(int n) {
+    BusLine_t** buslines = calloc(n, sizeof(BusLine_t*));
     
     for (int i = 0; i < n; i++) {
 
@@ -185,7 +185,7 @@ BusLine** BusLine_Read(int n) {
     return buslines;
 }
 
-void BusLine_Free(BusLine* busLine) {
+void BusLine_Free(BusLine_t* busLine) {
     if (busLine != NULL){
         if (busLine->name != NULL)  free(busLine->name);
         if (busLine->color != NULL) free(busLine->color);

@@ -4,7 +4,7 @@
 // FUNÇÕES RESPONSÁVEIS PELA FORMATAÇÃO DOS PRINTS
 
 //  Printam um registro seguindo as normas
-void Printer_Vehicle(Vehicle *vehicle);
-void Printer_BusLine(BusLine *busLine);
+void Printer_Vehicle(Vehicle_t *vehicle);
+void Printer_BusLine(BusLine_t *busLine);
 
 #endif

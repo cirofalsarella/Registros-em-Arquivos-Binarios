@@ -5,7 +5,7 @@
 
 //  Leem os registros não removidos de um arquivo binário
 //  O header é um parâmetro por referência, para podermos usar seus valores depois
-Vehicle** binaryReader_Vehicles(VehicleHeader** header, char *fileName);
-BusLine** binaryReader_BusLines(BusLineHeader** header, char *fileName);
+Vehicle_t** binaryReader_Vehicles(VehicleHeader_t** header, char *fileName);
+BusLine_t** binaryReader_BusLines(BusLineHeader_t** header, char *fileName);
 
 #endif

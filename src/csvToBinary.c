@@ -11,7 +11,7 @@
 
 
 // Transforma uma linha da tabela em um registro
-Vehicle* CreateVehicleFromRow(StringTable* table, int row) {
+Vehicle_t* CreateVehicleFromRow(StringTable* table, int row) {
     // Gets each cell from csv, and converts to int when necessary
     char* prefix = StringTable_GetCellAt(table, 0, row);
     char* date = StringTable_GetCellAt(table, 1, row);
@@ -34,7 +34,7 @@ Vehicle* CreateVehicleFromRow(StringTable* table, int row) {
     return Vehicle_Create(removed, prefix, date, Utils_StrToInt(numSeats), Utils_StrToInt(lineCode), strdup(model), strdup(category));
 }
 
-BusLine* CreateBusLineFromRow(StringTable* table, int row) {
+BusLine_t* CreateBusLineFromRow(StringTable* table, int row) {
     // Gets each cell from csv, and converts to int when necessary
     char* lineCode = StringTable_GetCellAt(table, 0, row);
     char* acceptsCreditCard = StringTable_GetCellAt(table, 1, row);
@@ -59,8 +59,8 @@ BusLine* CreateBusLineFromRow(StringTable* table, int row) {
 // Creates a binary file from the given string table.
 void CsvToBinary_WriteVehicleFile(StringTable *table, char *fileName) {
     // Creates a list of vehicles
-    Vehicle** vehicles = (Vehicle**) malloc((table->rowCount - 1) * sizeof(Vehicle*));
-    VehicleHeader* header = BinaryHeaders_CreateVehicleHeader(table);
+    Vehicle_t** vehicles = (Vehicle_t**) malloc((table->rowCount - 1) * sizeof(Vehicle_t*));
+    VehicleHeader_t* header = BinaryHeaders_CreateVehicleHeader(table);
     int vehiclesCount = table->rowCount-1;
 
     for (int i = 0; i < vehiclesCount; i++) {
@@ -73,8 +73,8 @@ void CsvToBinary_WriteVehicleFile(StringTable *table, char *fileName) {
 
 void CsvToBinary_WriteBusLineFile(StringTable *table, char *fileName) {
     // Creates a list of bus lines
-    BusLine** busLines = (BusLine**) malloc((table->rowCount - 1) * sizeof(BusLine*));
-    BusLineHeader* header = BinaryHeaders_CreateBusLineHeader(table);
+    BusLine_t** busLines = (BusLine_t**) malloc((table->rowCount - 1) * sizeof(BusLine_t*));
+    BusLineHeader_t* header = BinaryHeaders_CreateBusLineHeader(table);
     int busLinesCount = table->rowCount-1;
 
     for (int i = 0; i < busLinesCount; i++) {

@@ -88,8 +88,8 @@ void Op_SelectVehicles() {
     scanf("%s", binFile);
 
     //  lê o arquivo binário e salva registros não removidos
-    VehicleHeader* header = NULL;
-    Vehicle** vehicles = binaryReader_Vehicles(&header, binFile);
+    VehicleHeader_t* header = NULL;
+    Vehicle_t** vehicles = binaryReader_Vehicles(&header, binFile);
     if (vehicles == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
@@ -116,8 +116,8 @@ void Op_SelectBusLines() {
     scanf("%s", binFile);
 
     //  lê o arquivo binário e salva registros não removidos
-    BusLineHeader* header = NULL;
-    BusLine** buslines = binaryReader_BusLines(&header, binFile);
+    BusLineHeader_t* header = NULL;
+    BusLine_t** buslines = binaryReader_BusLines(&header, binFile);
     if (buslines == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
@@ -145,8 +145,8 @@ void Op_SelectVehiclesWhere() {
     scanf("%s", binFile);
 
     //  lê o arquivo binário e salva registros não removidos
-    VehicleHeader* header = NULL;
-    Vehicle** vehicles = binaryReader_Vehicles(&header, binFile);
+    VehicleHeader_t* header = NULL;
+    Vehicle_t** vehicles = binaryReader_Vehicles(&header, binFile);
     if (vehicles == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
@@ -163,7 +163,7 @@ void Op_SelectVehiclesWhere() {
 
     // Seleciona e imprime os registros
     int32_t nSelectedReg;
-    Vehicle** selectedVehicles = SelectWhere_SelectVehicles(functionPt, pattern, vehicles, header->numReg, &nSelectedReg);
+    Vehicle_t** selectedVehicles = SelectWhere_SelectVehicles(functionPt, pattern, vehicles, header->numReg, &nSelectedReg);
 
     if (nSelectedReg > 0) {
         for (int i = 0; i < nSelectedReg; i++) {
@@ -191,8 +191,8 @@ void Op_SelectBuslinesWhere() {
     scanf("%s", binFile);
 
     //  lê o arquivo binário e salva registros não removidos
-    BusLineHeader* header = NULL;
-    BusLine** buslines = binaryReader_BusLines(&header, binFile);
+    BusLineHeader_t* header = NULL;
+    BusLine_t** buslines = binaryReader_BusLines(&header, binFile);
     if (buslines == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
@@ -209,7 +209,7 @@ void Op_SelectBuslinesWhere() {
 
     // Seleciona e imprime os registros
     int32_t nSelectedReg;
-    BusLine** selectedBuslines = SelectWhere_SelectBusLines(functionPt, pattern, buslines, header->numReg, &nSelectedReg);
+    BusLine_t** selectedBuslines = SelectWhere_SelectBusLines(functionPt, pattern, buslines, header->numReg, &nSelectedReg);
 
     if (nSelectedReg > 0) {
         for (int i = 0; i < nSelectedReg; i++) {
@@ -240,7 +240,7 @@ void Op_PushVehicles() {
     //  lê os registros do stdin
     int n;
     scanf("%d", &n);
-    Vehicle** vehicles = Vehicle_Read(n);
+    Vehicle_t** vehicles = Vehicle_Read(n);
     if (vehicles == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
@@ -266,7 +266,7 @@ void Op_PushBuslines() {
     //  lê os registros do stdin
     int n;
     scanf("%d", &n);
-    BusLine** buslines = BusLine_Read(n);
+    BusLine_t** buslines = BusLine_Read(n);
     if (buslines == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;

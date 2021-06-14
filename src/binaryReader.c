@@ -3,8 +3,8 @@
 
 #include "dataModel.h"
 
-VehicleHeader* ReadVehicleHeader(FILE *srcFile) {
-    VehicleHeader* header = calloc(1, sizeof(VehicleHeader));
+VehicleHeader_t* ReadVehicleHeader(FILE *srcFile) {
+    VehicleHeader_t* header = calloc(1, sizeof(VehicleHeader_t));
 
     fread(&header->status, sizeof(char), 1, srcFile);
     fread(&header->nextReg, sizeof(int64_t), 1, srcFile);
@@ -21,8 +21,8 @@ VehicleHeader* ReadVehicleHeader(FILE *srcFile) {
     return header;
 }
 
-Vehicle* ReadVehicle(FILE *srcFile) {
-    Vehicle* vehicle = calloc(1, sizeof(Vehicle));
+Vehicle_t* ReadVehicle(FILE *srcFile) {
+    Vehicle_t* vehicle = calloc(1, sizeof(Vehicle_t));
 
     //  Fixed length fields
     fread(&vehicle->removed, sizeof(char), 1, srcFile);
@@ -46,7 +46,7 @@ Vehicle* ReadVehicle(FILE *srcFile) {
     return vehicle;
 }
 
-Vehicle** binaryReader_Vehicles(VehicleHeader** header, char* fileName) {
+Vehicle_t** binaryReader_Vehicles(VehicleHeader_t** header, char* fileName) {
     FILE* srcFile = fopen(fileName, "rb");
     if (srcFile == NULL) {
         return NULL;
@@ -64,13 +64,13 @@ Vehicle** binaryReader_Vehicles(VehicleHeader** header, char* fileName) {
     *header = ReadVehicleHeader(srcFile);
 
     // Allocates space for the vehicles
-    Vehicle** vehicles = calloc((*header)->numReg, sizeof(Vehicle*));
+    Vehicle_t** vehicles = calloc((*header)->numReg, sizeof(Vehicle_t*));
     int n_registers = (*header)->numReg + (*header)->numRegRemov;
 
     // Gets the vehicles that arent removed from the file
     int j = 0;
     for (int i=0; i < n_registers; i++) {
-        Vehicle* aux = ReadVehicle(srcFile);
+        Vehicle_t* aux = ReadVehicle(srcFile);
         if (aux != NULL) {
             if (aux->removed == '0') {
                 Vehicle_Free(aux);
@@ -86,8 +86,8 @@ Vehicle** binaryReader_Vehicles(VehicleHeader** header, char* fileName) {
 }
 
 
-BusLineHeader* ReadBusLineHeader(FILE *srcFile) {
-    BusLineHeader* header = calloc(1, sizeof(VehicleHeader));
+BusLineHeader_t* ReadBusLineHeader(FILE *srcFile) {
+    BusLineHeader_t* header = calloc(1, sizeof(VehicleHeader_t));
 
     fread(&header->status, sizeof(char), 1, srcFile);
     fread(&header->nextReg, sizeof(int64_t), 1, srcFile);
@@ -102,8 +102,8 @@ BusLineHeader* ReadBusLineHeader(FILE *srcFile) {
     return header;
 }
 
-BusLine* ReadBusLine(FILE *srcFile) {
-    BusLine* busLine = calloc(1, sizeof(BusLine));
+BusLine_t* ReadBusLine(FILE *srcFile) {
+    BusLine_t* busLine = calloc(1, sizeof(BusLine_t));
 
     //  Fixed length fields
     fread(&busLine->removed, sizeof(char), 1, srcFile);
@@ -125,7 +125,7 @@ BusLine* ReadBusLine(FILE *srcFile) {
     return busLine;
 }
 
-BusLine** binaryReader_BusLines(BusLineHeader** header, char* fileName) {
+BusLine_t** binaryReader_BusLines(BusLineHeader_t** header, char* fileName) {
     FILE* srcFile = fopen(fileName, "rb");
     if (srcFile == NULL) {
         return NULL;
@@ -143,13 +143,13 @@ BusLine** binaryReader_BusLines(BusLineHeader** header, char* fileName) {
     *header = ReadBusLineHeader(srcFile);
 
     // Allocates space for the bus lines
-    BusLine** busLines = calloc((*header)->numReg, sizeof(BusLine*));
+    BusLine_t** busLines = calloc((*header)->numReg, sizeof(BusLine_t*));
     int n_registers = (*header)->numReg + (*header)->numRegRemov;
 
     // Gets the bus lines that arent removed from the file
     int j = 0;
     for (int i=0; i < n_registers; i++) {
-        BusLine* aux = ReadBusLine(srcFile);
+        BusLine_t* aux = ReadBusLine(srcFile);
         if (aux != NULL) {
             if (aux->removed == '0') {
                 BusLine_Free(aux);

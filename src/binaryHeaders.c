@@ -8,9 +8,9 @@
 
 
 // Create an Vehicle header
-VehicleHeader* CreateVehicleHeader(char* describePrefix, char* describeDate, char* describePlaces, char* describeLine, char* describeModel, char* describeCategory) {
+VehicleHeader_t* CreateVehicleHeader(char* describePrefix, char* describeDate, char* describePlaces, char* describeLine, char* describeModel, char* describeCategory) {
     // Describe lenghts: 18, 35, 42, 26, 17, 20
-    VehicleHeader* header = (VehicleHeader*) malloc(sizeof(VehicleHeader));
+    VehicleHeader_t* header = (VehicleHeader_t*) malloc(sizeof(VehicleHeader_t));
     
     header->status = '0';
     header->nextReg = 0;
@@ -28,7 +28,7 @@ VehicleHeader* CreateVehicleHeader(char* describePrefix, char* describeDate, cha
     return header;
 }
 
-VehicleHeader* BinaryHeaders_CreateVehicleHeader(StringTable* table) {
+VehicleHeader_t* BinaryHeaders_CreateVehicleHeader(StringTable* table) {
     return CreateVehicleHeader(StringTable_GetLabel(table, 0),
                                 StringTable_GetLabel(table, 1),
                                 StringTable_GetLabel(table, 2),
@@ -39,9 +39,9 @@ VehicleHeader* BinaryHeaders_CreateVehicleHeader(StringTable* table) {
 
 
 // Create an busline Header
-BusLineHeader* CreateBusLineHeader(char* describeCode, char* describeCard, char* describeName, char* describeLine) {
+BusLineHeader_t* CreateBusLineHeader(char* describeCode, char* describeCard, char* describeName, char* describeLine) {
     // Describe lenghts: 15, 13, 13, 24
-    BusLineHeader* header = (BusLineHeader*) malloc(sizeof(BusLineHeader));
+    BusLineHeader_t* header = (BusLineHeader_t*) malloc(sizeof(BusLineHeader_t));
     
     header->status = '0';
     header->nextReg = 0;
@@ -57,7 +57,7 @@ BusLineHeader* CreateBusLineHeader(char* describeCode, char* describeCard, char*
     return header;                        
 }
 
-BusLineHeader* BinaryHeaders_CreateBusLineHeader(StringTable *table) {
+BusLineHeader_t* BinaryHeaders_CreateBusLineHeader(StringTable *table) {
     return CreateBusLineHeader(StringTable_GetLabel(table, 0),
                                 StringTable_GetLabel(table, 1),
                                 StringTable_GetLabel(table, 2),
@@ -66,10 +66,10 @@ BusLineHeader* BinaryHeaders_CreateBusLineHeader(StringTable *table) {
 
 
 // Free the register header
-void BinaryHeaders_FreeVehicleHeader(VehicleHeader* header) {
+void BinaryHeaders_FreeVehicleHeader(VehicleHeader_t* header) {
     free(header);
 }
 
-void BinaryHeaders_FreeBusLineHeader(BusLineHeader* header) {
+void BinaryHeaders_FreeBusLineHeader(BusLineHeader_t* header) {
     free(header);
 }
