@@ -1,6 +1,7 @@
 #ifndef _BINARY_HEADERS_H_
 #define _BINARY_HEADERS_H_
 
+#include <stdint.h>
 
 // FUNÇÕES RESPONSÁVEIS PELA MANIPULAÇÃO DOS HEADERS
 

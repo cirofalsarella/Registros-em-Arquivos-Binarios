@@ -1,6 +1,7 @@
 #ifndef _DATA_MODEL_H_
 #define _DATA_MODEL_H_
 
+#include <stdint.h>
 
 //  FUNCIONALIDADES RESPONSÁVEIS POR ESTRUTURAR OS REGISTROS
 

@@ -1,6 +1,8 @@
 #ifndef _CSV_TO_BINARY_H_
 #define _CSV_TO_BINARY_H_
 
+#include <stdint.h>
+
 //  FUNÇÕES RESPONSÁVEIS PELA CONVERSÃO DE CSV EM BINÁRIO
 
 
