@@ -23,7 +23,7 @@ BNode_t* BNode_Create(char folha, int32_t nroChavesIndexadas, RRN_t RRNdoNo,
                                   RRN_t P2, REGKEY_t C2, FILEPTR_t PR2,
                                   RRN_t P3, REGKEY_t C3, FILEPTR_t PR3,
                                   RRN_t P4, REGKEY_t C4, FILEPTR_t PR4,
-                                  RRN_t P5);
+                                  RRN_t P5) {
     BNode_t* node = (BNode_t*) malloc(sizeof(BNode_t));
     node->folha = folha;
     node->nroChavesIndexadas = nroChavesIndexadas;
