@@ -1,5 +1,6 @@
 #include "bTree.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
 
 BHeader_t* BHeader_Create(char status, RRN_t noRaiz, RRN_t RRNproxNo) {
@@ -10,7 +11,7 @@ BHeader_t* BHeader_Create(char status, RRN_t noRaiz, RRN_t RRNproxNo) {
     for (int i = 0; i < 68; ++i) {
         header->lixo[i] = '@';
     }
-    assert(sizeof(BHeader_t) == PAGE_SIZE); // Simple check that ensures that the struct has the right size
+    assert(sizeof(BHeader_t) == BTREE_PAGE_SIZE); // Simple check that ensures that the struct has the right size
     return header;
 }
 
@@ -41,7 +42,7 @@ BNode_t* BNode_Create(char folha, int32_t nroChavesIndexadas, RRN_t RRNdoNo,
     node->C4 = C4;
     node->PR4 = PR4;
     node->P5 = P5;
-    assert(sizeof(BNode_t) == PAGE_SIZE); // Simple check that ensures that the struct has the right size
+    assert(sizeof(BNode_t) == BTREE_PAGE_SIZE); // Simple check that ensures that the struct has the right size
 }
 
 BNode_t* BNode_CreateNoChildren(char folha, int32_t nroChavesIndexadas, RRN_t RRNdoNo) {
@@ -50,4 +51,8 @@ BNode_t* BNode_CreateNoChildren(char folha, int32_t nroChavesIndexadas, RRN_t RR
 
 void BNode_Free(BNode_t* node) {
     free(node);
+}
+
+FILEPTR_t RRNToFilePtr(RRN_t rrn) {
+    return ((FILEPTR_t)rrn) * (FILEPTR_t)BTREE_RECORD_SIZE;
 }
