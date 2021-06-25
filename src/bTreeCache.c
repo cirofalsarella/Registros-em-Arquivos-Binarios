@@ -133,6 +133,7 @@ void BTreeCache_Free(BTreeCache_t* bTreeCache) {
     free(bTreeCache->bTreeIndexFileName);
     free(bTreeCache->registersFileName);
     BHeader_Free(bTreeCache->header);
+    
     // NOTE: This for loop also frees root
     for (int i = 0; i < bTreeCache->header->RRNproxNo; ++i) {
         BNode_Free(bTreeCache->nodes[i]);

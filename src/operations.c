@@ -89,7 +89,7 @@ void Op_SelectVehicles() {
 
     //  lê o arquivo binário e salva registros não removidos
     VehicleHeader_t* header = NULL;
-    Vehicle_t** vehicles = binaryReader_Vehicles(&header, binFile);
+    Vehicle_t** vehicles = BinaryReader_Vehicles(&header, binFile);
     if (vehicles == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
@@ -117,7 +117,7 @@ void Op_SelectBusLines() {
 
     //  lê o arquivo binário e salva registros não removidos
     BusLineHeader_t* header = NULL;
-    BusLine_t** buslines = binaryReader_BusLines(&header, binFile);
+    BusLine_t** buslines = BinaryReader_BusLines(&header, binFile);
     if (buslines == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
@@ -146,7 +146,7 @@ void Op_SelectVehiclesWhere() {
 
     //  lê o arquivo binário e salva registros não removidos
     VehicleHeader_t* header = NULL;
-    Vehicle_t** vehicles = binaryReader_Vehicles(&header, binFile);
+    Vehicle_t** vehicles = BinaryReader_Vehicles(&header, binFile);
     if (vehicles == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
@@ -192,7 +192,7 @@ void Op_SelectBuslinesWhere() {
 
     //  lê o arquivo binário e salva registros não removidos
     BusLineHeader_t* header = NULL;
-    BusLine_t** buslines = binaryReader_BusLines(&header, binFile);
+    BusLine_t** buslines = BinaryReader_BusLines(&header, binFile);
     if (buslines == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;

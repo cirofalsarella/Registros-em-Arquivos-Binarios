@@ -9,8 +9,7 @@
 
 //  Escrevem Registros Únicos
 
-void WriteVehicle(const Vehicle_t* vehicle, FILE* destFile) {
-
+void BinaryWriter_WriteVehicle(const Vehicle_t* vehicle, FILE* destFile) {
     // Fixed length fields
     fwrite(&vehicle->removed, sizeof(char), 1, destFile);
     fwrite(&vehicle->regSize, sizeof(int32_t), 1, destFile);
@@ -31,8 +30,7 @@ void WriteVehicle(const Vehicle_t* vehicle, FILE* destFile) {
         fwrite(vehicle->category, sizeof(char), vehicle->categoryLength, destFile);
 }
 
-void WriteBusLine(const BusLine_t* busLine, FILE* destFile) {
-
+void BinaryWriter_WriteBusLine(const BusLine_t* busLine, FILE* destFile) {
     // Fixed length fields
     fwrite(&busLine->removed, sizeof(char), 1, destFile);
     fwrite(&busLine->regSize, sizeof(int32_t), 1, destFile);
@@ -106,7 +104,7 @@ void BinaryWriter_CreateVehicleFile(Vehicle_t** vehicles, int vehiclesCount, Veh
     WriteVehicleHeader(header, destFile);
 
     for (int i = 0; i < vehiclesCount; i++){
-        WriteVehicle(vehicles[i], destFile);
+        BinaryWriter_WriteVehicle(vehicles[i], destFile);
         Vehicle_Free(vehicles[i]);
     }
 
@@ -147,7 +145,7 @@ void BinaryWriter_CreateBusLineFile(BusLine_t** busLines, int busLinesCount, Bus
     WriteBusLineHeader(header, destFile);
 
     for (int i = 0; i < busLinesCount; i++){
-        WriteBusLine(busLines[i], destFile);
+        BinaryWriter_WriteBusLine(busLines[i], destFile);
         BusLine_Free(busLines[i]);
     }
 
@@ -201,7 +199,7 @@ int BinaryWriter_IncrementVehicleFile(Vehicle_t** vehicles, int vehiclesCount, c
     // Writing the registers
     fseek(destFile, proxReg, SEEK_SET);
     for (int i = 0; i < vehiclesCount; i++){
-        WriteVehicle(vehicles[i], destFile);
+        BinaryWriter_WriteVehicle(vehicles[i], destFile);
         if (vehicles[i]->removed == '0') {
             numRegRem++;
         } else {
@@ -258,7 +256,7 @@ int BinaryWriter_IncrementBusLineFile(BusLine_t** buslines, int buslinesCount, c
     // Writing the registers
     fseek(destFile, proxReg, SEEK_SET);
     for (int i = 0; i < buslinesCount; i++){
-        WriteBusLine(buslines[i], destFile);
+        BinaryWriter_WriteBusLine(buslines[i], destFile);
         if (buslines[i]->removed == '0') {
             numRegRem++;
         } else {

@@ -6,7 +6,6 @@
 #include "bTree.h"
 
 // TODO: fopens & fcloses
-// TODO: Tornar ReadBusLine/ReadVehicle e outras funções do binaryReader e writer "públicas"
 // TODO: Ciro - para acessar uma node por RRN, faz cache->nodes[rrn-1]. Menos 1 pois o primeiro reg do arquivo é o header.
 
 typedef struct BTreeCache BTreeCache_t;
