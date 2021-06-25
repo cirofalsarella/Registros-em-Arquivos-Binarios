@@ -5,8 +5,10 @@
 #include <stdlib.h>
 #include "bTree.h"
 
-// TODO: fopens & fcloses
 // TODO: Ciro - para acessar uma node por RRN, faz cache->nodes[rrn-1]. Menos 1 pois o primeiro reg do arquivo é o header.
+// TODO: Chamar BTreeCache_OpenIndexFile, então BTreeCache_BeginWrite e depois BTreeCache_CloseIndexFile. Análogo para o EndWrite
+// TODO: Lembrar de mudar o status do registersFile (essa classe nao cuida disso)
+// TODO: Implementar busca & operações, lembrar de chamar fopens (ex. BTreeCache_OpenIndexFile) e fcloses (ex. BTreeCache_CloseIndexFile)
 
 typedef struct BTreeCache BTreeCache_t;
 
@@ -22,6 +24,36 @@ struct BTreeCache {
     BNode_t* root;
     BNode_t** nodes;
 };
+
+/**
+ * @brief fopens the index file. Returns a status - 1 if sucessful, 0 otherwise.
+ * 
+ * @param cache
+ * @param openMode Either rb or wb.
+ * @return int 
+ */
+int BTreeCache_OpenIndexFile(BTreeCache_t* cache, const char* openMode);
+
+/**
+ * @brief fopens the registers file. Returns a status - 1 if sucessful, 0 otherwise.
+ * 
+ * @param cache
+ * @param openMode Either rb or wb.
+ * @return int 
+ */
+ int BTreeCache_OpenRegistersFile(BTreeCache_t* cache, const char* openMode);
+
+/**
+ * @brief fcloses the index file.
+ * @param cache
+ */
+void BTreeCache_CloseIndexFile(BTreeCache_t* cache);
+
+/**
+ * @brief fcloses the registers file.
+ * @param cache
+ */
+void BTreeCache_CloseRegistersFile(BTreeCache_t* cache);
 
 /**
  * @brief Creates a B-Tree Cache from the given files and returns it.

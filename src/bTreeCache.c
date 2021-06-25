@@ -1,6 +1,30 @@
 #include "bTreeCache.h"
 #include <assert.h>
 
+int BTreeCache_OpenIndexFile(BTreeCache_t* cache, const char* openMode) {
+    if (cache->bTreeFile != NULL) return 1;
+    cache->bTreeFile = fopen(cache->bTreeIndexFileName, openMode);
+    return cache->bTreeFile != NULL;
+}
+
+ int BTreeCache_OpenRegistersFile(BTreeCache_t* cache, const char* openMode) {
+     if (cache->registersFile != NULL) return 1;
+    cache->registersFile = fopen(cache->registersFileName, openMode);
+    return cache->registersFile != NULL;
+ }
+
+void BTreeCache_CloseIndexFile(BTreeCache_t* cache) {
+    if (cache == NULL || cache->bTreeFile == NULL) return;
+    fclose(cache->bTreeFile);
+    cache->bTreeFile = NULL;
+}
+
+void BTreeCache_CloseRegistersFile(BTreeCache_t* cache) {
+    if (cache == NULL || cache->registersFile == NULL) return;
+    fclose(cache->registersFile);
+    cache->registersFile = NULL;
+}
+
 /**
  * @brief Helper function that reads the B-Header and the root node from the given file. Used during BTreeCache_Create.
  * 
@@ -45,6 +69,8 @@ BTreeCache_t* BTreeCache_CreateFromFile(char* bTreeIndexFileName, char* register
     cache->bTreeIndexFileName = bTreeIndexFileName;
     cache->registersFileName = registersFileName;
     cache->header = ReadBHeaderAndRootFromFile(cache, bTreeIndexFileName);
+    cache->registersFile = NULL;
+    cache->bTreeFile = NULL;
 
     if (cache->header->RRNproxNo > 0) {
         cache->nodes = calloc(cache->header->RRNproxNo, sizeof(BNode_t*));
@@ -129,6 +155,18 @@ BNode_t* BTreeCache_GetNodeByKey(BTreeCache_t* cache, REGKEY_t key) {
 }
 
 void BTreeCache_Free(BTreeCache_t* bTreeCache) {
+    if (bTreeCache == NULL) return;
+
+    if (bTreeCache->bTreeFile != NULL) {
+        fclose(bTreeCache->bTreeFile);
+        bTreeCache->bTreeFile = NULL;
+    }
+
+    if (bTreeCache->registersFile != NULL) {
+        fclose(bTreeCache->registersFile);
+        bTreeCache->registersFile = NULL;
+    }
+
     // Frees everything
     free(bTreeCache->bTreeIndexFileName);
     free(bTreeCache->registersFileName);
@@ -138,6 +176,7 @@ void BTreeCache_Free(BTreeCache_t* bTreeCache) {
     for (int i = 0; i < bTreeCache->header->RRNproxNo; ++i) {
         BNode_Free(bTreeCache->nodes[i]);
     }
+
     free(bTreeCache->nodes);
     free(bTreeCache);
 }
