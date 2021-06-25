@@ -61,4 +61,20 @@ void BinaryWriter_WriteVehicle(const Vehicle_t* vehicle, FILE* destFile);
  */
 void BinaryWriter_WriteBusLine(const BusLine_t* busLine, FILE* destFile);
 
+/**
+ * @brief Writes the vehicles header.
+ * 
+ * @param header 
+ * @param destFile 
+ */
+void BinaryWriter_WriteVehicleHeader(const VehicleHeader_t* header, FILE *destFile);
+
+/**
+ * @brief Writes the bus line header.
+ * 
+ * @param header 
+ * @param destFile 
+ */
+void BinaryWriter_WriteBusLineHeader(const BusLineHeader_t* header, FILE *destFile);
+
 #endif
