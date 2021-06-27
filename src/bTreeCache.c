@@ -96,7 +96,7 @@ BNode_t* BTreeCache_GetNode(BTreeCache_t* cache, RRN_t nodeRRN) {
     fseek(cache->bTreeFile, byteOffsetOfNode, SEEK_SET);
     
     // Creates a NULL node
-    BNode_t* node = BNode_CreateNoChildren(-1, -1, -1);
+    BNode_t* node = BNode_CreateNoChildren(-1, -1);
 
     // Reads fields
     fread(&node->folha, sizeof(char), 1, cache->bTreeFile);

@@ -108,7 +108,7 @@ BNode_t* BNode_Create(char folha, int32_t nroChavesIndexadas, RRN_t RRNdoNo,
  * @param RRNdoNo 
  * @return BNode_t* 
  */
-BNode_t* BNode_CreateNoChildren(char folha, int32_t nroChavesIndexadas, RRN_t RRNdoNo);
+BNode_t* BNode_CreateNoChildren(char folha, RRN_t RRNdoNo);
 
 /**
  * @brief Frees the given B-Tree node.
