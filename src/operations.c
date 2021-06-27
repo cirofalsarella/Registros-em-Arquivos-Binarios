@@ -89,7 +89,7 @@ void Op_SelectVehicles() {
 
     //  lê o arquivo binário e salva registros não removidos
     VehicleHeader* header = NULL;
-    Vehicle** vehicles = binaryReader_Vehicles(&header, binFile);
+    Vehicle** vehicles = BinaryReader_Vehicles(&header, binFile);
     if (vehicles == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
@@ -117,7 +117,7 @@ void Op_SelectBusLines() {
 
     //  lê o arquivo binário e salva registros não removidos
     BusLineHeader* header = NULL;
-    BusLine** buslines = binaryReader_BusLines(&header, binFile);
+    BusLine** buslines = BinaryReader_BusLines(&header, binFile);
     if (buslines == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
@@ -146,7 +146,7 @@ void Op_SelectVehiclesWhere() {
 
     //  lê o arquivo binário e salva registros não removidos
     VehicleHeader* header = NULL;
-    Vehicle** vehicles = binaryReader_Vehicles(&header, binFile);
+    Vehicle** vehicles = BinaryReader_Vehicles(&header, binFile);
     if (vehicles == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
@@ -175,7 +175,7 @@ void Op_SelectVehiclesWhere() {
 
 
     // Libera a memória
-    for (int i=0; i<header->numReg; i++) {
+    for (int i=0; i < header->numReg; i++) {
         Vehicle_Free(vehicles[i]);
     }
 
@@ -192,7 +192,7 @@ void Op_SelectBuslinesWhere() {
 
     //  lê o arquivo binário e salva registros não removidos
     BusLineHeader* header = NULL;
-    BusLine** buslines = binaryReader_BusLines(&header, binFile);
+    BusLine** buslines = BinaryReader_BusLines(&header, binFile);
     if (buslines == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
@@ -219,9 +219,8 @@ void Op_SelectBuslinesWhere() {
         printf("Registro inexistente.\n");
     }
 
-
     // Libera a memória
-    for (int i=0; i<header->numReg; i++) {
+    for (int i=0; i < header->numReg; i++) {
         BusLine_Free(buslines[i]);
     }
 
@@ -252,10 +251,10 @@ void Op_PushVehicles() {
         free(vehicles);
         return;
     }
-    
+
+    PrintHash(binFile);
     //  libera a memória alocada
     free(vehicles);
-    PrintHash(binFile);
 }
 
 void Op_PushBuslines() {
@@ -264,6 +263,7 @@ void Op_PushBuslines() {
     scanf("%s", binFile);
 
     //  lê os registros do stdin
+
     int n;
     scanf("%d", &n);
     BusLine** buslines = BusLine_Read(n);
@@ -279,7 +279,7 @@ void Op_PushBuslines() {
         return;
     }
     
+    PrintHash(binFile);
     //  libera a memória alocada
     free(buslines);
-    PrintHash(binFile);
 }

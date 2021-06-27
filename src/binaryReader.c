@@ -46,7 +46,7 @@ Vehicle* ReadVehicle(FILE *srcFile) {
     return vehicle;
 }
 
-Vehicle** binaryReader_Vehicles(VehicleHeader** header, char* fileName) {
+Vehicle** BinaryReader_Vehicles(VehicleHeader** header, char* fileName) {
     FILE* srcFile = fopen(fileName, "rb");
     if (srcFile == NULL) {
         return NULL;
@@ -125,7 +125,7 @@ BusLine* ReadBusLine(FILE *srcFile) {
     return busLine;
 }
 
-BusLine** binaryReader_BusLines(BusLineHeader** header, char* fileName) {
+BusLine** BinaryReader_BusLines(BusLineHeader** header, char* fileName) {
     FILE* srcFile = fopen(fileName, "rb");
     if (srcFile == NULL) {
         return NULL;
