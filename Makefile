@@ -4,11 +4,16 @@ all:
 	gcc src/main.c ${OBJECTS} -o programaTrab -Wall
 
 run:
-	make all
-	programaTrab.exe
+	./programaTrab
 
-#run:
-#	./programaTrab
+# Windows-specific
+d:
+	gcc -ggdb3 src/main.c ${OBJECTS} -o programaTrab.exe -Wall
+	gdb programaTrab.exe
+
+r:
+	gcc src/main.c ${OBJECTS} -o programaTrab.exe -Wall
+	programaTrab.exe
 
 clean:
 	rm ./*bin ./*csv programaTrab.exe

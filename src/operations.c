@@ -175,7 +175,7 @@ void Op_SelectVehiclesWhere() {
 
 
     // Libera a memória
-    for (int i=0; i<header->numReg; i++) {
+    for (int i=0; i < header->numReg; i++) {
         Vehicle_Free(vehicles[i]);
     }
 
@@ -221,7 +221,7 @@ void Op_SelectBuslinesWhere() {
 
 
     // Libera a memória
-    for (int i=0; i<header->numReg; i++) {
+    for (int i=0; i < header->numReg; i++) {
         BusLine_Free(buslines[i]);
     }
 
@@ -253,9 +253,10 @@ void Op_PushVehicles() {
         return;
     }
     
-    //  libera a memória alocada
-    free(vehicles);
     PrintHash(binFile);
+
+    // libera a memória alocada
+    free(vehicles);
 }
 
 void Op_PushBuslines() {
@@ -279,7 +280,8 @@ void Op_PushBuslines() {
         return;
     }
     
+    PrintHash(binFile);
+
     //  libera a memória alocada
     free(buslines);
-    PrintHash(binFile);
 }
