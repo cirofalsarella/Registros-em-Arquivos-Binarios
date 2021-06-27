@@ -36,6 +36,9 @@ struct BNode {
     char      folha; // FALSE or TRUE
     int32_t   nroChavesIndexadas; // Number of register keys stored in this node
     RRN_t     RRNdoNo;
+    RRN_t*     P;
+    REGKEY_t*  C;
+    FILEPTR_t* PR;
     RRN_t     P1;  // RRN of a child node
     REGKEY_t  C1;  // Register key
     FILEPTR_t PR1; // Pointer to the registers file

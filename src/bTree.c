@@ -4,9 +4,12 @@
 #include <stdlib.h>
 #include <assert.h>
 
-// TODO:    Salvar o registro 
-//          Att o valor de 
-
+/*  TODO:
+ *      (inserção)
+ *      Escrita em disco (nós e header)
+ *      Inserir o valor no arquivo 
+ *      Promoção do nó 
+ */
 
 BHeader_t* BHeader_Create(char status, RRN_t noRaiz, RRN_t RRNproxNo) {
     BHeader_t* header = (BHeader_t*) malloc(sizeof(BHeader_t));
@@ -27,50 +30,98 @@ void BHeader_Free(BHeader_t* header) {
 
 
 // retorna o pt pro próximo nó a ser inserido
-// -1 indica que vai inserir no nó apontado por atual
-FILEPTR_t BuscaProxRRN(BNode_t* node, REGKEY_t key) {
-    if (node == NULL || node->nroChavesIndexadas < BTREE_ORDER)   return -1;
+FILEPTR_t SearchNextNode(BNode_t* node, REGKEY_t key) {
+    if (node->folha)    return -1;  // Não existe próximo nó
 
-    if (key < node->C1) return node->P1;
-    if (key < node->C2) return node->P2;
-    if (key < node->C3) return node->P3;
-    if (key < node->C4) return node->P4;
-    return node->P5;
+    for (int i=0; i<node->nroChavesIndexadas; i++) {
+        if (node->C[key] < key) return i;
+    }
+    return node->nroChavesIndexadas; 
 }
 
+void InsertOnNode(BNode_t* node, REGKEY_t chave, FILEPTR_t PR, RRN_t ant, RRN_t prox){
+    assert(node->nroChavesIndexadas < BTREE_ORDER-1);
+
+    // Encontro a posição que vou inserir
+    int pos = 0;
+    while (chave > node->C[pos] && node->C[pos] != -1) {
+        pos++;
+    }
+
+    // Movo os registros 1 pra frente
+    for (int i=node->nroChavesIndexadas; i>pos; i++) {
+        node->C[i] = node->C[i-1];
+        node->PR[i] = node->PR[i-1];
+        node->P[i] = node->P[i];
+    }
+
+    // Salvo o conteúdo da nova inserção
+    node->C[pos] = chave;
+    node->PR[pos] = PR;
+
+    node->P[pos] = ant;
+    node->P[pos+1] = prox;
+    
+    node->nroChavesIndexadas++;
+}
+
+void RegTradeNode(BNode_t* origem, BNode_t* dest, int pos) {
+
+    // Salvando os valores do nó de origem
+    RRN_t ant = origem->P[pos];
+    origem->P[pos] = -1;
+    RRN_t prox = origem->P[pos+1];
+    origem->P[pos+1] = -1;
+
+    REGKEY_t chave = origem->C[pos];
+    origem->C[pos] = -1;
+
+    FILEPTR_t PR = origem->PR[pos];
+    origem->PR[pos] = -1;
+
+
+    // Atualizando as posições
+    origem->nroChavesIndexadas--;
+    for (int i=pos; i<origem->nroChavesIndexadas; i++) {
+        origem->P[i] = origem->P[i+1];
+        origem->C[i] = origem->C[i+1];
+        origem->PR[i] = origem->PR[i+1];
+    }
+    origem->P[origem->nroChavesIndexadas] = origem->P[origem->nroChavesIndexadas+1];
+
+
+    // Inserindo no nó de destino
+    InsertOnNode(dest, chave, PR, ant, prox);
+}
+
+void* Insert_Rec(BHeader_t* header, BTreeCache_t* cache, BNode_t* node, REGKEY_t chave, FILEPTR_t PR) {
+    if (node->folha) {     // Insere no próprio nó
+        if (node->nroChavesIndexadas == (BTREE_ORDER - 1)) {    // Nó Cheio
+            // Criando o nó de partição
+            BNode_t* particionado = BNode_CreateNoChildren(1, header->RRNproxNo);
+            header->RRNproxNo += BTREE_RECORD_SIZE;
+
+            RegTradeNode(node, particionado, BTREE_ORDER-1);    // Coloca o último no novo nó
+            InsertOnNode(node, chave, PR, -1, -1);              // Coloca o novo registro no nó antigo
+            RegTradeNode(node, particionado, BTREE_ORDER-1);
+
+            // TODO:    Inserir o registro promovido no nó pai
+            // TODO:    Escrever nó particionado no disco
+        } 
+        else    // Tem espaço
+            InsertOnNode(node, chave, PR, -1, -1);
+    }
+    else    // Insere em um nó filho    
+        Insert_Rec(header, cache, BTreeCache_GetNode(cache, SearchNextNode(node, chave)), chave, PR);
+
+    // TODO:    escrever nó no disco
+
+    return NULL;
+}
 
 void BTree_Insert(BTreeCache_t* cache, BHeader_t* header, REGKEY_t chave, FILEPTR_t PR) {
-    // Encontra o lugar para inserção
-    BNode_t* ant = NULL;
-    BNode_t* atual = BTreeCache_GetNode(cache, header->noRaiz);
-    FILEPTR_t prox = BuscaProxRRN(atual, chave);
-    while (prox != -1) {
-        ant = atual;
-        atual = BTreeCache_GetNode(cache, prox);
-        prox = BuscaProxRRN(atual, chave);
-    }
-
-    int pos = 0;
-    if (atual == NULL) {
-        atual = BNode_CreateNoChildren(1, header->RRNproxNo);
-        header->RRNproxNo += BTREE_RECORD_SIZE;
-        // Atualiza RRNproxNo no arquivo
-    } else {
-        atual = ant;
-        while (chave > atual.C[pos] && atual.C[pos] != -1) {
-            pos++;
-        }
-
-        for (int i=atual->nroChavesIndexadas; i>pos; i++) {
-            atual.C[i] = atual.c[i-1];
-        }
-    }
-
-    atual->C[pos] = chave;
-    atual->PR[pos] = PR;
-    atual->nroChavesIndexadas++;
-
-    // Escreve nó atual no arquivo
+    Insert_Rec(header, cache, BTreeCache_GetNode(cache, header->noRaiz), chave, PR);
+    // TODO:    Escrever header no disco
 }
 
 
