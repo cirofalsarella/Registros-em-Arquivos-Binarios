@@ -74,7 +74,7 @@ BTreeCache_t* BTreeCache_CreateFromFile(char* bTreeIndexFileName, char* register
  * 
  * @return BNode_t* 
  */
-BNode_t* BTreeCache_GetNode(BTreeCache_t* cache, RRN_t nodeRRN);
+BNode_t* BTreeCache_GetNode(BTreeCache_t* cache, RRN nodeRRN);
 
 /**
  * @brief Gets a B-Tree Node by key.
@@ -84,7 +84,7 @@ BNode_t* BTreeCache_GetNode(BTreeCache_t* cache, RRN_t nodeRRN);
  * 
  * @return BNode_t* 
  */
-BNode_t* BTreeCache_GetNodeByKey(BTreeCache_t* cache, REGKEY_t key);
+BNode_t* BTreeCache_GetNodeByKey(BTreeCache_t* cache, REGKEY key);
 
 /**
  * @brief Marks status of the B-Tree index file as '0'. Status change for the registers file is done elsewhere. Call this as soon as the file is opened. NOTE: Changes the file pointer.

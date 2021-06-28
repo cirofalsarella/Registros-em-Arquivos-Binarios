@@ -51,8 +51,8 @@ BHeader_t* ReadBHeaderAndRootFromFile(BTreeCache_t* cache, char* fileName) {
     }
 
     // Reads the other fields
-    fread(&header->noRaiz, sizeof(RRN_t), 1, file);
-    fread(&header->RRNproxNo, sizeof(RRN_t), 1, file);
+    fread(&header->noRaiz, sizeof(RRN), 1, file);
+    fread(&header->RRNproxNo, sizeof(RRN), 1, file);
     fread(&header->lixo[0], sizeof(char), 68, file);
 
     cache->root = BTreeCache_GetNode(cache, header->noRaiz);
@@ -80,7 +80,7 @@ BTreeCache_t* BTreeCache_CreateFromFile(char* bTreeIndexFileName, char* register
     return cache;
 }
 
-BNode_t* BTreeCache_GetNode(BTreeCache_t* cache, RRN_t nodeRRN) {
+BNode_t* BTreeCache_GetNode(BTreeCache_t* cache, RRN nodeRRN) {
     if (nodeRRN < 0) { // Checks for NULL RRNs.
         return NULL;
     }
@@ -92,7 +92,7 @@ BNode_t* BTreeCache_GetNode(BTreeCache_t* cache, RRN_t nodeRRN) {
         return cache->nodes[nodeRRN-1];
     }
 
-    FILEPTR_t byteOffsetOfNode = RRNToFilePtr(nodeRRN);
+    OFFSET byteOffsetOfNode = RRNToOffset(nodeRRN);
     fseek(cache->bTreeFile, byteOffsetOfNode, SEEK_SET);
     
     // Creates a NULL node
@@ -101,20 +101,14 @@ BNode_t* BTreeCache_GetNode(BTreeCache_t* cache, RRN_t nodeRRN) {
     // Reads fields
     fread(&node->folha, sizeof(char), 1, cache->bTreeFile);
     fread(&node->nroChavesIndexadas, sizeof(int32_t), 1, cache->bTreeFile);
-    fread(&node->RRNdoNo, sizeof(RRN_t), 1, cache->bTreeFile);
-    fread(&node->P1, sizeof(RRN_t), 1, cache->bTreeFile);
-    fread(&node->C1, sizeof(REGKEY_t), 1, cache->bTreeFile);
-    fread(&node->PR1, sizeof(FILEPTR_t), 1, cache->bTreeFile);
-    fread(&node->P2, sizeof(RRN_t), 1, cache->bTreeFile);
-    fread(&node->C2, sizeof(REGKEY_t), 1, cache->bTreeFile);
-    fread(&node->PR2, sizeof(FILEPTR_t), 1, cache->bTreeFile);
-    fread(&node->P3, sizeof(RRN_t), 1, cache->bTreeFile);
-    fread(&node->C3, sizeof(REGKEY_t), 1, cache->bTreeFile);
-    fread(&node->PR3, sizeof(FILEPTR_t), 1, cache->bTreeFile);
-    fread(&node->P4, sizeof(RRN_t), 1, cache->bTreeFile);
-    fread(&node->C4, sizeof(REGKEY_t), 1, cache->bTreeFile);
-    fread(&node->PR4, sizeof(FILEPTR_t), 1, cache->bTreeFile);
-    fread(&node->P5, sizeof(RRN_t), 1, cache->bTreeFile);
+    fread(&node->RRNdoNo, sizeof(RRN), 1, cache->bTreeFile);
+
+    for (int i=0; i<BTREE_ORDER-1; i++) {
+        fread(&node->P[i], sizeof(RRN), 1, cache->bTreeFile);
+        fread(&node->C[i], sizeof(REGKEY), 1, cache->bTreeFile);
+        fread(&node->PR[i], sizeof(OFFSET), 1, cache->bTreeFile);
+    }
+    fread(&node->P[BTREE_ORDER-1], sizeof(RRN), 1, cache->bTreeFile);
 
     return node;
 }
@@ -127,7 +121,7 @@ BNode_t* BTreeCache_GetNode(BTreeCache_t* cache, RRN_t nodeRRN) {
  * @param key 
  * @return BNode_t* 
  */
-BNode_t* GetNodeByKeyRecur(BTreeCache_t* cache, RRN_t nodeRRN, REGKEY_t key) {
+BNode_t* GetNodeByKeyRecur(BTreeCache_t* cache, RRN nodeRRN, REGKEY key) {
     BNode_t* current = BTreeCache_GetNode(cache, nodeRRN);
 
     if (current == NULL) {
@@ -139,18 +133,13 @@ BNode_t* GetNodeByKeyRecur(BTreeCache_t* cache, RRN_t nodeRRN, REGKEY_t key) {
         exit(1);
     }
 
-    // Performs a simple binary search.
-    // Since the project specifications requests for the fields to not be in array format,
-    // the only way to do the binary search is to go through each possible case.
-    if (key == current->C1 || key == current->C2 || key == current->C3 || key == current->C4) return current;
-    else if (key < current->C1) return GetNodeByKeyRecur(cache, current->P1, key);
-    else if (key < current->C2) return GetNodeByKeyRecur(cache, current->P2, key);
-    else if (key < current->C3) return GetNodeByKeyRecur(cache, current->P3, key);
-    else if (key < current->C4) return GetNodeByKeyRecur(cache, current->P4, key);
-    else return GetNodeByKeyRecur(cache, current->P5, key);
+    for (int i=0; i<current->nroChavesIndexadas; i++) {
+        if (current->C[key] < key) return current->C[i];
+    }
+    return current->C[current->nroChavesIndexadas]; 
 }
 
-BNode_t* BTreeCache_GetNodeByKey(BTreeCache_t* cache, REGKEY_t key) {
+BNode_t* BTreeCache_GetNodeByKey(BTreeCache_t* cache, REGKEY key) {
     return GetNodeByKeyRecur(cache, cache->root->RRNdoNo, key);
 }
 
