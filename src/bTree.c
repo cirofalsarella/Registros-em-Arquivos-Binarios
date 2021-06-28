@@ -9,11 +9,11 @@
  *      escrita no arquivo indice
  */
 
-BHeader_t* BHeader_Create(char status, RRN noRaiz, RRN RRNproxNo) {
+BHeader_t* BHeader_Create(char status, RRN rootNode, RRN rrnNextNode) {
     BHeader_t* header = (BHeader_t*) malloc(sizeof(BHeader_t));
     header->status = status;
-    header->rootRRN = noRaiz;
-    header->rrnNextNode = RRNproxNo;
+    header->rootRRN = rootNode;
+    header->rrnNextNode = rrnNextNode;
     memset(header->unused, 68, sizeof(header->unused));
     
     return header;
@@ -39,17 +39,12 @@ BNode_t* BNode_Create(char isLeaf, int32_t indexedKeysCount, RRN rrn, OFFSET* re
     return node;
 }
 
-BNode_t* BNode_CreateNoChildren(char folha, RRN RRNdoNo) {
-    OFFSET PR[BTREE_ORDER-1];
-    memset(PR, -1, sizeof(OFFSET)*(BTREE_ORDER-1));
-
-    REGKEY C[BTREE_ORDER-1];
-    memset(PR, -1, sizeof(REGKEY)*(BTREE_ORDER-1));
+BNode_t* BNode_CreateNoChildren(char isKey, RRN isRRN) {
+    OFFSET regOffsets[BTREE_ORDER-1] = { -1 };
+    REGKEY regKeys[BTREE_ORDER-1] = { -1 };
+    RRN childrenRRNs[BTREE_ORDER] = { -1 };
     
-    RRN P[BTREE_ORDER];
-    memset(PR, -1, sizeof(RRN)*(BTREE_ORDER));
-    
-    return BNode_Create(folha, 0, RRNdoNo, PR, C, P);
+    return BNode_Create(isKey, 0, isRRN, &regOffsets[0], &regKeys[0], &childrenRRNs[0]);
 }
 
 void BNode_Free(BNode_t* node) {
