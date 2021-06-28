@@ -12,9 +12,9 @@
 BHeader_t* BHeader_Create(char status, RRN noRaiz, RRN RRNproxNo) {
     BHeader_t* header = (BHeader_t*) malloc(sizeof(BHeader_t));
     header->status = status;
-    header->noRaiz = noRaiz;
-    header->RRNproxNo = RRNproxNo;
-    memset(header, header->lixo, 68);
+    header->rootRRN = noRaiz;
+    header->rrnNextNode = RRNproxNo;
+    memset(header, header->unused, 68);
     
     return header;
 }
@@ -61,12 +61,12 @@ BRegister_t* CreateRegister(REGKEY chave, OFFSET PR, RRN p_ant, RRN p_prox) {
  * @return the next node rrn
  */
 RRN SearchNextNodeRRN(BNode_t* node, REGKEY key) {
-    if (node->folha)    return -1;  // Não existe próximo nó
+    if (node->isLeaf)    return -1;  // Não existe próximo nó
 
-    for (int i=0; i<node->nroChavesIndexadas; i++) {
-        if (node->C[key] < key) return node->C[i];
+    for (int i=0; i<node->indexedKeysCount; i++) {
+        if (node->regKeys[key] < key) return node->regKeys[i];
     }
-    return node->C[node->nroChavesIndexadas]; 
+    return node->regKeys[node->indexedKeysCount]; 
 }
 
 /**
@@ -76,29 +76,29 @@ RRN SearchNextNodeRRN(BNode_t* node, REGKEY key) {
  * @param reg register to be inserted; its memory will be freed
  */
 void InsertOnNode(BNode_t* node, BRegister_t* reg){
-    assert(node->nroChavesIndexadas < BTREE_ORDER-1);
+    assert(node->indexedKeysCount < BTREE_ORDER-1);
 
     // Encontro a posição que vou inserir
     int pos = 0;
-    while (reg->chave > node->C[pos] && node->C[pos] != -1) {
+    while (reg->chave > node->regKeys[pos] && node->regKeys[pos] != -1) {
         pos++;
     }
 
     // Movo os registros 1 pra frente
-    for (int i=node->nroChavesIndexadas; i>pos; i++) {
-        node->C[i] = node->C[i-1];
-        node->PR[i] = node->PR[i-1];
-        node->P[i] = node->P[i];
+    for (int i=node->indexedKeysCount; i>pos; i++) {
+        node->regKeys[i] = node->regKeys[i-1];
+        node->regOffsets[i] = node->regOffsets[i-1];
+        node->childrenRRNs[i] = node->childrenRRNs[i];
     }
 
     // Salvo o conteúdo da nova inserção
-    node->C[pos] = reg->chave;
-    node->PR[pos] = reg->PR;
-    node->P[pos] = reg->p_ant;
-    node->P[pos+1] = reg->p_prox;
+    node->regKeys[pos] = reg->chave;
+    node->regOffsets[pos] = reg->PR;
+    node->childrenRRNs[pos] = reg->p_ant;
+    node->childrenRRNs[pos+1] = reg->p_prox;
     free(reg);
 
-    node->nroChavesIndexadas++;
+    node->indexedKeysCount++;
 }
 
 /**
@@ -109,24 +109,24 @@ void InsertOnNode(BNode_t* node, BRegister_t* reg){
  * @param pos The position of the register in the origin node
  */
 void RegTradeNode(BNode_t* origem, BNode_t* dest, int pos) {
-    assert(dest->nroChavesIndexadas != BTREE_ORDER-1);
+    assert(dest->indexedKeysCount != BTREE_ORDER-1);
 
     // Salvando os valores do nó de origem
-    BRegister_t* newReg = CreateRegister(origem->C[pos], origem->PR[pos], origem->P[pos], origem->P[pos+1]);
+    BRegister_t* newReg = CreateRegister(origem->regKeys[pos], origem->regOffsets[pos], origem->childrenRRNs[pos], origem->childrenRRNs[pos+1]);
 
     // Atualizando o nó de origem
-    origem->nroChavesIndexadas--;
-    for (int i=pos; i<origem->nroChavesIndexadas; i++) {
-        origem->P[i] = origem->P[i+1];
-        origem->C[i] = origem->C[i+1];
-        origem->PR[i] = origem->PR[i+1];
+    origem->indexedKeysCount--;
+    for (int i=pos; i<origem->indexedKeysCount; i++) {
+        origem->childrenRRNs[i] = origem->childrenRRNs[i+1];
+        origem->regKeys[i] = origem->regKeys[i+1];
+        origem->regOffsets[i] = origem->regOffsets[i+1];
     }
-    origem->P[origem->nroChavesIndexadas] = origem->P[origem->nroChavesIndexadas+1];
+    origem->childrenRRNs[origem->indexedKeysCount] = origem->childrenRRNs[origem->indexedKeysCount+1];
 
-    origem->P[origem->nroChavesIndexadas] = -1;
-    origem->C[origem->nroChavesIndexadas] = -1;
-    origem->PR[origem->nroChavesIndexadas] = -1;
-    origem->P[origem->nroChavesIndexadas+1] = -1;
+    origem->childrenRRNs[origem->indexedKeysCount] = -1;
+    origem->regKeys[origem->indexedKeysCount] = -1;
+    origem->regOffsets[origem->indexedKeysCount] = -1;
+    origem->childrenRRNs[origem->indexedKeysCount+1] = -1;
 
 
     // Inserindo no nó de destino
@@ -143,8 +143,8 @@ void RegTradeNode(BNode_t* origem, BNode_t* dest, int pos) {
  */
 BRegister_t* PartitionsNode(BHeader_t* header, BNode_t* node, BRegister_t* newReg){
     // Criando o nó de partição
-    BNode_t* particionado = BNode_CreateNoChildren(1, header->RRNproxNo);
-    header->RRNproxNo++;
+    BNode_t* particionado = BNode_CreateNoChildren(1, header->rrnNextNode);
+    header->rrnNextNode++;
 
     // Pega os registros e muda os 2 maiores para o novo nó partição
     RegTradeNode(node, particionado, BTREE_ORDER-1);
@@ -153,17 +153,17 @@ BRegister_t* PartitionsNode(BHeader_t* header, BNode_t* node, BRegister_t* newRe
 
     
     // Remover o 1o registro do nó particionado
-    BRegister_t* promovido = CreateRegister(particionado->C[0], particionado->PR[0], node->RRNdoNo, particionado->RRNdoNo);
+    BRegister_t* promovido = CreateRegister(particionado->regKeys[0], particionado->regOffsets[0], node->rrn, particionado->rrn);
     
-    particionado->C[0] = particionado->C[1];
-    particionado->C[1] = -1;
+    particionado->regKeys[0] = particionado->regKeys[1];
+    particionado->regKeys[1] = -1;
 
-    particionado->PR[0] = particionado->PR[1];
-    particionado->PR[1] = -1;
+    particionado->regOffsets[0] = particionado->regOffsets[1];
+    particionado->regOffsets[1] = -1;
     
-    particionado->P[0] = particionado->P[1];
-    particionado->P[1] = particionado->P[2];
-    particionado->P[2] = -1;
+    particionado->childrenRRNs[0] = particionado->childrenRRNs[1];
+    particionado->childrenRRNs[1] = particionado->childrenRRNs[2];
+    particionado->childrenRRNs[2] = -1;
 
 
     // TODO:    Escrever nó particionado no disco
@@ -181,8 +181,8 @@ BRegister_t* PartitionsNode(BHeader_t* header, BNode_t* node, BRegister_t* newRe
  * @return in case of promotion returns the promoted reg, otherwise returns NULL
  */
 BRegister_t* Insert_Rec(BHeader_t* header, BTreeCache_t* cache, BNode_t* node, BRegister_t* newReg) {
-    if (node->folha) {      // Insere no próprio nó
-        if (node->nroChavesIndexadas == (BTREE_ORDER - 1))
+    if (node->isLeaf) {      // Insere no próprio nó
+        if (node->indexedKeysCount == (BTREE_ORDER - 1))
             return PartitionsNode(header, node, newReg);
         // Se o nó estiver cheio vai particionar e promover um nó
 
@@ -194,7 +194,7 @@ BRegister_t* Insert_Rec(BHeader_t* header, BTreeCache_t* cache, BNode_t* node, B
 
         // confere se um dos nós do filho foi promovido
         if (promovido != NULL) {
-            if (node->nroChavesIndexadas == (BTREE_ORDER - 1))
+            if (node->indexedKeysCount == (BTREE_ORDER - 1))
                 return PartitionsNode(node, promovido, newReg);
             // Se o nó estiver cheio vai particionar e promover um nó
 
@@ -211,12 +211,12 @@ BRegister_t* Insert_Rec(BHeader_t* header, BTreeCache_t* cache, BNode_t* node, B
 
 void BTree_Insert(BHeader_t* header, BTreeCache_t* cache, REGKEY chave, OFFSET PR) {
     BRegister_t* newReg = CreateRegister(chave, PR, -1, -1);
-    BRegister_t* promovido = Insert_Rec(header, cache, BTreeCache_GetNode(cache, header->noRaiz), newReg);
+    BRegister_t* promovido = Insert_Rec(header, cache, BTreeCache_GetNode(cache, header->rootRRN), newReg);
     
     if (promovido != NULL) {
-        BNode_t* root = BNode_CreateNoChildren(0, header->RRNproxNo);
-        header->RRNproxNo++;
-        header->noRaiz = root->RRNdoNo;
+        BNode_t* root = BNode_CreateNoChildren(0, header->rrnNextNode);
+        header->rrnNextNode++;
+        header->rootRRN = root->rrn;
         InsertOnNode(root, promovido);
 
         // TODO:    Escrever nó promovido no arquivo de indice
@@ -228,16 +228,16 @@ void BTree_Insert(BHeader_t* header, BTreeCache_t* cache, REGKEY chave, OFFSET P
 
 BNode_t* BNode_Create(char folha, int32_t nroChavesIndexadas, RRN RRNdoNo, OFFSET* PR, REGKEY* C, RRN* P) {
     BNode_t* node = (BNode_t*) malloc(sizeof(BNode_t));
-    node->folha = folha;
-    node->nroChavesIndexadas = nroChavesIndexadas;
-    node->RRNdoNo = RRNdoNo;
+    node->isLeaf = folha;
+    node->indexedKeysCount = nroChavesIndexadas;
+    node->rrn = RRNdoNo;
 
     for (int i=0; i<BTREE_ORDER-1; i++) {
-        node->P[i] = P[i];
-        node->C[i] = C[i];
-        node->PR[i] = PR[i];
+        node->childrenRRNs[i] = P[i];
+        node->regKeys[i] = C[i];
+        node->regOffsets[i] = PR[i];
     }
-    node->P[BTREE_ORDER-1] = P[BTREE_ORDER-1];
+    node->childrenRRNs[BTREE_ORDER-1] = P[BTREE_ORDER-1];
 
     return node;
 }

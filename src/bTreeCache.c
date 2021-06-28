@@ -51,12 +51,12 @@ BHeader_t* ReadBHeaderAndRootFromFile(BTreeCache_t* cache, char* fileName) {
     }
 
     // Reads the other fields
-    fread(&header->noRaiz, sizeof(RRN), 1, file);
-    fread(&header->RRNproxNo, sizeof(RRN), 1, file);
-    fread(&header->lixo[0], sizeof(char), 68, file);
+    fread(&header->rootRRN, sizeof(RRN), 1, file);
+    fread(&header->rrnNextNode, sizeof(RRN), 1, file);
+    fread(&header->unused[0], sizeof(char), 68, file);
 
-    cache->root = BTreeCache_GetNode(cache, header->noRaiz);
-    cache->nodes[header->noRaiz-1] = cache->root;
+    cache->root = BTreeCache_GetNode(cache, header->rootRRN);
+    cache->nodes[header->rootRRN-1] = cache->root;
 
     fclose(file);
 
@@ -72,8 +72,8 @@ BTreeCache_t* BTreeCache_CreateFromFile(char* bTreeIndexFileName, char* register
     cache->registersFile = NULL;
     cache->bTreeFile = NULL;
 
-    if (cache->header->RRNproxNo > 0) {
-        cache->nodes = calloc(cache->header->RRNproxNo, sizeof(BNode_t*));
+    if (cache->header->rrnNextNode > 0) {
+        cache->nodes = calloc(cache->header->rrnNextNode, sizeof(BNode_t*));
     } else {
         cache->nodes = NULL;
     }
@@ -99,16 +99,16 @@ BNode_t* BTreeCache_GetNode(BTreeCache_t* cache, RRN nodeRRN) {
     BNode_t* node = BNode_CreateNoChildren(-1, -1);
 
     // Reads fields
-    fread(&node->folha, sizeof(char), 1, cache->bTreeFile);
-    fread(&node->nroChavesIndexadas, sizeof(int32_t), 1, cache->bTreeFile);
-    fread(&node->RRNdoNo, sizeof(RRN), 1, cache->bTreeFile);
+    fread(&node->isLeaf, sizeof(char), 1, cache->bTreeFile);
+    fread(&node->indexedKeysCount, sizeof(int32_t), 1, cache->bTreeFile);
+    fread(&node->rrn, sizeof(RRN), 1, cache->bTreeFile);
 
     for (int i=0; i<BTREE_ORDER-1; i++) {
-        fread(&node->P[i], sizeof(RRN), 1, cache->bTreeFile);
-        fread(&node->C[i], sizeof(REGKEY), 1, cache->bTreeFile);
-        fread(&node->PR[i], sizeof(OFFSET), 1, cache->bTreeFile);
+        fread(&node->childrenRRNs[i], sizeof(RRN), 1, cache->bTreeFile);
+        fread(&node->regKeys[i], sizeof(REGKEY), 1, cache->bTreeFile);
+        fread(&node->regOffsets[i], sizeof(OFFSET), 1, cache->bTreeFile);
     }
-    fread(&node->P[BTREE_ORDER-1], sizeof(RRN), 1, cache->bTreeFile);
+    fread(&node->childrenRRNs[BTREE_ORDER-1], sizeof(RRN), 1, cache->bTreeFile);
 
     return node;
 }
@@ -128,19 +128,19 @@ BNode_t* GetNodeByKeyRecur(BTreeCache_t* cache, RRN nodeRRN, REGKEY key) {
         return NULL;
     }
 
-    if (current->nroChavesIndexadas < (BTREE_ORDER+1)/2-1 || current->nroChavesIndexadas > BTREE_ORDER-1) {
-        printf("Arvore-B corrompida. Um ou mais nó possuem nroChavesIndexadas invalido: %d.", current->nroChavesIndexadas);
+    if (current->indexedKeysCount < (BTREE_ORDER+1)/2-1 || current->indexedKeysCount > BTREE_ORDER-1) {
+        printf("Arvore-B corrompida. Um ou mais nó possuem nroChavesIndexadas invalido: %d.", current->indexedKeysCount);
         exit(1);
     }
 
-    for (int i=0; i<current->nroChavesIndexadas; i++) {
-        if (current->C[key] < key) return current->C[i];
+    for (int i=0; i<current->indexedKeysCount; i++) {
+        if (current->regKeys[key] < key) return current->regKeys[i];
     }
-    return current->C[current->nroChavesIndexadas]; 
+    return current->regKeys[current->indexedKeysCount]; 
 }
 
 BNode_t* BTreeCache_GetNodeByKey(BTreeCache_t* cache, REGKEY key) {
-    return GetNodeByKeyRecur(cache, cache->root->RRNdoNo, key);
+    return GetNodeByKeyRecur(cache, cache->root->rrn, key);
 }
 
 void BTreeCache_Free(BTreeCache_t* bTreeCache) {
@@ -162,7 +162,7 @@ void BTreeCache_Free(BTreeCache_t* bTreeCache) {
     BHeader_Free(bTreeCache->header);
     
     // NOTE: This for loop also frees root
-    for (int i = 0; i < bTreeCache->header->RRNproxNo; ++i) {
+    for (int i = 0; i < bTreeCache->header->rrnNextNode; ++i) {
         BNode_Free(bTreeCache->nodes[i]);
     }
 

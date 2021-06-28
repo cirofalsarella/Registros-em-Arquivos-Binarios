@@ -1,44 +1,48 @@
 #ifndef _B_TREE_H_
 #define _B_TREE_H_
 
-// Constant tipes for better code control
+#include <stdint.h>
+
+// Constant types for better code control
 typedef int32_t RRN;
 typedef int32_t REGKEY;
 typedef int64_t OFFSET;
 
 
 // Constant values for better code control
-#define BTREE_ORDER 5
+
+#define BTREE_ORDER 5 // Maximum number of children
+#define BTREE_REGKEY_COUNT (BTREE_ORDER-1)
+#define BTREE_MAX_CHILD_COUNT BTREE_ORDER
 #define BTREE_PAGE_SIZE 77
 #define BTREE_RECORD_SIZE BTREE_PAGE_SIZE
 
-
 typedef struct BHeader {
-    char status;        // '0' or '1'
-    RRN noRaiz;       // RRN of the root node
-    RRN RRNproxNo;    // RRN of the next node to be inserted
-    char lixo[68];
+    char status; // '0' or '1'
+    RRN rootRRN; // RRN of the root node
+    RRN rrnNextNode; // RRN of the next node to be inserted
+    char unused[68];
 } BHeader_t;
 
 /**
  * @brief A B-Tree node.
  * 
- * @param folha indica se o nó é uma folha (T/F)
- * @param RRNdoNo RRN do nó no arquivo de índice
- * @param nroChavesIndexadas número de chaves presentes no nó
+ * @param isLeaf Flag indicating whether this node is a leaf 
+ * @param rrn This node's RRN
+ * @param indexedKeysCount Number of indexed keys in node
  * 
- * @param P RRN de outros nós
- * @param PR Offset do registro no arquivo principal
- * @param C Chave do registro
+ * @param childrenRRNs RRN of the children
+ * @param regOffsets Byte offsets of the registers stored in this node
+ * @param regKeys Keys of the registers stored in this node
  */
 typedef struct BNode {
-    char folha;
-    RRN RRNdoNo;
-    int32_t nroChavesIndexadas;
+    char isLeaf;
+    RRN rrn;
+    int32_t indexedKeysCount;
 
-    OFFSET PR[BTREE_ORDER -1];
-    REGKEY C[BTREE_ORDER -1];
-    RRN P[BTREE_ORDER];
+    OFFSET regOffsets[BTREE_ORDER -1];
+    REGKEY regKeys[BTREE_ORDER -1];
+    RRN childrenRRNs[BTREE_ORDER];
 } BNode_t;
 
 
