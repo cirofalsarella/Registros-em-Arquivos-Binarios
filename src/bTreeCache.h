@@ -101,6 +101,16 @@ void BTreeCache_BeginWrite(BTreeCache_t* bTreeCache);
 void BTreeCache_EndWrite(BTreeCache_t* bTreeCache);
 
 /**
+ * @brief Inserts a new register in the cache.
+ * 
+ * @param header header to create new nodes
+ * @param cache cache to acess the nodes in ram
+ * @param key the key of the new register
+ * @param regOffset the rrn of the new register
+ */
+void BTreeCache_Insert(BTreeCache_t* cache, REGKEY key, OFFSET regOffset);
+
+/**
  * @brief Frees the heap memory allocated for the given B-Tree Cache.
  * 
  * @param bTreeCache 

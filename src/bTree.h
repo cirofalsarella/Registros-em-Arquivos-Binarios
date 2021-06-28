@@ -54,7 +54,7 @@ typedef struct BNode {
  * @param RRNproxNo 
  * @return BHeader_t* 
  */
-BHeader_t* BHeader_Create(char status, RRN noRaiz, RRN RRNproxNo);
+BHeader_t* BHeader_Create(char status, RRN rootRRN, RRN nextNodeRRN);
 
 /**
  * @brief Frees the given B-Tree header.
@@ -68,25 +68,15 @@ void BHeader_Free(BHeader_t* header);
  * the parameters are the members of the struct BNode
  * @return the node created
  */
-BNode_t* BNode_Create(char folha, int32_t nroChavesIndexadas, RRN RRNdoNo, OFFSET* PR, REGKEY* C, RRN* P);
-
-/**
- * @brief Controls the insertion of the register
- * 
- * @param header header to create new nodes
- * @param cache cache to acess the nodes in ram
- * @param chave the key of the new register
- * @param PR the rrn of the new register
- */
-void BTree_Insert(BHeader_t* header, BTreeCache_t* cache, REGKEY chave, OFFSET PR);
+BNode_t* BNode_Create(char isLeaf, int32_t indexedKeysCount, RRN rrn, OFFSET* regOffsets, REGKEY* regKeys, RRN* childrenRRNs);
 
 /**
  * @brief Creates a B-Tree Node with no children (correctly initializes pointer and keys to -1).
- * @param folha indicates if the node is an leaf
- * @param RRNdoNo indicates the rrn of the node
+ * @param isLeaf indicates if the node is an leaf
+ * @param rrn indicates the rrn of the node
  * @return an empty Node
  */
-BNode_t* BNode_CreateNoChildren(char folha, RRN RRNdoNo);
+BNode_t* BNode_CreateNoChildren(char isLeaf, RRN rrn);
 
 /**
  * @brief Frees the given B-Tree node.
