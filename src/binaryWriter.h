@@ -45,36 +45,4 @@ int BinaryWriter_IncrementVehicleFile(Vehicle_t** vehicles, int vehiclesCount, c
  */
 int BinaryWriter_IncrementBusLineFile(BusLine_t** busLines, int buslinesCount, char* fileName);
 
-/**
- * @brief Writes a vehicle to destFile. Before calling, fseek to the right offset in the file.
- * 
- * @param vehicle The vehicle to write.
- * @param destFile Destination file.
- */
-void BinaryWriter_WriteVehicle(const Vehicle_t* vehicle, FILE* destFile);
-
-/**
- * @brief Writes a bus line to destFile. Before calling, fseek to the right offset in the file.
- * 
- * @param busLine The bus line to write.
- * @param destFile Destination file.
- */
-void BinaryWriter_WriteBusLine(const BusLine_t* busLine, FILE* destFile);
-
-/**
- * @brief Writes the vehicles header.
- * 
- * @param header 
- * @param destFile 
- */
-void BinaryWriter_WriteVehicleHeader(const VehicleHeader_t* header, FILE *destFile);
-
-/**
- * @brief Writes the bus line header.
- * 
- * @param header 
- * @param destFile 
- */
-void BinaryWriter_WriteBusLineHeader(const BusLineHeader_t* header, FILE *destFile);
-
 #endif

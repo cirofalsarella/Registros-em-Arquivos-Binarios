@@ -9,7 +9,7 @@
 
 //  Escrevem Registros Únicos
 
-void BinaryWriter_WriteVehicle(const Vehicle_t* vehicle, FILE* destFile) {
+void WriteVehicle(const Vehicle_t* vehicle, FILE* destFile) {
     // Fixed length fields
     fwrite(&vehicle->removed, sizeof(char), 1, destFile);
     fwrite(&vehicle->regSize, sizeof(int32_t), 1, destFile);
@@ -30,7 +30,7 @@ void BinaryWriter_WriteVehicle(const Vehicle_t* vehicle, FILE* destFile) {
         fwrite(vehicle->category, sizeof(char), vehicle->categoryLength, destFile);
 }
 
-void BinaryWriter_WriteBusLine(const BusLine_t* busLine, FILE* destFile) {
+void WriteBusLine(const BusLine_t* busLine, FILE* destFile) {
     // Fixed length fields
     fwrite(&busLine->removed, sizeof(char), 1, destFile);
     fwrite(&busLine->regSize, sizeof(int32_t), 1, destFile);
@@ -52,7 +52,7 @@ void BinaryWriter_WriteBusLine(const BusLine_t* busLine, FILE* destFile) {
 
 //  Escrevem um Header
 
-void BinaryWriter_WriteVehicleHeader(const VehicleHeader_t* header, FILE *destFile) {
+void WriteVehicleHeader(const VehicleHeader_t* header, FILE *destFile) {
     fwrite(&header->status, sizeof(char), 1, destFile);
     fwrite(&header->nextReg, sizeof(int64_t), 1, destFile);
     fwrite(&header->numReg, sizeof(int32_t), 1, destFile);
@@ -67,7 +67,7 @@ void BinaryWriter_WriteVehicleHeader(const VehicleHeader_t* header, FILE *destFi
     fwrite(&header->describeCategory[0], sizeof(char), 20, destFile);
 }
 
-void BinaryWriter_WriteBusLineHeader(const BusLineHeader_t* header, FILE *destFile) {
+void WriteBusLineHeader(const BusLineHeader_t* header, FILE *destFile) {
     fwrite(&header->status, sizeof(char), 1, destFile);
     fwrite(&header->nextReg, sizeof(int64_t), 1, destFile);
     fwrite(&header->numReg, sizeof(int32_t), 1, destFile);
@@ -101,10 +101,10 @@ void BinaryWriter_CreateVehicleFile(Vehicle_t** vehicles, int vehiclesCount, Veh
 
     // Opens the file and writes the header
     FILE* destFile = fopen(fileName, "wb");
-    BinaryWriter_WriteVehicleHeader(header, destFile);
+    WriteVehicleHeader(header, destFile);
 
     for (int i = 0; i < vehiclesCount; i++){
-        BinaryWriter_WriteVehicle(vehicles[i], destFile);
+        WriteVehicle(vehicles[i], destFile);
         Vehicle_Free(vehicles[i]);
     }
 
@@ -142,10 +142,10 @@ void BinaryWriter_CreateBusLineFile(BusLine_t** busLines, int busLinesCount, Bus
 
     // Opens the file and writes the header
     FILE* destFile = fopen(fileName, "wb");
-    BinaryWriter_WriteBusLineHeader(header, destFile);
+    WriteBusLineHeader(header, destFile);
 
     for (int i = 0; i < busLinesCount; i++){
-        BinaryWriter_WriteBusLine(busLines[i], destFile);
+        WriteBusLine(busLines[i], destFile);
         BusLine_Free(busLines[i]);
     }
 
@@ -199,7 +199,7 @@ int BinaryWriter_IncrementVehicleFile(Vehicle_t** vehicles, int vehiclesCount, c
     // Writing the registers
     fseek(destFile, proxReg, SEEK_SET);
     for (int i = 0; i < vehiclesCount; i++){
-        BinaryWriter_WriteVehicle(vehicles[i], destFile);
+        WriteVehicle(vehicles[i], destFile);
         if (vehicles[i]->removed == '0') {
             numRegRem++;
         } else {
@@ -256,7 +256,7 @@ int BinaryWriter_IncrementBusLineFile(BusLine_t** buslines, int buslinesCount, c
     // Writing the registers
     fseek(destFile, proxReg, SEEK_SET);
     for (int i = 0; i < buslinesCount; i++){
-        BinaryWriter_WriteBusLine(buslines[i], destFile);
+        WriteBusLine(buslines[i], destFile);
         if (buslines[i]->removed == '0') {
             numRegRem++;
         } else {
