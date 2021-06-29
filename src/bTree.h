@@ -1,95 +1,120 @@
-#ifndef _B_TREE_H_
-#define _B_TREE_H_
+#ifndef _BTREE_H_
+#define _BTREE_H_
 
-#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "bTreeDataModel.h"
 
-// Constant types for better code control
-typedef int32_t RRN;
-typedef int32_t REGKEY;
-typedef int64_t OFFSET;
+// TODO: Ciro - para acessar uma node por RRN, faz cache->nodes[rrn-1]. Menos 1 pois o primeiro reg do arquivo é o header.
+// TODO: Chamar BTreeCache_OpenIndexFile, então BTreeCache_BeginWrite e depois BTreeCache_CloseIndexFile. Análogo para o EndWrite
+// TODO: Lembrar de mudar o status do registersFile (essa classe nao cuida disso)
+// TODO: Implementar busca & operações, lembrar de chamar fopens (ex. BTreeCache_OpenIndexFile) e fcloses (ex. BTreeCache_CloseIndexFile)
 
-
-// Constant values for better code control
-
-#define BTREE_ORDER 5 // Maximum number of children
-#define BTREE_REGKEY_COUNT (BTREE_ORDER-1)
-#define BTREE_MAX_CHILD_COUNT BTREE_ORDER
-#define BTREE_PAGE_SIZE 77
-#define BTREE_RECORD_SIZE BTREE_PAGE_SIZE
-
-typedef struct BHeader {
-    char status; // '0' or '1'
-    RRN rootRRN; // RRN of the root node
-    RRN rrnNextNode; // RRN of the next node to be inserted
-    char unused[68];
-} BHeader_t;
+typedef struct BTreeCache BTreeCache_t;
 
 /**
- * @brief A B-Tree node.
+ * @brief Cached B-Tree nodes currently in RAM.
+ */
+struct BTreeCache {
+    char* bTreeIndexFileName; // File with the nodes from the B-Tree.
+    char* registersFileName; // File with the registers from the B-Tree.
+    FILE* bTreeFile;
+    FILE* registersFile;
+    BHeader_t* header;
+    BNode_t* root;
+    BNode_t** nodes;
+};
+
+/**
+ * @brief fopens the index file. Returns a status - 1 if sucessful, 0 otherwise.
  * 
- * @param isLeaf Flag indicating whether this node is a leaf 
- * @param rrn This node's RRN
- * @param indexedKeysCount Number of indexed keys in node
+ * @param cache
+ * @param openMode Either rb or wb.
+ * @return int 
+ */
+int BTreeCache_OpenIndexFile(BTreeCache_t* cache, const char* openMode);
+
+/**
+ * @brief fopens the registers file. Returns a status - 1 if sucessful, 0 otherwise.
  * 
- * @param childrenRRNs RRN of the children
- * @param regOffsets Byte offsets of the registers stored in this node
- * @param regKeys Keys of the registers stored in this node
+ * @param cache
+ * @param openMode Either rb or wb.
+ * @return int 
  */
-typedef struct BNode {
-    char isLeaf;
-    RRN rrn;
-    int32_t indexedKeysCount;
-
-    OFFSET regOffsets[BTREE_ORDER -1];
-    REGKEY regKeys[BTREE_ORDER -1];
-    RRN childrenRRNs[BTREE_ORDER];
-} BNode_t;
-
+ int BTreeCache_OpenRegistersFile(BTreeCache_t* cache, const char* openMode);
 
 /**
- * @brief Creates a new BTreeIndex Header and returns it.
+ * @brief fcloses the index file.
+ * @param cache
+ */
+void BTreeCache_CloseIndexFile(BTreeCache_t* cache);
+
+/**
+ * @brief fcloses the registers file.
+ * @param cache
+ */
+void BTreeCache_CloseRegistersFile(BTreeCache_t* cache);
+
+/**
+ * @brief Creates a B-Tree Cache from the given files and returns it.
  * 
- * @param status 
- * @param noRaiz 
- * @param RRNproxNo 
- * @return BHeader_t* 
+ * @param bTreeIndexFileName File containing the B-Tree index. 
+ * @param registersFileName File containing the registers.
+ * @return BTreeCache_t* 
  */
-BHeader_t* BHeader_Create(char status, RRN rootRRN, RRN nextNodeRRN);
+BTreeCache_t* BTreeCache_CreateFromFile(char* bTreeIndexFileName, char* registersFileName);
 
 /**
- * @brief Frees the given B-Tree header.
+ * @brief Gets a node from the B-Tree cache by RRN.
+ *        If the node is not cached, loads from disk.
+ *        If RRN is null (< 0), returns NULL.
  * 
- * @param header The header to free.
- */
-void BHeader_Free(BHeader_t* header);
-
-/**
- * @brief Creates a new BTreeIndex Node and returns it.
- * the parameters are the members of the struct BNode
- * @return the node created
- */
-BNode_t* BNode_Create(char isLeaf, int32_t indexedKeysCount, RRN* rrn, OFFSET* regOffsets, REGKEY* regKeys, RRN* childrenRRNs);
-
-/**
- * @brief Creates a B-Tree Node with no children (correctly initializes pointer and keys to -1).
- * @param isLeaf indicates if the node is an leaf
- * @param rrn indicates the rrn of the node
- * @return an empty Node
- */
-BNode_t* BNode_CreateNoChildren(char isLeaf, RRN* rrn);
-
-/**
- * @brief Frees the given B-Tree node.
- * @param node The node to free.
- */
-void BNode_Free(BNode_t* node);
-
-/**
- * @brief Helper function that converts an RRN to a file Offset.
+ * @param cache
+ * @param nodeRRN Must be -1 or a valid RRN.
  * 
- * @param rrn to be used
- * @return the offset to that rrn
+ * @return BNode_t* 
  */
-OFFSET RRNToOffset(RRN rrn);
+BNode_t* BTreeCache_GetNode(BTreeCache_t* cache, RRN nodeRRN);
+
+/**
+ * @brief Gets a B-Tree Node by key.
+ * 
+ * @param cache
+ * @param key Key to use during the query.
+ * 
+ * @return BNode_t* 
+ */
+BNode_t* BTreeCache_GetNodeByKey(BTreeCache_t* cache, REGKEY key);
+
+/**
+ * @brief Marks status of the B-Tree index file as '0'. Status change for the registers file is done elsewhere. Call this as soon as the file is opened. NOTE: Changes the file pointer.
+ * 
+ * @param bTreeCache The cache.
+ */
+void BTreeCache_BeginWrite(BTreeCache_t* bTreeCache);
+
+/**
+ * @brief Marks status of the B-Tree index file as '1'. Status change for the registers file is done elsewhere. Call this immediately before fclosing the file. NOTE: Changes the file pointer.
+ * 
+ * @param bTreeCache 
+ */
+void BTreeCache_EndWrite(BTreeCache_t* bTreeCache);
+
+/**
+ * @brief Inserts a new register in the cache.
+ * 
+ * @param header header to create new nodes
+ * @param cache cache to acess the nodes in ram
+ * @param key the key of the new register
+ * @param regOffset the rrn of the new register
+ */
+void BTreeCache_Insert(BTreeCache_t* cache, REGKEY key, OFFSET regOffset);
+
+/**
+ * @brief Frees the heap memory allocated for the given B-Tree Cache.
+ * 
+ * @param bTreeCache 
+ */
+void BTreeCache_Free(BTreeCache_t* bTreeCache);
 
 #endif
