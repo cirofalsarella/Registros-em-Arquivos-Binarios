@@ -45,4 +45,7 @@ int BinaryWriter_IncrementVehicleFile(Vehicle_t** vehicles, int vehiclesCount, c
  */
 int BinaryWriter_IncrementBusLineFile(BusLine_t** busLines, int buslinesCount, char* fileName);
 
+int BinaryWriter_IncrementBtree(BNode_t* node, BTreeCache_t* cache);
+
+
 #endif

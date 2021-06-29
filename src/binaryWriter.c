@@ -7,6 +7,16 @@
 #include "stringTable.h"
 #include "binaryHeaders.h"
 
+#include "bTree.h"
+#include "bTreeDataModel.h"
+
+
+/*  TODO:
+ *      BinaryWriter_BTreeIndexFile
+ *
+ */
+
+
 //  Escrevem Registros Únicos
 
 void WriteVehicle(const Vehicle_t* vehicle, FILE* destFile) {
@@ -48,6 +58,18 @@ void WriteBusLine(const BusLine_t* busLine, FILE* destFile) {
         fwrite(busLine->color, sizeof(char), busLine->colorLength, destFile);
 }
 
+void WriteBTreeNode(const BNode_t* node, FILE* destFile){
+    fwrite(&node->isLeaf, sizeof(char), 1, destFile);
+    fwrite(&node->indexedKeysCount, sizeof(int32_t), 1, destFile);
+    fwrite(&node->rrn, sizeof(RRN), 1, destFile);
+
+    for (int i=0; i<BTREE_ORDER-1; i++) {
+        fwrite(&node->childrenRRNs[i], sizeof(RRN), 1, destFile);
+        fwrite(&node->regKeys[i], sizeof(REGKEY), 1, destFile);
+        fwrite(&node->regOffsets[i], sizeof(OFFSET), 1, destFile);
+    }
+    fwrite(&node->childrenRRNs[BTREE_ORDER-1], sizeof(RRN), 1, destFile);
+}
 
 
 //  Escrevem um Header
@@ -166,6 +188,9 @@ void BinaryWriter_CreateBusLineFile(BusLine_t** busLines, int busLinesCount, Bus
     BinaryHeaders_FreeBusLineHeader(header);
 }
 
+void BinaryWriter_BTreeIndexFile(BTreeCache_t* cache){
+    // TODO
+}
 
 
 // Incrementam um arquivo com novos registros
@@ -278,6 +303,28 @@ int BinaryWriter_IncrementBusLineFile(BusLine_t** buslines, int buslinesCount, c
     fseek(destFile, 0, SEEK_SET);
     fwrite(&status, sizeof(char), 1, destFile);
 
+    fclose(destFile);
+    return 0;
+}
+
+int BinaryWriter_IncrementBtree(BNode_t* node, BTreeCache_t* cache){
+    FILE* destFile = fopen(cache->bTreeIndexFileName, "rb+");
+    // Já foi conferido que o arquivo existe e que seu status é válido
+    
+    // Set as editing mode
+    char status = '0';
+    fwrite(&status, sizeof(char), 1, destFile);
+    
+    // Writing node
+    fseek(destFile, RRNToOffset(node->rrn), SEEK_SET);
+    WriteBTreeNode(node, destFile);
+
+    // Set as default mode
+    fseek(destFile, 0, SEEK_SET);
+    status = '1';
+    fwrite(&status, sizeof(char), 1, destFile);
+    
+    // Exiting
     fclose(destFile);
     return 0;
 }
