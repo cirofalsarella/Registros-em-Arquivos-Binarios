@@ -23,11 +23,12 @@ void BHeader_Free(BHeader_t* header) {
     free(header);
 }
 
-BNode_t* BNode_Create(char isLeaf, int32_t indexedKeysCount, RRN rrn, OFFSET* regOffsets, REGKEY* regKeys, RRN* childrenRRNs) {
+BNode_t* BNode_Create(char isLeaf, int32_t indexedKeysCount, RRN* rrn, OFFSET* regOffsets, REGKEY* regKeys, RRN* childrenRRNs) {
     BNode_t* node = (BNode_t*) malloc(sizeof(BNode_t));
     node->isLeaf = isLeaf;
     node->indexedKeysCount = indexedKeysCount;
-    node->rrn = rrn;
+    node->rrn = *rrn;
+    (*rrn)++;
 
     for (int i=0; i<BTREE_ORDER-1; i++) {
         node->childrenRRNs[i] = childrenRRNs[i];
@@ -39,12 +40,12 @@ BNode_t* BNode_Create(char isLeaf, int32_t indexedKeysCount, RRN rrn, OFFSET* re
     return node;
 }
 
-BNode_t* BNode_CreateNoChildren(char isKey, RRN isRRN) {
+BNode_t* BNode_CreateNoChildren(char isLeaf, RRN* rrn) {
     OFFSET regOffsets[BTREE_ORDER-1] = { -1 };
     REGKEY regKeys[BTREE_ORDER-1] = { -1 };
     RRN childrenRRNs[BTREE_ORDER] = { -1 };
     
-    return BNode_Create(isKey, 0, isRRN, &regOffsets[0], &regKeys[0], &childrenRRNs[0]);
+    return BNode_Create(isLeaf, 0, rrn, &regOffsets[0], &regKeys[0], &childrenRRNs[0]);
 }
 
 void BNode_Free(BNode_t* node) {
