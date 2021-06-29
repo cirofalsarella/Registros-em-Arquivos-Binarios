@@ -18,8 +18,6 @@ typedef struct BTreeCache BTreeCache_t;
 struct BTreeCache {
     char* bTreeIndexFileName; // File with the nodes from the B-Tree.
     char* registersFileName; // File with the registers from the B-Tree.
-    FILE* bTreeFile;
-    FILE* registersFile;
     BHeader_t* header;
     BNode_t* root;
     BNode_t** nodes;

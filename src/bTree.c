@@ -2,29 +2,6 @@
 #include "binaryReader.h"
 #include <assert.h>
 
-int BTreeCache_OpenIndexFile(BTreeCache_t* cache, const char* openMode) {
-    if (cache->bTreeFile != NULL) return 1;
-    cache->bTreeFile = fopen(cache->bTreeIndexFileName, openMode);
-    return cache->bTreeFile != NULL;
-}
-
- int BTreeCache_OpenRegistersFile(BTreeCache_t* cache, const char* openMode) {
-     if (cache->registersFile != NULL) return 1;
-    cache->registersFile = fopen(cache->registersFileName, openMode);
-    return cache->registersFile != NULL;
- }
-
-void BTreeCache_CloseIndexFile(BTreeCache_t* cache) {
-    if (cache == NULL || cache->bTreeFile == NULL) return;
-    fclose(cache->bTreeFile);
-    cache->bTreeFile = NULL;
-}
-
-void BTreeCache_CloseRegistersFile(BTreeCache_t* cache) {
-    if (cache == NULL || cache->registersFile == NULL) return;
-    fclose(cache->registersFile);
-    cache->registersFile = NULL;
-}
 
 BTreeCache_t* BTreeCache_CreateFromFile(char* bTreeIndexFileName, char* registersFileName) {
     // Inits a B-Tree Cache
@@ -32,8 +9,6 @@ BTreeCache_t* BTreeCache_CreateFromFile(char* bTreeIndexFileName, char* register
     cache->bTreeIndexFileName = bTreeIndexFileName;
     cache->registersFileName = registersFileName;
     cache->header = BinaryReader_BTreeHeaderAndRoot(cache, bTreeIndexFileName);
-    cache->registersFile = NULL;
-    cache->bTreeFile = NULL;
 
     if (cache->header->rrnNextNode > 0) {
         cache->nodes = calloc(cache->header->rrnNextNode, sizeof(BNode_t*));
@@ -42,7 +17,6 @@ BTreeCache_t* BTreeCache_CreateFromFile(char* bTreeIndexFileName, char* register
     }
     return cache;
 }
-
 
 
 /**
@@ -77,31 +51,8 @@ BNode_t* GetBTreeNodeByKey(BTreeCache_t* cache, REGKEY key) {
     return GetNodeByKeyRecur(cache, cache->root->rrn, key);
 }
 
-void BTreeCache_BeginWrite(BTreeCache_t* bTreeCache) {
-    bTreeCache->header->status = '0';
-    fseek(bTreeCache->bTreeFile, 0, SEEK_SET);
-    fwrite(&bTreeCache->header->status, sizeof(char), 1, bTreeCache->bTreeFile);
-}
-
-void BTreeCache_EndWrite(BTreeCache_t* bTreeCache) {
-    bTreeCache->header->status = '1';
-    fseek(bTreeCache->bTreeFile, 0, SEEK_SET);
-    fwrite(&bTreeCache->header->status, sizeof(char), 1, bTreeCache->bTreeFile);
-}
-
-
 void BTreeCache_Free(BTreeCache_t* bTreeCache) {
     if (bTreeCache == NULL) return;
-
-    if (bTreeCache->bTreeFile != NULL) {
-        fclose(bTreeCache->bTreeFile);
-        bTreeCache->bTreeFile = NULL;
-    }
-
-    if (bTreeCache->registersFile != NULL) {
-        fclose(bTreeCache->registersFile);
-        bTreeCache->registersFile = NULL;
-    }
 
     // Frees everything
     free(bTreeCache->bTreeIndexFileName);

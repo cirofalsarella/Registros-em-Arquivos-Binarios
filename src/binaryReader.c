@@ -172,6 +172,7 @@ BNode_t* BinaryReader_BTreeNode(BTreeCache_t* cache, RRN nodeRRN) {
     if (nodeRRN < 0) { // Checks for NULL RRNs.
         return NULL;
     }
+    FILE* fp = fopen(cache->registersFileName, "rb");
 
     assert(nodeRRN != 0); // "The RRN of NODES must be greater than zero."
 
@@ -181,22 +182,22 @@ BNode_t* BinaryReader_BTreeNode(BTreeCache_t* cache, RRN nodeRRN) {
     }
 
     OFFSET byteOffsetOfNode = RRNToOffset(nodeRRN);
-    fseek(cache->bTreeFile, byteOffsetOfNode, SEEK_SET);
+    fseek(fp, byteOffsetOfNode, SEEK_SET);
     
     // Creates a NULL node
     BNode_t* node = BNode_CreateNoChildren(-1, NULL);
 
     // Reads fields
-    fread(&node->isLeaf, sizeof(char), 1, cache->bTreeFile);
-    fread(&node->indexedKeysCount, sizeof(int32_t), 1, cache->bTreeFile);
-    fread(&node->rrn, sizeof(RRN), 1, cache->bTreeFile);
+    fread(&node->isLeaf, sizeof(char), 1, fp);
+    fread(&node->indexedKeysCount, sizeof(int32_t), 1, fp);
+    fread(&node->rrn, sizeof(RRN), 1, fp);
 
     for (int i=0; i<BTREE_ORDER-1; i++) {
-        fread(&node->childrenRRNs[i], sizeof(RRN), 1, cache->bTreeFile);
-        fread(&node->regKeys[i], sizeof(REGKEY), 1, cache->bTreeFile);
-        fread(&node->regOffsets[i], sizeof(OFFSET), 1, cache->bTreeFile);
+        fread(&node->childrenRRNs[i], sizeof(RRN), 1, fp);
+        fread(&node->regKeys[i], sizeof(REGKEY), 1, fp);
+        fread(&node->regOffsets[i], sizeof(OFFSET), 1, fp);
     }
-    fread(&node->childrenRRNs[BTREE_ORDER-1], sizeof(RRN), 1, cache->bTreeFile);
+    fread(&node->childrenRRNs[BTREE_ORDER-1], sizeof(RRN), 1, fp);
 
     return node;
 }
