@@ -102,7 +102,27 @@ void WriteBusLineHeader(const BusLineHeader_t* header, FILE *destFile) {
     fwrite(&header->describeLine[0], sizeof(char), 24, destFile);
 }
 
+void BinaryWriter_BTreeHeader(BTreeCache_t* cache) {
+    FILE* destFile = fopen(cache->bTreeIndexFileName, "rb+");
+    // Já foi conferido que o arquivo existe e que seu status é válido
+    
+    // Set as editing mode
+    char status = '0';
+    fwrite(&status, sizeof(char), 1, destFile);
+    
+    // Writing header
+    fread(cache->header->rootRRN, sizeof(RRN), 1, destFile);
+    fread(cache->header->rrnNextNode, sizeof(RRN), 1, destFile);
+    fread(cache->header->unused[0], sizeof(char), 68, destFile);
 
+    // Set as default mode
+    fseek(destFile, 0, SEEK_SET);
+    status = '1';
+    fwrite(&status, sizeof(char), 1, destFile);
+    
+    // Exiting
+    fclose(destFile);
+}
 
 //  Escrevem um arquivo inteiro
 

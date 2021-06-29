@@ -26,6 +26,13 @@ void BinaryWriter_CreateBusLineFile(BusLine_t** busLines, int busLinesCount, Bus
 
 
 /**
+ * @brief Writes the header of an BTree file
+ * @param cache is the Btree to be wroten
+ */
+void BinaryWriter_BTreeHeader(BTreeCache_t* cache) {
+
+
+/**
  * @brief Writes a vector of vehicles to the end of dest file.
  * 
  * @param vehicles 
@@ -45,6 +52,13 @@ int BinaryWriter_IncrementVehicleFile(Vehicle_t** vehicles, int vehiclesCount, c
  */
 int BinaryWriter_IncrementBusLineFile(BusLine_t** busLines, int buslinesCount, char* fileName);
 
+/**
+ * @brief 
+ * 
+ * @param node 
+ * @param cache 
+ * @return int 
+ */
 int BinaryWriter_IncrementBtree(BNode_t* node, BTreeCache_t* cache);
 
 
