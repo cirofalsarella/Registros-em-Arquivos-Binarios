@@ -1,9 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "dataModel.h"
+#include "bTreeDataModel.h"
+#include "bTree.h"
 
-Vehicle_t* BinaryReader_ReadVehicle(FILE *srcFile) {
+Vehicle_t* BinaryReader_Vehicle(FILE *srcFile) {
     Vehicle_t* vehicle = calloc(1, sizeof(Vehicle_t));
 
     //  Fixed length fields
@@ -28,7 +31,7 @@ Vehicle_t* BinaryReader_ReadVehicle(FILE *srcFile) {
     return vehicle;
 }
 
-BusLine_t* BinaryReader_ReadBusLine(FILE *srcFile) {
+BusLine_t* BinaryReader_BusLine(FILE *srcFile) {
     BusLine_t* busLine = calloc(1, sizeof(BusLine_t));
 
     //  Fixed length fields
@@ -50,7 +53,7 @@ BusLine_t* BinaryReader_ReadBusLine(FILE *srcFile) {
     return busLine;
 }
 
-VehicleHeader_t* BinaryReader_ReadVehicleHeader(FILE *srcFile) {
+VehicleHeader_t* BinaryReader_VehicleHeader(FILE *srcFile) {
     VehicleHeader_t* header = calloc(1, sizeof(VehicleHeader_t));
 
     fread(&header->status, sizeof(char), 1, srcFile);
@@ -68,7 +71,7 @@ VehicleHeader_t* BinaryReader_ReadVehicleHeader(FILE *srcFile) {
     return header;
 }
 
-BusLineHeader_t* BinaryReader_ReadBusLineHeader(FILE *srcFile) {
+BusLineHeader_t* BinaryReader_BusLineHeader(FILE *srcFile) {
     BusLineHeader_t* header = calloc(1, sizeof(VehicleHeader_t));
 
     fread(&header->status, sizeof(char), 1, srcFile);
@@ -99,7 +102,7 @@ Vehicle_t** BinaryReader_Vehicles(VehicleHeader_t** header, char* fileName) {
     }
 
     // Reads the header
-    *header = BinaryReader_ReadVehicleHeader(srcFile);
+    *header = BinaryReader_VehicleHeader(srcFile);
 
     // Allocates space for the vehicles
     Vehicle_t** vehicles = calloc((*header)->numReg, sizeof(Vehicle_t*));
@@ -108,7 +111,7 @@ Vehicle_t** BinaryReader_Vehicles(VehicleHeader_t** header, char* fileName) {
     // Gets the vehicles that arent removed from the file
     int j = 0;
     for (int i=0; i < n_registers; i++) {
-        Vehicle_t* aux = BinaryReader_ReadVehicle(srcFile);
+        Vehicle_t* aux = BinaryReader_Vehicle(srcFile);
         if (aux != NULL) {
             if (aux->removed == '0') {
                 Vehicle_Free(aux);
@@ -138,7 +141,7 @@ BusLine_t** BinaryReader_BusLines(BusLineHeader_t** header, char* fileName) {
     }
     
     // Reads the header
-    *header = BinaryReader_ReadBusLineHeader(srcFile);
+    *header = BinaryReader_BusLineHeader(srcFile);
 
     // Allocates space for the bus lines
     BusLine_t** busLines = calloc((*header)->numReg, sizeof(BusLine_t*));
@@ -147,7 +150,7 @@ BusLine_t** BinaryReader_BusLines(BusLineHeader_t** header, char* fileName) {
     // Gets the bus lines that arent removed from the file
     int j = 0;
     for (int i=0; i < n_registers; i++) {
-        BusLine_t* aux = BinaryReader_ReadBusLine(srcFile);
+        BusLine_t* aux = BinaryReader_BusLine(srcFile);
         if (aux != NULL) {
             if (aux->removed == '0') {
                 BusLine_Free(aux);
@@ -162,3 +165,76 @@ BusLine_t** BinaryReader_BusLines(BusLineHeader_t** header, char* fileName) {
     return busLines;
 }
 
+
+
+
+BNode_t* BinaryReader_BTreeNode(BTreeCache_t* cache, RRN nodeRRN) {
+    if (nodeRRN < 0) { // Checks for NULL RRNs.
+        return NULL;
+    }
+
+    assert(nodeRRN != 0); // "The RRN of NODES must be greater than zero."
+
+    // Avoids unnecessary freads
+    if (cache->nodes[nodeRRN-1] != NULL) {
+        return cache->nodes[nodeRRN-1];
+    }
+
+    OFFSET byteOffsetOfNode = RRNToOffset(nodeRRN);
+    fseek(cache->bTreeFile, byteOffsetOfNode, SEEK_SET);
+    
+    // Creates a NULL node
+    BNode_t* node = BNode_CreateNoChildren(-1, NULL);
+
+    // Reads fields
+    fread(&node->isLeaf, sizeof(char), 1, cache->bTreeFile);
+    fread(&node->indexedKeysCount, sizeof(int32_t), 1, cache->bTreeFile);
+    fread(&node->rrn, sizeof(RRN), 1, cache->bTreeFile);
+
+    for (int i=0; i<BTREE_ORDER-1; i++) {
+        fread(&node->childrenRRNs[i], sizeof(RRN), 1, cache->bTreeFile);
+        fread(&node->regKeys[i], sizeof(REGKEY), 1, cache->bTreeFile);
+        fread(&node->regOffsets[i], sizeof(OFFSET), 1, cache->bTreeFile);
+    }
+    fread(&node->childrenRRNs[BTREE_ORDER-1], sizeof(RRN), 1, cache->bTreeFile);
+
+    return node;
+}
+
+/**
+ * @brief Helper function that reads the B-Header and the root node from the given file. Used during BTreeCache_Create.
+ * 
+ * @param fileName 
+ * @return BHeader_t* 
+ */
+BHeader_t* BinaryReader_BTreeHeaderAndRoot(BTreeCache_t* cache, char* fileName) {
+    FILE* file = fopen(fileName, "rb");
+
+    if (file == NULL) {
+        printf("Arquivo índice de Arvore-B inexistente\n");
+        exit(1);
+        return NULL;
+    }
+
+    BHeader_t* header = BHeader_Create(0, -1, -1);
+    fread(&header->status, sizeof(char), 1, file);
+
+    // If the status is not '1', then the file is corrupted.
+    if (header->status != '1') {
+        printf("Arquivo índice de Arvore-B corrompido\n");
+        exit(1);
+        return NULL;
+    }
+
+    // Reads the other fields
+    fread(&header->rootRRN, sizeof(RRN), 1, file);
+    fread(&header->rrnNextNode, sizeof(RRN), 1, file);
+    fread(&header->unused[0], sizeof(char), 68, file);
+
+    cache->root = BinaryReader_BTreeNode(cache, header->rootRRN);
+    cache->nodes[header->rootRRN-1] = cache->root;
+
+    fclose(file);
+
+    return header;
+}

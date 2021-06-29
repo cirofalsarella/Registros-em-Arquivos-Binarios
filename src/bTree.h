@@ -65,18 +65,6 @@ void BTreeCache_CloseRegistersFile(BTreeCache_t* cache);
 BTreeCache_t* BTreeCache_CreateFromFile(char* bTreeIndexFileName, char* registersFileName);
 
 /**
- * @brief Gets a node from the B-Tree cache by RRN.
- *        If the node is not cached, loads from disk.
- *        If RRN is null (< 0), returns NULL.
- * 
- * @param cache
- * @param nodeRRN Must be -1 or a valid RRN.
- * 
- * @return BNode_t* 
- */
-BNode_t* BTreeCache_GetNode(BTreeCache_t* cache, RRN nodeRRN);
-
-/**
  * @brief Gets a B-Tree Node by key.
  * 
  * @param cache
@@ -84,7 +72,7 @@ BNode_t* BTreeCache_GetNode(BTreeCache_t* cache, RRN nodeRRN);
  * 
  * @return BNode_t* 
  */
-BNode_t* BTreeCache_GetNodeByKey(BTreeCache_t* cache, REGKEY key);
+BNode_t* GetTreeNodeByKey(BTreeCache_t* cache, REGKEY key);
 
 /**
  * @brief Marks status of the B-Tree index file as '0'. Status change for the registers file is done elsewhere. Call this as soon as the file is opened. NOTE: Changes the file pointer.
