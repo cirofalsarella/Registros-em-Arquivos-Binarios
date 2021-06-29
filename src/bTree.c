@@ -1,5 +1,6 @@
 #include "bTree.h"
 #include "binaryReader.h"
+#include "binaryWriter.h"
 #include <assert.h>
 
 
@@ -88,7 +89,7 @@ typedef struct bRegister {
     RRN nextRRN;
 } BRegister_t;
 
-BRegister_t* InsertRegisterInNode(RRN* NextPos, BNode_t* node, BRegister_t* reg);
+BRegister_t* InsertRegisterInNode(BTreeCache_t* cache, BNode_t* node, BRegister_t* reg);
 
 /**
  * @brief Create and return an Register object
@@ -125,7 +126,7 @@ RRN SearchNextNodeRRN(BNode_t* node, REGKEY key) {
  * @param dest The node that will receive the register
  * @param pos The position of the register in the origin node
  */
-BRegister_t* RegTradeNode(RRN* NextPos, BNode_t* source, BNode_t* dest, int pos) {
+BRegister_t* RegTradeNode(BTreeCache_t* cache, BNode_t* source, BNode_t* dest, int pos) {
     // Salvando os valores do nó de origem
     BRegister_t* newReg = CreateRegister(source->regKeys[pos], source->regOffsets[pos], source->childrenRRNs[pos], source->childrenRRNs[pos+1]);
 
@@ -145,7 +146,7 @@ BRegister_t* RegTradeNode(RRN* NextPos, BNode_t* source, BNode_t* dest, int pos)
 
 
     // Inserindo no nó de destino
-    return InsertRegisterInNode(NextPos, dest, newReg);
+    return InsertRegisterInNode(cache, dest, newReg);
 }
 
 /**
@@ -156,15 +157,15 @@ BRegister_t* RegTradeNode(RRN* NextPos, BNode_t* source, BNode_t* dest, int pos)
  * @param newReg the register to be inserted in the node
  * @return the new node created
  */
-BRegister_t* PartitionsNode(RRN* NextPos, BNode_t* node, BRegister_t* newReg) {
+BRegister_t* PartitionsNode(BTreeCache_t* cache, BNode_t* node, BRegister_t* newReg) {
     // Criando o nó de partição
-    BNode_t* partitioned = BNode_CreateNoChildren(1, NextPos);
+    BNode_t* partitioned = BNode_CreateNoChildren(1, &(cache->header->rrnNextNode));
 
     // Pega os registros e muda os 2 maiores para o novo nó partição
     // Desconsidero o retorno pois sei que será NULL
-    RegTradeNode(NextPos, node, partitioned, BTREE_ORDER-1);
-    InsertRegisterInNode(NextPos, node, newReg);
-    RegTradeNode(NextPos, node, partitioned, BTREE_ORDER-1);
+    RegTradeNode(cache, node, partitioned, BTREE_ORDER-1);
+    InsertRegisterInNode(cache, node, newReg);
+    RegTradeNode(cache, node, partitioned, BTREE_ORDER-1);
     
     // Remover o 1o registro do nó particionado
     BRegister_t* promovido = CreateRegister(partitioned->regKeys[0], partitioned->regOffsets[0], node->rrn, partitioned->rrn);
@@ -180,7 +181,7 @@ BRegister_t* PartitionsNode(RRN* NextPos, BNode_t* node, BRegister_t* newReg) {
     partitioned->childrenRRNs[2] = -1;
 
 
-    // TODO:    Escrever nó particionado no disco
+    BinaryWriter_IncrementBtree(partitioned, cache);
 
     return promovido;
 }
@@ -191,15 +192,13 @@ BRegister_t* PartitionsNode(RRN* NextPos, BNode_t* node, BRegister_t* newReg) {
  * @param node
  * @param reg register to be inserted; its memory will be freed
  */
-BRegister_t* InsertRegisterInNode(RRN* NextPos, BNode_t* node, BRegister_t* reg) {
+BRegister_t* InsertRegisterInNode(BTreeCache_t* cache, BNode_t* node, BRegister_t* reg) {
     if (reg == NULL || node == NULL)    return NULL;
 
     // Se não tiver espaço vou ter de particionar
     if (node->indexedKeysCount == BTREE_ORDER-1) {
-        return PartitionsNode(NextPos, node, reg);
-    }
-    
-    // Caso contrário somente realizo a inserção simples
+        return PartitionsNode(cache, node, reg);
+    }   // Caso contrário somente realizo a inserção simples
 
     // Encontro a posição que vou inserir
     int pos = 0;
@@ -235,14 +234,14 @@ BRegister_t* InsertRegisterInNode(RRN* NextPos, BNode_t* node, BRegister_t* reg)
  */
 BRegister_t* InsertNodeRecur(BTreeCache_t* cache, BNode_t* node, BRegister_t* newReg) {
     if (node->isLeaf) {      // Insere no próprio nó
-        InsertRegisterInNode(&(cache->header->rrnNextNode), node, newReg);
+        InsertRegisterInNode(cache, node, newReg);
     }
     else {                  // Insere em um nó filho   
         BRegister_t* promoted = InsertNodeRecur(cache, BinaryReader_BTreeNode(cache, SearchNextNodeRRN(node, newReg->key)), newReg);
-        InsertRegisterInNode(&(cache->header->rrnNextNode), node, promoted);
+        InsertRegisterInNode(cache, node, promoted);
     }
 
-    // TODO:    escrever nó no disco
+    BinaryWriter_IncrementBtree(node, cache);
 
     return NULL;
 }
@@ -255,9 +254,8 @@ void BTreeCache_Insert(BTreeCache_t* cache, REGKEY key, OFFSET fileOffset) {
     if (promoted != NULL) {
         BNode_t* root = BNode_CreateNoChildren(0, &(cache->header->rrnNextNode));
         cache->header->rootRRN = root->rrn;
-        InsertRegisterInNode(&(cache->header->rrnNextNode), root, promoted);
-
-        // TODO:    Escrever nó promovido no arquivo de indice
+        InsertRegisterInNode(cache, root, promoted);
+        BinaryWriter_IncrementBtree(root, cache);
     }
-    // TODO:    Escrever header no arquivo de índice
+    BinaryWriter_BTreeHeader(cache);
 }
