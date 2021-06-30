@@ -285,3 +285,39 @@ void Op_PushBuslines() {
     //  libera a memória alocada
     free(buslines);
 }
+
+void Op_CreateBTreeVehicles() {
+    // Gets file names from terminal
+    char regsFileName[128] = { '\0' };
+    scanf("%s", &regsFileName[0]);
+
+    char bTreeFileName[128] = { '\0' };
+    scanf("%s", &bTreeFileName[0]);
+
+    // Loads vehicles
+    VehicleHeader_t* regsHeader = NULL;
+    Vehicle_t** regs = BinaryReader_Vehicles(&regsHeader, regsFileName);
+    
+    // Creates an empty cache
+    BTreeCache_t* cache = BTreeCache_Create(bTreeFileName, regsFileName);
+    ByteOffset_t fileOffset = VEHICLE_HEADER_SIZE;
+
+    // TODO: fopen and fclose for every register is bad + change status at the end
+    // Inserts the vehicles
+    for (int i = 0; i < regsHeader->numReg; i++) {
+        const RegKey_t key = Utils_VehiclePrefixHash(regs[i]->prefix);
+        BTreeCache_Insert(cache, key, fileOffset);
+        fileOffset += regs[i]->regSize + REG_SIZE_IGNORED;
+    }
+
+    // Prints hash of resulting file
+    PrintHash(bTreeFileName);
+
+    // Frees everything
+    for (int i = 0; i < regsHeader->numReg; i++) {
+        Vehicle_Free(regs[i]);
+    }
+
+    BinaryHeaders_FreeVehicleHeader(regsHeader);
+    free(regs);
+}

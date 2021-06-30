@@ -27,15 +27,6 @@ void BinaryWriter_CreateVehicleFile(Vehicle_t** vehicles, int vehiclesCount, Veh
  */
 void BinaryWriter_CreateBusLineFile(BusLine_t** busLines, int busLinesCount, BusLineHeader_t* header, char* fileName);
 
-
-/**
- * @brief Writes the header of an BTree file
- * 
- * @param cache is the Btree to be wroten
- */
-void BinaryWriter_BTreeHeader(BTreeCache_t* cache);
-
-
 /**
  * @brief Writes a vector of vehicles to the end of dest file.
  * 
@@ -58,17 +49,27 @@ int BinaryWriter_IncrementVehicleFile(Vehicle_t** vehicles, int vehiclesCount, c
  */
 int BinaryWriter_IncrementBusLineFile(BusLine_t** busLines, int buslinesCount, char* fileName);
 
+
+// FUNÇÕES DE ESCRITA RELACIONADAS A B-TREES
+
 /**
- * @brief
+ * @brief Increments a B-Tree index with the given nodes.
  * 
- * @param BusLine vector of BusLine that will be writen
- * @param BusLineCount number of BusLine to be writen
+ * @param BusLine vector of BusLines that will be writen
+ * @param BusLineCount number of BusLines to be writen
  * @param header header of the file
  * @param fileName name of the file
  * 
  * @return 1 == error, 0 == success
  */
-int BinaryWriter_IncrementBtree(BNode_t* node, BTreeCache_t* cache);
+int BinaryWriter_IncrementBTree(BNode_t* node, BTreeCache_t* cache);
+
+/**
+ * @brief Writes the header of a BTree in the B-Tree file.
+ * 
+ * @param cache The cache that contains the header and file pointer.
+ */
+void BinaryWriter_BTreeHeader(BTreeCache_t* cache);
 
 
 #endif

@@ -75,7 +75,7 @@ BHeader_t* BinaryReader_BTreeHeaderAndRoot(BTreeCache_t* cache, char* fileName);
  * 
  * @return an BNode_t*, the node or NULL if not found / rrn invalid
  */
-BNode_t* BinaryReader_BTreeNode(BTreeCache_t* cache, RRN nodeRRN);
+BNode_t* BinaryReader_BTreeNode(BTreeCache_t* cache, RRN_t nodeRRN);
 
 
 

@@ -32,5 +32,10 @@ void Op_SelectBuslinesWhere();
 void Op_PushVehicles();
 void Op_PushBuslines();
 
+/**
+ * Operações 9 e 10
+ *      Criam um árquivo índice B-Tree.
+ */
+void Op_CreateBTreeVehicles();
 
 #endif

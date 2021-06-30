@@ -108,7 +108,7 @@ Vehicle_t** BinaryReader_Vehicles(VehicleHeader_t** header, char* fileName) {
     Vehicle_t** vehicles = calloc((*header)->numReg, sizeof(Vehicle_t*));
     int n_registers = (*header)->numReg + (*header)->numRegRemov;
 
-    // Gets the vehicles that arent removed from the file
+    // Gets the vehicles that aren't removed from the file
     int j = 0;
     for (int i=0; i < n_registers; i++) {
         Vehicle_t* aux = BinaryReader_Vehicle(srcFile);
@@ -168,7 +168,7 @@ BusLine_t** BinaryReader_BusLines(BusLineHeader_t** header, char* fileName) {
 
 
 
-BNode_t* BinaryReader_BTreeNode(BTreeCache_t* cache, RRN nodeRRN) {
+BNode_t* BinaryReader_BTreeNode(BTreeCache_t* cache, RRN_t nodeRRN) {
     if (nodeRRN < 0) { // Checks for NULL RRNs.
         return NULL;
     }
@@ -181,7 +181,7 @@ BNode_t* BinaryReader_BTreeNode(BTreeCache_t* cache, RRN nodeRRN) {
         return cache->nodes[nodeRRN-1];
     }
 
-    OFFSET byteOffsetOfNode = RRNToOffset(nodeRRN);
+    ByteOffset_t byteOffsetOfNode = RRNToOffset(nodeRRN);
     fseek(fp, byteOffsetOfNode, SEEK_SET);
     
     // Creates a NULL node
@@ -190,14 +190,14 @@ BNode_t* BinaryReader_BTreeNode(BTreeCache_t* cache, RRN nodeRRN) {
     // Reads fields
     fread(&node->isLeaf, sizeof(char), 1, fp);
     fread(&node->indexedKeysCount, sizeof(int32_t), 1, fp);
-    fread(&node->rrn, sizeof(RRN), 1, fp);
+    fread(&node->rrn, sizeof(RRN_t), 1, fp);
 
     for (int i=0; i<BTREE_ORDER-1; i++) {
-        fread(&node->childrenRRNs[i], sizeof(RRN), 1, fp);
-        fread(&node->regKeys[i], sizeof(REGKEY), 1, fp);
-        fread(&node->regOffsets[i], sizeof(OFFSET), 1, fp);
+        fread(&node->childrenRRNs[i], sizeof(RRN_t), 1, fp);
+        fread(&node->regKeys[i], sizeof(RegKey_t), 1, fp);
+        fread(&node->regOffsets[i], sizeof(ByteOffset_t), 1, fp);
     }
-    fread(&node->childrenRRNs[BTREE_ORDER-1], sizeof(RRN), 1, fp);
+    fread(&node->childrenRRNs[BTREE_ORDER-1], sizeof(RRN_t), 1, fp);
 
     return node;
 }
@@ -228,8 +228,8 @@ BHeader_t* BinaryReader_BTreeHeaderAndRoot(BTreeCache_t* cache, char* fileName) 
     }
 
     // Reads the other fields
-    fread(&header->rootRRN, sizeof(RRN), 1, file);
-    fread(&header->rrnNextNode, sizeof(RRN), 1, file);
+    fread(&header->rootRRN, sizeof(RRN_t), 1, file);
+    fread(&header->rrnNextNode, sizeof(RRN_t), 1, file);
     fread(&header->unused[0], sizeof(char), 68, file);
 
     cache->root = BinaryReader_BTreeNode(cache, header->rootRRN);

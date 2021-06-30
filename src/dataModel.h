@@ -5,11 +5,13 @@
 
 //  FUNCIONALIDADES RESPONSÁVEIS POR ESTRUTURAR OS REGISTROS
 
+#define REG_SIZE_IGNORED 5 // Register size ignored by register->regSize (1 byte for removed and 4 for regSize)
 
 #define VEHICLE_FIXED_LENGTH 31 // 31 bytes of fixed length (IGNORES 'REMOVED' AND 'REGSIZE')
 #define BUSLINE_FIXED_LENGTH 13 // 13 bytes of fixed length (IGNORES 'REMOVED' AND 'REGSIZE')
 
-
+#define VEHICLE_HEADER_SIZE (1+8+4+4+18+35+42+26+17+20)
+#define BUSLINE_HEADER_SIZE (1+8+4+4+15+13+13+24)
 
 //  Header dos arquivos Binários
 

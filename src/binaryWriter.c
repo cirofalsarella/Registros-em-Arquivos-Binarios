@@ -61,14 +61,14 @@ void WriteBusLine(const BusLine_t* busLine, FILE* destFile) {
 void WriteBTreeNode(const BNode_t* node, FILE* destFile){
     fwrite(&node->isLeaf, sizeof(char), 1, destFile);
     fwrite(&node->indexedKeysCount, sizeof(int32_t), 1, destFile);
-    fwrite(&node->rrn, sizeof(RRN), 1, destFile);
+    fwrite(&node->rrn, sizeof(RRN_t), 1, destFile);
 
     for (int i=0; i<BTREE_ORDER-1; i++) {
-        fwrite(&node->childrenRRNs[i], sizeof(RRN), 1, destFile);
-        fwrite(&node->regKeys[i], sizeof(REGKEY), 1, destFile);
-        fwrite(&node->regOffsets[i], sizeof(OFFSET), 1, destFile);
+        fwrite(&node->childrenRRNs[i], sizeof(RRN_t), 1, destFile);
+        fwrite(&node->regKeys[i], sizeof(RegKey_t), 1, destFile);
+        fwrite(&node->regOffsets[i], sizeof(ByteOffset_t), 1, destFile);
     }
-    fwrite(&node->childrenRRNs[BTREE_ORDER-1], sizeof(RRN), 1, destFile);
+    fwrite(&node->childrenRRNs[BTREE_ORDER-1], sizeof(RRN_t), 1, destFile);
 }
 
 
@@ -111,8 +111,8 @@ void BinaryWriter_BTreeHeader(BTreeCache_t* cache) {
     fwrite(&status, sizeof(char), 1, destFile);
     
     // Writing header
-    fwrite(&(cache->header->rootRRN), sizeof(RRN), 1, destFile);
-    fwrite(&(cache->header->rrnNextNode), sizeof(RRN), 1, destFile);
+    fwrite(&(cache->header->rootRRN), sizeof(RRN_t), 1, destFile);
+    fwrite(&(cache->header->rrnNextNode), sizeof(RRN_t), 1, destFile);
     fwrite(&(cache->header->unused[0]), sizeof(char), 68, destFile);
 
     // Set as default mode
@@ -327,7 +327,7 @@ int BinaryWriter_IncrementBusLineFile(BusLine_t** buslines, int buslinesCount, c
     return 0;
 }
 
-int BinaryWriter_IncrementBtree(BNode_t* node, BTreeCache_t* cache){
+int BinaryWriter_IncrementBTree(BNode_t* node, BTreeCache_t* cache) {
     FILE* destFile = fopen(cache->bTreeIndexFileName, "rb+");
     // Já foi conferido que o arquivo existe e que seu status é válido
     

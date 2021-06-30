@@ -40,6 +40,9 @@ int main() {
     case 8:
         Op_PushBuslines();
         break;
+    case 9:
+        Op_CreateBTreeVehicles();
+        break;
     }
 
     return 0;
