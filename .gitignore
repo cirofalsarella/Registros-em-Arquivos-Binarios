@@ -1,5 +1,7 @@
+.vscode
 programaTrab.exe
+programaTrab
 *.bin
 *.csv
+*.zip
 out
-.vscode
