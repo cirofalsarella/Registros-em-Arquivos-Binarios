@@ -113,19 +113,33 @@ BRegister_t* CreateRegister(RegKey_t key, ByteOffset_t regOffset, RRN_t previous
 }
 
 /**
- * @brief Finds the RRN of the next node on the search
+ * @brief Get the Next Node object
  * 
- * @param node node with the pointers
- * @param key  key to be searched
- * @return the next node rrn
+ * @param cache 
+ * @param node 
+ * @param key 
+ * @return BNode_t* 
  */
-RRN_t SearchNextNodeRRN(BNode_t* node, RegKey_t key) {
-    if (node->isLeaf)    return -1;  // Não existe próximo nó
-
-    for (int i=0; i<node->indexedKeysCount; i++) {
-        if (node->regKeys[key] < key) return node->regKeys[i];
+BNode_t* getNextNode(BTreeCache_t* cache, BNode_t* node, RegKey_t key) {
+    int i=0;
+    while (key > node->regKeys[i] && i < node->indexedKeysCount) {
+        i++;
     }
-    return node->regKeys[node->indexedKeysCount]; 
+
+    BNode_t* filho = NULL;
+
+    // Caso o nó filho já exista eu uso ele
+    if (node->childrenRRNs[i] != -1){
+        filho = BinaryReader_BTreeNode(cache, node->childrenRRNs[i]);
+    }
+    else {
+        node->isLeaf = 0;
+        filho = BNode_CreateNoChildren(0, &(cache->header->rrnNextNode));
+        filho->isLeaf = 1;
+        node->childrenRRNs[i] = filho->rrn;
+    }
+
+    return filho;
 }
 
 /**
@@ -227,6 +241,7 @@ BRegister_t* InsertRegisterInNode(BTreeCache_t* cache, BNode_t* node, BRegister_
     node->regOffsets[pos] = reg->fileOffset;
     node->childrenRRNs[pos] = reg->previousRRN;
     node->childrenRRNs[pos+1] = reg->nextRRN;
+
     free(reg);
 
     node->indexedKeysCount++;
@@ -242,15 +257,19 @@ BRegister_t* InsertRegisterInNode(BTreeCache_t* cache, BNode_t* node, BRegister_
  * @return in case of promotion returns the promoted reg, otherwise returns NULL
  */
 BRegister_t* InsertNodeRecur(BTreeCache_t* cache, BNode_t* node, BRegister_t* newReg) {
-    if (node->isLeaf) {     // Insere no próprio nó
-        InsertRegisterInNode(cache, node, newReg);
-    }
-    else {                  // Insere em um nó filho   
-        BRegister_t* promoted = InsertNodeRecur(cache, BinaryReader_BTreeNode(cache, SearchNextNodeRRN(node, newReg->key)), newReg);
-        InsertRegisterInNode(cache, node, promoted);
-    }
+    BRegister_t* promoted = NULL;
 
+    if (node->isLeaf) {     // Insere no próprio nó
+        promoted = InsertRegisterInNode(cache, node, newReg);
+    }
+    else {                  // Insere em um nó filho
+        BNode_t* filho = getNextNode(cache, node, newReg->key);
+        promoted = InsertNodeRecur(cache, filho, newReg);
+    }
     BinaryWriter_IncrementBTree(node, cache);
+    
+    // Caso exista um nó promovido é porque existem nós abaixo
+    if (promoted != NULL)   InsertNodeRecur(cache, node, promoted);
 
     return NULL;
 }
@@ -275,7 +294,7 @@ void  BTreeCache_Insert(BTreeCache_t* cache, RegKey_t key, ByteOffset_t fileOffs
         // Cria e insere novo registro 
         BRegister_t* newReg = CreateRegister(key, fileOffset, -1, -1);
         BRegister_t* promoted = InsertNodeRecur(cache, cache->root, newReg);
-        
+
         // Confere se existe promoção
         if (promoted != NULL) {
             
