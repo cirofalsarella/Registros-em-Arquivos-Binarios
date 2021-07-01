@@ -22,8 +22,12 @@ BNode_t* BNode_Create(char isLeaf, int32_t indexedKeysCount, RRN_t* rrn, ByteOff
     BNode_t* node = (BNode_t*) calloc(1, sizeof(BNode_t));
     node->isLeaf = isLeaf;
     node->indexedKeysCount = indexedKeysCount;
-    node->rrn = *rrn;
-    (*rrn)++;
+    if (rrn != NULL){
+        node->rrn = *rrn;
+        (*rrn)++;
+    } else {
+        node->rrn = -1;
+    }
 
     for (int i = 0; i < BTREE_ORDER-1; i++) {
         node->childrenRRNs[i] = childrenRRNs[i];

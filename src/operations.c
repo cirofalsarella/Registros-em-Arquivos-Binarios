@@ -298,17 +298,12 @@ void Op_CreateBTreeVehicles() {
     VehicleHeader_t* regsHeader = NULL;
     Vehicle_t** regs = BinaryReader_Vehicles(&regsHeader, regsFileName);
     
-    printf("%ld\n", regsHeader->nextReg);
-    printf("aqui\n");
-
     // Creates an empty cache
     BTreeCache_t* cache = BTreeCache_Create(bTreeFileName, regsFileName);
     ByteOffset_t fileOffset = VEHICLE_HEADER_SIZE;
 
     // Inserts the vehicles
-
     for (int i = 0; i < regsHeader->numReg; i++) {
-        printf("%c\n", regs[i]->prefix[0]);
         const RegKey_t key = Utils_VehiclePrefixHash(regs[i]->prefix);
         BTreeCache_Insert(cache, key, fileOffset);
         fileOffset += regs[i]->regSize + REG_SIZE_IGNORED;
