@@ -213,12 +213,10 @@ BRegister_t* InsertRegisterInNode(BTreeCache_t* cache, BNode_t* node, BRegister_
     int pos = 0;
     while (reg->key > node->regKeys[pos] && pos < node->indexedKeysCount) {
         pos++;
-        printf("ok\n");
     }
 
     // Movo os registros 1 pra frente
     for (int i=node->indexedKeysCount; i>pos; i--) {
-        printf("i -> %d\n", i);
         node->regKeys[i] = node->regKeys[i-1];
         node->regOffsets[i] = node->regOffsets[i-1];
         node->childrenRRNs[i] = node->childrenRRNs[i];
@@ -264,7 +262,7 @@ void  BTreeCache_Insert(BTreeCache_t* cache, RegKey_t key, ByteOffset_t fileOffs
         // Cria nó raiz
         cache->root = BNode_CreateNoChildren(1, &(cache->header->rrnNextNode));
         cache->header->rootRRN = 1;
-        cache->nodes[1] = cache->root;
+        cache->nodes[0] = cache->root;
 
         // Adiciona novo registro
         BRegister_t* newReg = CreateRegister(key, fileOffset, -1, -1);
