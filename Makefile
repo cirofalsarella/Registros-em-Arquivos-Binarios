@@ -6,6 +6,9 @@ all:
 run:
 	./programaTrab
 
+valgrind:
+	valgrind ./programaTrab
+
 # Windows-specific
 d:
 	gcc -ggdb3 src/main.c ${OBJECTS} -o programaTrab.exe -Wall
