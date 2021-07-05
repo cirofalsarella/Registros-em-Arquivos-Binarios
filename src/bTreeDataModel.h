@@ -65,7 +65,7 @@ void BHeader_Free(BHeader_t* header);
  * the parameters are the members of the struct BNode
  * @return the node created
  */
-BNode_t* BNode_Create(char isLeaf, int32_t indexedKeysCount, RRN_t* rrn, ByteOffset_t* regOffsets, RegKey_t* regKeys, RRN_t* childrenRRNs);
+BNode_t* BNode_Create(char isLeaf, int32_t indexedKeysCount, RRN_t rrn, ByteOffset_t* regOffsets, RegKey_t* regKeys, RRN_t* childrenRRNs);
 
 /**
  * @brief Creates a B-Tree Node with no children (correctly initializes pointer and keys to -1).
@@ -73,7 +73,7 @@ BNode_t* BNode_Create(char isLeaf, int32_t indexedKeysCount, RRN_t* rrn, ByteOff
  * @param rrn indicates the rrn of the node
  * @return an empty Node
  */
-BNode_t* BNode_CreateNoChildren(char isLeaf, RRN_t* rrn);
+BNode_t* BNode_CreateNoChildren(char isLeaf, RRN_t rrn);
 
 /**
  * @brief Frees the given B-Tree node.
