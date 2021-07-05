@@ -328,6 +328,7 @@ int BinaryWriter_IncrementBusLineFile(BusLine_t** buslines, int buslinesCount, c
 }
 
 int BinaryWriter_IncrementBTree(BNode_t* node, BTreeCache_t* cache) {
+    cache->nodes[node->rrn-1] = node;
     FILE* destFile = fopen(cache->bTreeIndexFileName, "rb+");
     // Já foi conferido que o arquivo existe e que seu status é válido
     
