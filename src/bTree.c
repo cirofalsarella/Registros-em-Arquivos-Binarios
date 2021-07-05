@@ -3,6 +3,7 @@
 #include "binaryWriter.h"
 #include <assert.h>
 
+// TODO: Realloc dinamico
 #define INITIAL_NODE_COUNT 10000
 
 BTreeCache_t* BTreeCache_Create(char* bTreeIndexFileName, char* registersFileName) {
@@ -83,7 +84,7 @@ void BTreeCache_Free(BTreeCache_t* bTreeCache) {
 
 
 /**
- * @brief print an node (for debugging)
+ * @brief Prints an node (for debugging)
  * @param rrn (use rrn-1)
  */
 void PrintNode(BTreeCache_t* cache, BNode_t* node, RRN_t rrn) {
@@ -143,7 +144,7 @@ BRegister_t* CreateRegister(RegKey_t key, ByteOffset_t regOffset, RRN_t previous
  * @param key 
  * @return BNode_t* 
  */
-BNode_t* getNextNode(BTreeCache_t* cache, BNode_t* node, RegKey_t key) {
+BNode_t* GetNextNode(BTreeCache_t* cache, BNode_t* node, RegKey_t key) {
     int i=0;
     while (key > node->regKeys[i] && i < node->indexedKeysCount) {
         i++;
@@ -276,7 +277,7 @@ BRegister_t* InsertNodeRecur(BTreeCache_t* cache, BNode_t* node, BRegister_t* ne
         promoted = InsertRegisterInNode(cache, node, newReg);
     }
     else {                  // Insere em um nó filho
-        BNode_t* filho = getNextNode(cache, node, newReg->key);
+        BNode_t* filho = GetNextNode(cache, node, newReg->key);
         promoted = InsertNodeRecur(cache, filho, newReg);
         promoted = InsertRegisterInNode(cache, node, promoted);
     }
@@ -285,8 +286,6 @@ BRegister_t* InsertNodeRecur(BTreeCache_t* cache, BNode_t* node, BRegister_t* ne
     // Caso exista um nó promovido tenta inserir no próprio nó
     return promoted;
 }
-
-
 
 void  BTreeCache_Insert(BTreeCache_t* cache, RegKey_t key, ByteOffset_t fileOffset) {
     printf("new: %d\n", key);

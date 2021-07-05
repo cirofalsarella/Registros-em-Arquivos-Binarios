@@ -18,7 +18,7 @@ c:
 	gcc -ggdb3 src/main.c ${OBJECTS} -o programaTrab.exe -Wall
 
 d:
-	gcc -ggdb3 src/main.c ${OBJECTS} -o programaTrab.exe -Wall
+	gcc -g src/main.c ${OBJECTS} -o programaTrab.exe -Wall
 	gdb programaTrab.exe
 
 r:

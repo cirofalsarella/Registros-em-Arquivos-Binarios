@@ -298,6 +298,11 @@ void Op_CreateBTreeVehicles() {
     VehicleHeader_t* regsHeader = NULL;
     Vehicle_t** regs = BinaryReader_Vehicles(&regsHeader, regsFileName);
     
+    if (regsHeader == NULL || regs == NULL) {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
     // Creates an empty cache
     BTreeCache_t* cache = BTreeCache_Create(bTreeFileName, regsFileName);
     ByteOffset_t fileOffset = VEHICLE_HEADER_SIZE;

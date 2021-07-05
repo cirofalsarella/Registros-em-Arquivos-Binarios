@@ -5,6 +5,7 @@
 #include <assert.h>
 
 BHeader_t* BHeader_Create(char status, RRN_t rootNode, RRN_t rrnNextNode) {
+    // Creates a new header and returns it
     BHeader_t* header = (BHeader_t*) malloc(sizeof(BHeader_t));
     header->status = status;
     header->rootRRN = rootNode;
@@ -19,6 +20,7 @@ void BHeader_Free(BHeader_t* header) {
 }
 
 BNode_t* BNode_Create(char isLeaf, int32_t indexedKeysCount, RRN_t rrn, ByteOffset_t* regOffsets, RegKey_t* regKeys, RRN_t* childrenRRNs) {
+    // Creates a new node and returns it
     BNode_t* node = (BNode_t*) calloc(1, sizeof(BNode_t));
     node->isLeaf = isLeaf;
     node->indexedKeysCount = indexedKeysCount;
