@@ -10,7 +10,7 @@ BHeader_t* BHeader_Create(char status, RRN_t rootNode, RRN_t rrnNextNode) {
     header->status = status;
     header->rootRRN = rootNode;
     header->rrnNextNode = rrnNextNode;
-    memset(header->unused, 68, sizeof(header->unused));
+    memset(header->unused, '@', sizeof(header->unused));
     
     return header;
 }
