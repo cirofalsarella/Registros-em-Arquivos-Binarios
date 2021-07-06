@@ -1,6 +1,10 @@
 #ifndef _PRINTER_H_
 #define _PRINTER_H_
 
+
+#include "bTree.h"
+#include "bTreeDataModel.h"
+
 // FUNÇÕES RESPONSÁVEIS PELA FORMATAÇÃO DOS PRINTS
 
 //  Printam um registro seguindo as normas
