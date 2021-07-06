@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <errno.h>
 
 #include "dataModel.h"
 #include "stringTable.h"
@@ -15,6 +16,25 @@
  *      BinaryWriter_BTreeIndexFile
  *
  */
+
+void FileSeek(FILE* file, ByteOffset_t offset) {
+    int seekStatus = fseek(file, offset, SEEK_SET);
+    if (seekStatus != 0) {
+        if (seekStatus == EBADF) {
+            fprintf(stderr, "The file descriptor underlying the stream file is not open for writing or the stream's buffer needed to be flushed and the file is not open. Offset: %I64d\n", offset);
+        } else if (seekStatus == EINVAL) {
+            fprintf(stderr, "The whence argument is invalid. The resulting file-position indicator would be set to a negative value. Offset: %I64d\n", offset);
+        } else if (seekStatus == EFBIG) {
+            fprintf(stderr, "An attempt was made to write a file that exceeds the maximum file size or the process's file size limit, or the file is a regular file and an attempt was made to write at or beyond the offset maximum associated with the corresponding stream. Offset: %I64d\n", offset);
+        } else {
+            if (file == NULL) {
+                fprintf(stderr, "Tentou-se fazer fseek em um arquivo NULO. Offset: %I64d\n", offset);
+            } else {
+                fprintf(stderr, "Um erro desconhecido ocorreu durante o fseek. Offset: %I64d\n", offset);
+            }
+        }
+    }
+}
 
 
 //  Escrevem Registros Únicos
@@ -63,7 +83,7 @@ void WriteBTreeNode(const BNode_t* node, FILE* destFile){
     fwrite(&node->indexedKeysCount, sizeof(int32_t), 1, destFile);
     fwrite(&node->rrn, sizeof(RRN_t), 1, destFile);
 
-    for (int i=0; i<BTREE_ORDER-1; i++) {
+    for (int i = 0; i < BTREE_ORDER-1; i++) {
         fwrite(&node->childrenRRNs[i], sizeof(RRN_t), 1, destFile);
         fwrite(&node->regKeys[i], sizeof(RegKey_t), 1, destFile);
         fwrite(&node->regOffsets[i], sizeof(ByteOffset_t), 1, destFile);
@@ -104,6 +124,9 @@ void WriteBusLineHeader(const BusLineHeader_t* header, FILE *destFile) {
 
 void BinaryWriter_BTreeHeader(BTreeCache_t* cache) {
     FILE* destFile = fopen(cache->bTreeIndexFileName, "rb+");
+    if (destFile == NULL) {
+        fprintf(stderr, "Arquivo nulo\n");
+    }
     // Já foi conferido que o arquivo existe e que seu status é válido
     
     // Set as editing mode
@@ -116,7 +139,7 @@ void BinaryWriter_BTreeHeader(BTreeCache_t* cache) {
     fwrite(&(cache->header->unused[0]), sizeof(char), 68, destFile);
 
     // Set as default mode
-    fseek(destFile, 0, SEEK_SET);
+    FileSeek(destFile, 0);
     status = '1';
     fwrite(&status, sizeof(char), 1, destFile);
     
@@ -330,18 +353,27 @@ int BinaryWriter_IncrementBusLineFile(BusLine_t** buslines, int buslinesCount, c
 int BinaryWriter_IncrementBTree(BNode_t* node, BTreeCache_t* cache) {
     cache->nodes[node->rrn-1] = node;
     FILE* destFile = fopen(cache->bTreeIndexFileName, "rb+");
+
+    if (destFile == NULL) {
+        fprintf(stderr, "Arquivo nulo\n");
+    }
+
     // Já foi conferido que o arquivo existe e que seu status é válido
     
+    printf("RRN %d\n", node->rrn);
+    printf("ByteOffset %I64d\n", RRNToOffset(node->rrn));
+
     // Set as editing mode
     char status = '0';
+    FileSeek(destFile, 0);
     fwrite(&status, sizeof(char), 1, destFile);
     
     // Writing node
-    fseek(destFile, RRNToOffset(node->rrn), SEEK_SET);
+    FileSeek(destFile, RRNToOffset(node->rrn));
     WriteBTreeNode(node, destFile);
 
     // Set as default mode
-    fseek(destFile, 0, SEEK_SET);
+    FileSeek(destFile, 0);
     status = '1';
     fwrite(&status, sizeof(char), 1, destFile);
     
