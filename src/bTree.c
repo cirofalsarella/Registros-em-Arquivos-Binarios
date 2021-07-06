@@ -6,12 +6,12 @@
 // TODO: Realloc dinamico
 #define INITIAL_NODE_COUNT 10000
 
-BTreeCache_t* BTreeCache_Create(char* bTreeIndexFileName, char* registersFileName) {
+BTreeCache_t* BTreeCache_Create(char* bTreeIndexFileName, char* indexOpenType, char* registersFileName, char* registerOpenType) {
     // Inits a B-Tree Cache
     BTreeCache_t* cache = calloc(1, sizeof(BTreeCache_t));
 
-    if (bTreeIndexFileName != NULL) cache->index = fopen(bTreeIndexFileName, "rb+");
-    if (registersFileName != NULL)  cache->registers = fopen(registersFileName, "rb+");
+    if (bTreeIndexFileName != NULL) cache->index = fopen(bTreeIndexFileName, indexOpenType);
+    if (registersFileName != NULL)  cache->registers = fopen(registersFileName, registerOpenType);
 
     cache->header = BHeader_Create('1', -1, 1);
     cache->nodes = calloc(INITIAL_NODE_COUNT, sizeof(BNode_t*));
@@ -20,12 +20,12 @@ BTreeCache_t* BTreeCache_Create(char* bTreeIndexFileName, char* registersFileNam
     return cache;
 }
 
-BTreeCache_t* BTreeCache_CreateFromFile(char* bTreeIndexFileName, char* registersFileName) {
+BTreeCache_t* BTreeCache_CreateFromFile(char* bTreeIndexFileName, char* indexOpenType, char* registersFileName, char* registerOpenType) {
     // Inits a B-Tree Cache
     BTreeCache_t* cache = calloc(1, sizeof(BTreeCache_t));
     
-    cache->index = fopen(bTreeIndexFileName, "rb+");
-    cache->registers = fopen(registersFileName, "rb+");
+    cache->index = fopen(bTreeIndexFileName, indexOpenType);
+    cache->registers = fopen(registersFileName, registerOpenType);
     
     // If FILE status == 1, error
     if (BinaryReader_BTreeHeaderAndRoot(cache, bTreeIndexFileName)) {

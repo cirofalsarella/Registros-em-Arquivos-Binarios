@@ -304,7 +304,7 @@ void Op_CreateBTreeVehicles() {
     }
 
     // Creates an empty cache
-    BTreeCache_t* cache = BTreeCache_Create(bTreeFileName, regsFileName);
+    BTreeCache_t* cache = BTreeCache_Create(bTreeFileName, "wb+", regsFileName, "rb+");
     ByteOffset_t fileOffset = VEHICLE_HEADER_SIZE;
 
     // Inserts the vehicles

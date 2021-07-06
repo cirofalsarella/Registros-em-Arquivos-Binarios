@@ -19,13 +19,15 @@ struct BTreeCache {
 };
 
 /**
- * @brief Creates a B-Tree cache.
+ * @brief 
  * 
  * @param bTreeIndexFileName 
+ * @param indexOpenType 
  * @param registersFileName 
+ * @param registerOpenType 
  * @return BTreeCache_t* 
  */
-BTreeCache_t* BTreeCache_Create(char* bTreeIndexFileName, char* registersFileName);
+BTreeCache_t* BTreeCache_Create(char* bTreeIndexFileName, char* indexOpenType, char* registersFileName, char* registerOpenType);
 
 /**
  * @brief Creates a B-Tree cache from the given files and returns it.
@@ -34,7 +36,7 @@ BTreeCache_t* BTreeCache_Create(char* bTreeIndexFileName, char* registersFileNam
  * @param registersFileName File containing the registers.
  * @return BTreeCache_t* 
  */
-BTreeCache_t* BTreeCache_CreateFromFile(char* bTreeIndexFileName, char* registersFileName);
+BTreeCache_t* BTreeCache_CreateFromFile(char* bTreeIndexFileName, char* indexOpenType, char* registersFileName, char* registerOpenType);
 
 /**
  * @brief Inserts a new register in the cache.
