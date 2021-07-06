@@ -11,8 +11,8 @@ typedef struct BTreeCache BTreeCache_t;
  * @brief Cached B-Tree nodes currently in RAM.
  */
 struct BTreeCache {
-    char* bTreeIndexFileName; // File with the nodes from the B-Tree.
-    char* registersFileName; // File with the registers from the B-Tree.
+    FILE* index; // File with the nodes from the B-Tree.
+    FILE* registers; // File with the registers from the B-Tree.
     BHeader_t* header;
     BNode_t* root;
     BNode_t** nodes;

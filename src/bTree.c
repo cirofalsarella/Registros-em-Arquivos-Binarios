@@ -9,8 +9,10 @@
 BTreeCache_t* BTreeCache_Create(char* bTreeIndexFileName, char* registersFileName) {
     // Inits a B-Tree Cache
     BTreeCache_t* cache = calloc(1, sizeof(BTreeCache_t));
-    cache->bTreeIndexFileName = bTreeIndexFileName;
-    cache->registersFileName = registersFileName;
+
+    if (bTreeIndexFileName != NULL) cache->index = fopen(bTreeIndexFileName, "rb+");
+    if (registersFileName != NULL)  cache->registers = fopen(registersFileName, "rb+");
+
     cache->header = BHeader_Create('1', -1, 1);
     cache->nodes = calloc(INITIAL_NODE_COUNT, sizeof(BNode_t*));
     cache->root = NULL;
@@ -21,9 +23,14 @@ BTreeCache_t* BTreeCache_Create(char* bTreeIndexFileName, char* registersFileNam
 BTreeCache_t* BTreeCache_CreateFromFile(char* bTreeIndexFileName, char* registersFileName) {
     // Inits a B-Tree Cache
     BTreeCache_t* cache = calloc(1, sizeof(BTreeCache_t));
-    cache->bTreeIndexFileName = bTreeIndexFileName;
-    cache->registersFileName = registersFileName;
-    cache->header = BinaryReader_BTreeHeaderAndRoot(cache, bTreeIndexFileName);
+    
+    cache->index = fopen(bTreeIndexFileName, "rb+");
+    cache->registers = fopen(registersFileName, "rb+");
+    
+    // If FILE status == 1, error
+    if (BinaryReader_BTreeHeaderAndRoot(cache, bTreeIndexFileName)) {
+        return NULL;
+    }
     cache->nodes = calloc(INITIAL_NODE_COUNT, sizeof(BNode_t*));
 
     return cache;
@@ -63,21 +70,21 @@ BNode_t* GetBTreeNodeByKey(BTreeCache_t* cache, RegKey_t key) {
     return GetNodeByKeyRecur(cache, cache->root->rrn, key);
 }
 
-void BTreeCache_Free(BTreeCache_t* bTreeCache) {
-    if (bTreeCache == NULL) return;
+void BTreeCache_Free(BTreeCache_t* cache) {
+    if (cache == NULL) return;
 
-    // Frees everything
-    free(bTreeCache->bTreeIndexFileName);
-    free(bTreeCache->registersFileName);
-    BHeader_Free(bTreeCache->header);
+    if (cache->registers != NULL) fclose(cache->registers);
+    if (cache->index != NULL) fclose(cache->index);
     
-    // NOTE: This for loop also frees root
-    for (int i = 0; i < bTreeCache->header->rrnNextNode; ++i) {
-        BNode_Free(bTreeCache->nodes[i]);
+    BHeader_Free(cache->header);
+
+    // This loop also frees root
+    for (int i = 0; i < cache->header->rrnNextNode; ++i) {
+        BNode_Free(cache->nodes[i]);
     }
 
-    free(bTreeCache->nodes);
-    free(bTreeCache);
+    free(cache->nodes);
+    free(cache);
 }
 
 
@@ -90,6 +97,7 @@ void BTreeCache_Free(BTreeCache_t* bTreeCache) {
 void PrintNode(BTreeCache_t* cache, BNode_t* node, RRN_t rrn) {
     if (node == NULL) node = cache->nodes[rrn];
     if (node == NULL)   return;
+
     printf("%d -> ", node->rrn);
     for (int i=0; i<4; i++) {
         printf("(%d) %d ", node->childrenRRNs[i], node->regKeys[i]);
@@ -212,6 +220,7 @@ BRegister_t* PartitionNode(BTreeCache_t* cache, BNode_t* node, BRegister_t* newR
 
     partitioned->indexedKeysCount--;
     BinaryWriter_IncrementBTree(partitioned, cache);
+    PrintNode(cache, NULL, 2);
 
     return promovido;
 }
@@ -318,7 +327,6 @@ void  BTreeCache_Insert(BTreeCache_t* cache, RegKey_t key, ByteOffset_t fileOffs
 
             InsertRegisterInNode(cache, cache->root, promoted);
             BinaryWriter_IncrementBTree(cache->root, cache);
-
         }
     }
 

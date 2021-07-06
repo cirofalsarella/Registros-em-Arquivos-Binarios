@@ -169,74 +169,48 @@ BusLine_t** BinaryReader_BusLines(BusLineHeader_t** header, char* fileName) {
 
 
 BNode_t* BinaryReader_BTreeNode(BTreeCache_t* cache, RRN_t nodeRRN) {
-    if (nodeRRN < 0) { // Checks for NULL RRNs.
-        return NULL;
-    }
-    assert(nodeRRN != 0); // "The RRN of NODES must be greater than zero."
-
-    // Avoids unnecessary freads
+    if (cache == NULL || cache->index == NULL)   return NULL;
+    
     if (cache->nodes[nodeRRN-1] != NULL) {
         return cache->nodes[nodeRRN-1];
     }
 
-
-    FILE* fp = fopen(cache->registersFileName, "rb");
-
-    ByteOffset_t byteOffsetOfNode = RRNToOffset(nodeRRN);
-    fseek(fp, byteOffsetOfNode, SEEK_SET);
+    fseek(cache->index, RRNToOffset(nodeRRN), SEEK_SET);
     
     // Creates a NULL node
     BNode_t* node = BNode_CreateNoChildren(-1, -1);
 
     // Reads fields
-    fread(&node->isLeaf, sizeof(char), 1, fp);
-    fread(&node->indexedKeysCount, sizeof(int32_t), 1, fp);
-    fread(&node->rrn, sizeof(RRN_t), 1, fp);
+    fread(&node->isLeaf, sizeof(char), 1, cache->index);
+    fread(&node->indexedKeysCount, sizeof(int32_t), 1, cache->index);
+    fread(&node->rrn, sizeof(RRN_t), 1, cache->index);
 
-    for (int i=0; i<BTREE_ORDER-1; i++) {
-        fread(&node->childrenRRNs[i], sizeof(RRN_t), 1, fp);
-        fread(&node->regKeys[i], sizeof(RegKey_t), 1, fp);
-        fread(&node->regOffsets[i], sizeof(ByteOffset_t), 1, fp);
+    for (int i=0; i<BTREE_ORDER-2; i++) {
+        fread(&node->childrenRRNs[i], sizeof(RRN_t), 1, cache->index);
+        fread(&node->regKeys[i], sizeof(RegKey_t), 1, cache->index);
+        fread(&node->regOffsets[i], sizeof(ByteOffset_t), 1, cache->index);
     }
-    fread(&node->childrenRRNs[BTREE_ORDER-1], sizeof(RRN_t), 1, fp);
+    fread(&node->childrenRRNs[BTREE_ORDER-1], sizeof(RRN_t), 1, cache->index);
 
     return node;
 }
 
 /**
- * @brief Helper function that reads the B-Header and the root node from the given file. Used during BTreeCache_Create.
+ * @brief Function that reads the header and root of an bTree.
  * 
- * @param fileName 
- * @return BHeader_t* 
+ * @param cache The cache of the bTree
+ * @return the file status 
  */
-BHeader_t* BinaryReader_BTreeHeaderAndRoot(BTreeCache_t* cache, char* fileName) {
-    FILE* file = fopen(fileName, "rb");
+int BinaryReader_BTreeHeaderAndRoot(BTreeCache_t* cache) {
+    cache->header = BHeader_Create(0, -1, -1);
 
-    if (file == NULL) {
-        printf("Arquivo índice de Arvore-B inexistente\n");
-        exit(1);
-        return NULL;
-    }
+    fread(&(cache->header->status), sizeof(char), 1, cache->index);
+    fread(&(cache->header->rootRRN), sizeof(RRN_t), 1, cache->index);
+    fread(&(cache->header->rrnNextNode), sizeof(RRN_t), 1, cache->index);
+    fread(&(cache->header->unused[0]), sizeof(char), 68, cache->index);
 
-    BHeader_t* header = BHeader_Create(0, -1, -1);
-    fread(&header->status, sizeof(char), 1, file);
+    cache->root = BinaryReader_BTreeNode(cache, cache->header->rootRRN);
+    cache->nodes[cache->header->rootRRN-1] = cache->root;
 
-    // If the status is not '1', then the file is corrupted.
-    if (header->status != '1') {
-        printf("Arquivo índice de Arvore-B corrompido\n");
-        exit(1);
-        return NULL;
-    }
-
-    // Reads the other fields
-    fread(&header->rootRRN, sizeof(RRN_t), 1, file);
-    fread(&header->rrnNextNode, sizeof(RRN_t), 1, file);
-    fread(&header->unused[0], sizeof(char), 68, file);
-
-    cache->root = BinaryReader_BTreeNode(cache, header->rootRRN);
-    cache->nodes[header->rootRRN-1] = cache->root;
-
-    fclose(file);
-
-    return header;
+    return cache->header->status;
 }
