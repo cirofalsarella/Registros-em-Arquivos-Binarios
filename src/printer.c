@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "bTree.h"
+#include "bTreeDataModel.h"
 #include "dataModel.h"
 #include "utils.h"
 
@@ -110,3 +112,23 @@ void Printer_BusLine(BusLine_t *busLine) {
     printf("\n");
 }
 
+
+/**
+ * @brief Prints an node
+ * @param rrn (use rrn-1)
+ */
+void Printer_Node(BTreeCache_t* cache, BNode_t* node, RRN_t rrn) {
+    if (node == NULL) node = cache->nodes[rrn];
+    if (node == NULL)   return;
+
+    printf("%d -> ", node->rrn);
+    for (int i=0; i<4; i++) {
+        printf("(%d) %d ", node->childrenRRNs[i], node->regKeys[i]);
+    }
+    printf("(%d)", node->childrenRRNs[4]);
+    printf(" %d,", node->indexedKeysCount);
+
+    if (cache->root->rrn == (rrn +1))    printf(" r");
+
+    printf("\n");
+}
