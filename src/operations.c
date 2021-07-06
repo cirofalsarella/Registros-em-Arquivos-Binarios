@@ -286,6 +286,7 @@ void Op_PushBuslines() {
     free(buslines);
 }
 
+
 void Op_CreateBTreeVehicles() {
     // Gets file names from terminal
     char regsFileName[128] = { '\0' };
@@ -305,13 +306,11 @@ void Op_CreateBTreeVehicles() {
 
     // Creates an empty cache
     BTreeCache_t* cache = BTreeCache_Create(bTreeFileName, "wb+", regsFileName, "rb+");
-    ByteOffset_t fileOffset = VEHICLE_HEADER_SIZE;
 
     // Inserts the vehicles
     for (int i = 0; i < regsHeader->numReg; i++) {
         const RegKey_t key = Utils_VehiclePrefixHash(regs[i]->prefix);
-        BTreeCache_Insert(cache, key, fileOffset);
-        fileOffset += regs[i]->regSize + REG_SIZE_IGNORED;
+        BTreeCache_Insert(cache, key, regs[i]->offset);
     }
 
     // Prints hash of resulting file

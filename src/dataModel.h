@@ -50,6 +50,8 @@ typedef struct BusLineHeader {
 //  Registros
 
 typedef struct Vehicle {
+    int64_t offset;
+
     char removed;       // '0' if this register has been removed, '1' otherwise
     int32_t regSize;    // Size of this register
 
@@ -67,10 +69,10 @@ typedef struct Vehicle {
 } Vehicle_t;
 
 typedef struct BusLine {
-    // '0' if this register has been removed, '1' otherwise
-    char removed;
-    // Size of this register
-    int32_t regSize;
+    int64_t offset;
+
+    char removed;       // '0' if this register has been removed, '1' otherwise
+    int32_t regSize;    // Size of this register
 
     // Fixed-length fields
     int32_t lineCode;
@@ -87,9 +89,9 @@ typedef struct BusLine {
 
 //  Cria um novo Registro a partir de seus campos
 
-Vehicle_t* Vehicle_Create(char removed, char* prefix, char* date, int32_t numPlaces, int32_t lineCode, char* model, char* category);
+Vehicle_t* Vehicle_Create(char removed, char* prefix, char* date, int32_t numPlaces, int32_t lineCode, char* model, char* category, int64_t offset);
 
-BusLine_t* BusLine_Create(char removed, int32_t lineCode, char acceptsCreditCard, char* name, char* color);
+BusLine_t* BusLine_Create(char removed, int32_t lineCode, char acceptsCreditCard, char* name, char* color, int64_t offset);
 
 
 

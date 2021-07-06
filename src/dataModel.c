@@ -7,9 +7,11 @@
 #include "utils.h"
 
 
-Vehicle_t* Vehicle_Create(char removed, char* prefix, char* date, int32_t numSeats, int32_t lineCode, char* model, char* category) {    
+Vehicle_t* Vehicle_Create(char removed, char* prefix, char* date, int32_t numSeats, int32_t lineCode, char* model, char* category, int64_t offset) {    
     // This code is basically just copying fields
     Vehicle_t* vehicle = malloc(sizeof(Vehicle_t));
+
+    vehicle->offset = offset;
 
     vehicle->modelLength = model == NULL ? 0 : strlen(model);
     vehicle->model = model;
@@ -79,7 +81,7 @@ Vehicle_t** Vehicle_Read(int n) {
         Utils_ScanQuoteString(category);
 
         // Creates a new vehicle and pushes it
-        vehicles[i] = Vehicle_Create(removed, prefix, date, Utils_StrToInt(numSeats), Utils_StrToInt(lineCode), model, category);        
+        vehicles[i] = Vehicle_Create(removed, prefix, date, Utils_StrToInt(numSeats), Utils_StrToInt(lineCode), model, category, -1);        
     }
 
 
@@ -102,9 +104,11 @@ void Vehicle_Free(Vehicle_t* vehicle) {
 
 
 
-BusLine_t* BusLine_Create(char removed, int32_t lineCode, char acceptsCreditCard, char* name, char* color) {
+BusLine_t* BusLine_Create(char removed, int32_t lineCode, char acceptsCreditCard, char* name, char* color, int64_t offset) {
     // This code is basically just copying fields
     BusLine_t* busLine = malloc(sizeof(BusLine_t));
+
+    busLine->offset = offset;
 
     busLine->nameLength = name == NULL ? 0 : strlen(name);
     busLine->name = name;
@@ -177,7 +181,7 @@ BusLine_t** BusLine_Read(int n) {
         Utils_ScanQuoteString(corLinha);
 
         // Creates a new vehicle and pushes it
-        buslines[i] = BusLine_Create(removed, lineCode, aceitaCartao[0], nomeLinha, corLinha);
+        buslines[i] = BusLine_Create(removed, lineCode, aceitaCartao[0], nomeLinha, corLinha, -1);
     }
 
     return buslines;

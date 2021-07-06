@@ -31,7 +31,7 @@ Vehicle_t* CreateVehicleFromRow(StringTable* table, int row) {
         free(prefixCopy);
     }
 
-    return Vehicle_Create(removed, prefix, date, Utils_StrToInt(numSeats), Utils_StrToInt(lineCode), strdup(model), strdup(category));
+    return Vehicle_Create(removed, prefix, date, Utils_StrToInt(numSeats), Utils_StrToInt(lineCode), strdup(model), strdup(category), -1);
 }
 
 BusLine_t* CreateBusLineFromRow(StringTable* table, int row) {
@@ -52,7 +52,7 @@ BusLine_t* CreateBusLineFromRow(StringTable* table, int row) {
         free(lineCodeCopy);
     }
 
-    return BusLine_Create(removed, Utils_StrToInt(lineCode), acceptsCreditCard[0], strdup(name), strdup(color));
+    return BusLine_Create(removed, Utils_StrToInt(lineCode), acceptsCreditCard[0], strdup(name), strdup(color), -1);
 }
 
 

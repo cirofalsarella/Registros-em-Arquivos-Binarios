@@ -9,6 +9,8 @@
 Vehicle_t* BinaryReader_Vehicle(FILE *srcFile) {
     Vehicle_t* vehicle = calloc(1, sizeof(Vehicle_t));
 
+    vehicle->offset = ftell(srcFile);
+
     //  Fixed length fields
     fread(&vehicle->removed, sizeof(char), 1, srcFile);
     
@@ -33,6 +35,8 @@ Vehicle_t* BinaryReader_Vehicle(FILE *srcFile) {
 
 BusLine_t* BinaryReader_BusLine(FILE *srcFile) {
     BusLine_t* busLine = calloc(1, sizeof(BusLine_t));
+
+    busLine->offset = ftell(srcFile);
 
     //  Fixed length fields
     fread(&busLine->removed, sizeof(char), 1, srcFile);
