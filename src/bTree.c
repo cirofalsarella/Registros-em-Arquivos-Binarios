@@ -1,10 +1,12 @@
 #include "bTree.h"
 #include "binaryReader.h"
 #include "binaryWriter.h"
+#include "printer.h"
 #include <assert.h>
 
 // TODO: Realloc dinamico
 #define INITIAL_NODE_COUNT 10000
+
 
 BTreeCache_t* BTreeCache_Create(char* bTreeIndexFileName, char* indexOpenType, char* registersFileName, char* registerOpenType) {
     // Inits a B-Tree Cache
@@ -13,7 +15,7 @@ BTreeCache_t* BTreeCache_Create(char* bTreeIndexFileName, char* indexOpenType, c
     if (bTreeIndexFileName != NULL) cache->index = fopen(bTreeIndexFileName, indexOpenType);
     if (registersFileName != NULL)  cache->registers = fopen(registersFileName, registerOpenType);
 
-    cache->header = BHeader_Create('1', -1, 1);
+    cache->header = BHeader_Create('0', -1, 0);
     cache->nodes = calloc(INITIAL_NODE_COUNT, sizeof(BNode_t*));
     cache->root = NULL;
 
@@ -48,18 +50,10 @@ BTreeCache_t* BTreeCache_CreateFromFile(char* bTreeIndexFileName, char* indexOpe
  */
 BNode_t* GetNodeByKeyRecur(BTreeCache_t* cache, RRN_t nodeRRN, RegKey_t key) {
     BNode_t* current = BinaryReader_BTreeNode(cache, nodeRRN);
-
-    if (current == NULL) {
-        return NULL;
-    }
-
-    if (current->indexedKeysCount < (BTREE_ORDER+1)/2-1 || current->indexedKeysCount > BTREE_ORDER-1) {
-        printf("Arvore-B corrompida. Um ou mais nó possuem indexedKeysCount invalido: %d.", current->indexedKeysCount);
-        exit(1);
-    }
+    if (current == NULL)    return NULL;
 
     for (int i = 0; i < current->indexedKeysCount; i++) {
-        if (current->regKeys[i] == key) return current;
+        if (current->regKeys[i] == key)     return current;
         else if (current->regKeys[i] < key) return GetNodeByKeyRecur(cache, current->childrenRRNs[i], key);
     }
 
@@ -79,8 +73,10 @@ void BTreeCache_Free(BTreeCache_t* cache) {
     BHeader_Free(cache->header);
 
     // This loop also frees root
-    for (int i = 0; i < cache->header->rrnNextNode; ++i) {
+    int i = 0;
+    while (cache->nodes[i] != NULL) {
         BNode_Free(cache->nodes[i]);
+        i++;
     }
     
     free(cache->nodes);
@@ -136,6 +132,10 @@ BNode_t* GetNextNode(BTreeCache_t* cache, BNode_t* node, RegKey_t key) {
     int i=0;
     while (key > node->regKeys[i] && i < node->indexedKeysCount) {
         i++;
+    }
+
+    if (key == 8820949) {
+        printf("pos = %d, (%d)\n", i, node->rrn);
     }
 
     return BinaryReader_BTreeNode(cache, node->childrenRRNs[i]);
@@ -224,13 +224,13 @@ BRegister_t* InsertRegisterInNode(BTreeCache_t* cache, BNode_t* node, BRegister_
         pos++;
     }
 
-    node->childrenRRNs[pos+2] = node->childrenRRNs[pos+1];
     // Movo os registros 1 pra frente
     for (int i=node->indexedKeysCount-1; i>=pos; i--) {
+        node->childrenRRNs[i+2] = node->childrenRRNs[i+1];
         node->regKeys[i+1] = node->regKeys[i];
         node->regOffsets[i+1] = node->regOffsets[i];
-        node->childrenRRNs[i+1] = node->childrenRRNs[i];
     }
+    node->childrenRRNs[pos+1] = node->childrenRRNs[pos];
 
     // Salvo o conteúdo da nova inserção
     node->regKeys[pos] = reg->key;
@@ -239,7 +239,7 @@ BRegister_t* InsertRegisterInNode(BTreeCache_t* cache, BNode_t* node, BRegister_
     node->childrenRRNs[pos+1] = reg->nextRRN;
 
     free(reg);
-
+    
     node->indexedKeysCount++;
     return NULL;
 }
@@ -261,7 +261,8 @@ BRegister_t* InsertNodeRecur(BTreeCache_t* cache, BNode_t* node, BRegister_t* ne
     else {                  // Insere em um nó filho
         BNode_t* filho = GetNextNode(cache, node, newReg->key);
         promoted = InsertNodeRecur(cache, filho, newReg);
-        promoted = InsertRegisterInNode(cache, node, promoted);
+
+        if (promoted != NULL)   promoted = InsertRegisterInNode(cache, node, promoted);
     }
     BinaryWriter_IncrementBTree(node, cache);
     
@@ -269,13 +270,17 @@ BRegister_t* InsertNodeRecur(BTreeCache_t* cache, BNode_t* node, BRegister_t* ne
     return promoted;
 }
 
+
+
 void  BTreeCache_Insert(BTreeCache_t* cache, RegKey_t key, ByteOffset_t fileOffset) {
+    printf("key: %d\n", key);
+
     // Confere se raiz existe
     if (cache->root == NULL) {
         // Cria nó raiz
         cache->root = BNode_CreateNoChildren(1, cache->header->rrnNextNode);
         cache->header->rrnNextNode++;
-        cache->header->rootRRN = 1;
+        cache->header->rootRRN = 0;
         cache->nodes[0] = cache->root;
 
         // Adiciona novo registro
@@ -301,6 +306,10 @@ void  BTreeCache_Insert(BTreeCache_t* cache, RegKey_t key, ByteOffset_t fileOffs
         }
     }
 
-    // Escreve o header em memória
-    BinaryWriter_BTreeHeader(cache);
+    int i=0;
+    while (cache->nodes[i] != 0) {
+        Printer_Node(cache, NULL, i);
+        i++;
+    }
+    printf("\n");
 }

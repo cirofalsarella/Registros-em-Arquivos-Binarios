@@ -121,14 +121,14 @@ void Printer_Node(BTreeCache_t* cache, BNode_t* node, RRN_t rrn) {
     if (node == NULL) node = cache->nodes[rrn];
     if (node == NULL)   return;
 
-    printf("%d -> ", node->rrn);
+    printf("%d %c -> ", node->rrn, (node->isLeaf ? 's' : 'n'));
     for (int i=0; i<4; i++) {
         printf("(%d) %d ", node->childrenRRNs[i], node->regKeys[i]);
     }
     printf("(%d)", node->childrenRRNs[4]);
     printf(" %d,", node->indexedKeysCount);
 
-    if (cache->root->rrn == (rrn +1))    printf(" r");
+    if (cache->root->rrn == rrn)    printf(" r");
 
     printf("\n");
 }

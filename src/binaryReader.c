@@ -174,9 +174,11 @@ BusLine_t** BinaryReader_BusLines(BusLineHeader_t** header, char* fileName) {
 
 BNode_t* BinaryReader_BTreeNode(BTreeCache_t* cache, RRN_t nodeRRN) {
     if (cache == NULL || cache->index == NULL)   return NULL;
+
+    if (nodeRRN < 0)    printf("merda\n"); //DEBUG
     
-    if (cache->nodes[nodeRRN-1] != NULL) {
-        return cache->nodes[nodeRRN-1];
+    if (cache->nodes[nodeRRN] != NULL) {
+        return cache->nodes[nodeRRN];
     }
 
     fseek(cache->index, RRNToOffset(nodeRRN), SEEK_SET);
@@ -214,7 +216,7 @@ int BinaryReader_BTreeHeaderAndRoot(BTreeCache_t* cache) {
     fread(&(cache->header->unused[0]), sizeof(char), 68, cache->index);
 
     cache->root = BinaryReader_BTreeNode(cache, cache->header->rootRRN);
-    cache->nodes[cache->header->rootRRN-1] = cache->root;
+    cache->nodes[cache->header->rootRRN] = cache->root;
 
     return cache->header->status;
 }

@@ -340,7 +340,7 @@ int BinaryWriter_IncrementBusLineFile(BusLine_t** buslines, int buslinesCount, c
 
 int BinaryWriter_IncrementBTree(BNode_t* node, BTreeCache_t* cache) {
     if (cache == NULL || cache->index == NULL || node == NULL)  return 1;
-    cache->nodes[node->rrn-1] = node;
+    cache->nodes[node->rrn] = node;
     
     fseek(cache->index, RRNToOffset(node->rrn), SEEK_SET);
     WriteBTreeNode(node, cache->index);

@@ -7,9 +7,11 @@
 BHeader_t* BHeader_Create(char status, RRN_t rootNode, RRN_t rrnNextNode) {
     // Creates a new header and returns it
     BHeader_t* header = (BHeader_t*) malloc(sizeof(BHeader_t));
+
     header->status = status;
     header->rootRRN = rootNode;
     header->rrnNextNode = rrnNextNode;
+    
     memset(header->unused, '@', sizeof(header->unused));
     
     return header;
@@ -49,5 +51,5 @@ void BNode_Free(BNode_t* node) {
 }
 
 ByteOffset_t RRNToOffset(RRN_t rrn) {
-    return ((ByteOffset_t) rrn) * ((ByteOffset_t) BTREE_RECORD_SIZE);
+    return (1 + (ByteOffset_t) rrn) * ((ByteOffset_t) BTREE_RECORD_SIZE);
 }
