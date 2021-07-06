@@ -134,10 +134,6 @@ BNode_t* GetNextNode(BTreeCache_t* cache, BNode_t* node, RegKey_t key) {
         i++;
     }
 
-    if (key == 8820949) {
-        printf("pos = %d, (%d)\n", i, node->rrn);
-    }
-
     return BinaryReader_BTreeNode(cache, node->childrenRRNs[i]);
 }
 
@@ -155,7 +151,6 @@ BRegister_t* LastRegTradeNode(BTreeCache_t* cache, BNode_t* source, BNode_t* des
     // Atualizando o nó de origem
     source->indexedKeysCount--;
 
-    source->childrenRRNs[BTREE_ORDER-2] = -1;
     source->regKeys[BTREE_ORDER-2] = -1;
     source->regOffsets[BTREE_ORDER-2] = -1;
     source->childrenRRNs[BTREE_ORDER-1] = -1;
@@ -180,7 +175,7 @@ BRegister_t* PartitionNode(BTreeCache_t* cache, BNode_t* node, BRegister_t* newR
 
     // Pega os registros e muda os 2 maiores para o novo nó partição
     // Desconsidero o retorno pois sei que será NULL
-    LastRegTradeNode(cache, node, partitioned); // node > (ant) Key (next); part < (ant) Key (next)
+    LastRegTradeNode(cache, node, partitioned); // < (ant) reg (pos)  > (ant) reg (prox) 
     InsertRegisterInNode(cache, node, newReg);  // < newReg
     LastRegTradeNode(cache, node, partitioned);
     
@@ -273,8 +268,6 @@ BRegister_t* InsertNodeRecur(BTreeCache_t* cache, BNode_t* node, BRegister_t* ne
 
 
 void  BTreeCache_Insert(BTreeCache_t* cache, RegKey_t key, ByteOffset_t fileOffset) {
-    printf("key: %d\n", key);
-
     // Confere se raiz existe
     if (cache->root == NULL) {
         // Cria nó raiz
@@ -305,11 +298,4 @@ void  BTreeCache_Insert(BTreeCache_t* cache, RegKey_t key, ByteOffset_t fileOffs
             BinaryWriter_IncrementBTree(cache->root, cache);
         }
     }
-
-    int i=0;
-    while (cache->nodes[i] != 0) {
-        Printer_Node(cache, NULL, i);
-        i++;
-    }
-    printf("\n");
 }
