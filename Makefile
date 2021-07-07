@@ -7,7 +7,7 @@ run:
 	./programaTrab
 
 valgrind:
-	valgrind ./programaTrab
+	valgrind --leak-check=full --show-leak-kinds=all ./programaTrab
 
 gdb:
 	gdb programaTrab
