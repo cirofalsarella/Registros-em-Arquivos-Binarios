@@ -273,6 +273,9 @@ BRegister_t* InsertNodeRecur(BTreeCache_t* cache, BNode_t* node, BRegister_t* ne
 
 
 void  BTreeCache_Insert(BTreeCache_t* cache, RegKey_t key, ByteOffset_t fileOffset) {
+    // <DEBUG>
+    // printf("%d\n", key);
+    
     // Confere se raiz existe
     if (cache->root == NULL) {
         // Cria nó raiz
@@ -303,4 +306,12 @@ void  BTreeCache_Insert(BTreeCache_t* cache, RegKey_t key, ByteOffset_t fileOffs
             BinaryWriter_IncrementBTree(cache->root, cache);
         }
     }
+
+    // <DEBUG>
+    // int i=0;
+    // while (cache->nodes[i] != NULL) {
+    //     Printer_Node(cache, cache->nodes[i], 0);
+    //     i++;
+    // }
+    // printf("\n");
 }

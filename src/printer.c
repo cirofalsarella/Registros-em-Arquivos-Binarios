@@ -128,7 +128,7 @@ void Printer_Node(BTreeCache_t* cache, BNode_t* node, RRN_t rrn) {
     printf("(%d)", node->childrenRRNs[4]);
     printf(" %d,", node->indexedKeysCount);
 
-    if (cache->root->rrn == rrn)    printf(" r");
+    if (cache->root->rrn == node->rrn)    printf(" r");
 
     printf("\n");
 }
