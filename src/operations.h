@@ -37,5 +37,6 @@ void Op_PushBuslines();
  *      Criam um árquivo índice B-Tree.
  */
 void Op_CreateBTreeVehicles();
+void Op_CreateBTreeBusLines();
 
 #endif

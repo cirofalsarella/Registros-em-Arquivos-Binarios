@@ -328,3 +328,45 @@ void Op_CreateBTreeVehicles() {
     // Prints hash of resulting file
     PrintHash(bTreeFileName);
 }
+
+
+void Op_CreateBTreeBusLines() {
+    // Gets file names from terminal
+    char regsFileName[128] = { '\0' };
+    scanf("%s", &regsFileName[0]);
+
+    char bTreeFileName[128] = { '\0' };
+    scanf("%s", &bTreeFileName[0]);
+
+    // Loads BusLines
+    BusLineHeader_t* regsHeader = NULL;
+    BusLine_t** regs = BinaryReader_BusLines(&regsHeader, regsFileName);
+    
+    if (regsHeader == NULL || regs == NULL) {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
+    // Creates an empty cache
+    BTreeCache_t* cache = BTreeCache_Create(bTreeFileName, "wb+", regsFileName, "rb+");
+
+    // Inserts the BusLines
+    for (int i = 0; i < regsHeader->numReg; i++) {
+        BTreeCache_Insert(cache, regs[i]->lineCode, regs[i]->offset);
+    }
+    BinaryWriter_BTreeHeader(cache);
+
+
+    // Frees the registers
+    for (int i = 0; i < regsHeader->numReg; i++)    BusLine_Free(regs[i]);
+    BinaryHeaders_FreeBusLineHeader(regsHeader);
+    free(regs);
+
+    
+    // Frees the btree
+    BTreeCache_Free(cache);
+
+
+    // Prints hash of resulting file
+    PrintHash(bTreeFileName);
+}

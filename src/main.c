@@ -43,6 +43,9 @@ int main() {
     case 9:
         Op_CreateBTreeVehicles();
         break;
+    case 10:
+        Op_CreateBTreeBusLines();
+        break;
     }
 
     return 0;
