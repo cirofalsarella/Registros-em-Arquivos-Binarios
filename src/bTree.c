@@ -106,7 +106,7 @@ void BTreeCache_Free(BTreeCache_t* cache) {
 typedef struct bRegister {
     RegKey_t key;
     ByteOffset_t fileOffset;
-    RRN_t previousRRN;
+    RRN_t antRRN;
     RRN_t nextRRN;
 } BRegister_t;
 
@@ -115,11 +115,11 @@ BRegister_t* InsertRegisterInNode(BTreeCache_t* cache, BNode_t* node, BRegister_
 /**
  * @brief Create and return an Register object
  */
-BRegister_t* CreateRegister(RegKey_t key, ByteOffset_t regOffset, RRN_t previousRRN, RRN_t nextRRN) {
+BRegister_t* CreateRegister(RegKey_t key, ByteOffset_t regOffset, RRN_t antRRN, RRN_t nextRRN) {
     BRegister_t* reg = (BRegister_t*) malloc(sizeof(BRegister_t));
     reg->key = key;
     reg->fileOffset = regOffset;
-    reg->previousRRN = previousRRN;
+    reg->antRRN = antRRN;
     reg->nextRRN = nextRRN;
 
     return reg;
@@ -143,29 +143,6 @@ BNode_t* GetNextNode(BTreeCache_t* cache, BNode_t* node, RegKey_t key) {
 }
 
 /**
- * @brief Moves a register from an node to the other with space
- * 
- * @param origem The node that will provide the register
- * @param dest The node that will receive the register
- * @param pos The position of the register in the origin node
- */
-BRegister_t* LastRegTradeNode(BTreeCache_t* cache, BNode_t* source, BNode_t* dest) {
-    // Salvando os valores do nó de origem
-    BRegister_t* newReg = CreateRegister(source->regKeys[BTREE_ORDER-2], source->regOffsets[BTREE_ORDER-2], source->childrenRRNs[BTREE_ORDER-2], source->childrenRRNs[BTREE_ORDER-1]);
-
-    // Atualizando o nó de origem
-    source->indexedKeysCount--;
-
-    source->regKeys[BTREE_ORDER-2] = -1;
-    source->regOffsets[BTREE_ORDER-2] = -1;
-    source->childrenRRNs[BTREE_ORDER-1] = -1;
-
-
-    // Inserindo no nó de destino
-    return InsertRegisterInNode(cache, dest, newReg);
-}
-
-/**
  * @brief Partitions a node to two.
  * 
  * @param header the header of the btree (used to create the new node)
@@ -174,33 +151,63 @@ BRegister_t* LastRegTradeNode(BTreeCache_t* cache, BNode_t* source, BNode_t* des
  * @return the new node created
  */
 BRegister_t* PartitionNode(BTreeCache_t* cache, BNode_t* node, BRegister_t* newReg) {
-    // Criando o nó de partição
+    // Criar vetores auxiliares
+    RRN_t filhos[BTREE_ORDER+1];
+    ByteOffset_t offsets[BTREE_ORDER];
+    RegKey_t chaves[BTREE_ORDER];
+
+    filhos[BTREE_ORDER-1] = node->childrenRRNs[BTREE_ORDER-1];
+    for (int i=0; i<BTREE_ORDER-1; i++) {
+        filhos[i] = node->childrenRRNs[i];
+        offsets[i] = node->regOffsets[i];
+        chaves[i] = node->regKeys[i];
+    }
+
+
+    // Insere newReg ordenado nos vetores auxiliares
+    int pos = 0;
+    while (newReg->key > chaves[pos]) pos++;
+
+    for (int i=BTREE_ORDER-1; i>pos; i--) {
+        filhos[i+1] = filhos[i];
+        offsets[i] = offsets[i-1];
+        chaves[i] = chaves[i-1];
+    }
+    filhos[pos] = newReg->nextRRN;
+    chaves[pos] = newReg->key;
+    offsets[pos] = newReg->fileOffset;
+
+
+    // Copia os primeiros no antigo e apaga registros removidos dele
+    for (int i=0; i<BTREE_ORDER/2; i++) {
+        node->childrenRRNs[i+1] = filhos[i+1];
+        node->regOffsets[i] = offsets[i];
+        node->regKeys[i] = chaves[i];
+    }
+    for (int i=BTREE_ORDER/2; i<BTREE_ORDER-1; i++) {
+        node->childrenRRNs[i+1] = -1;
+        node->regOffsets[i] = -1;
+        node->regKeys[i] = -1;
+    }
+    node->indexedKeysCount = BTREE_ORDER/2;
+    BinaryWriter_IncrementBTree(node, cache);
+
+
+    // Cria novo nó e copia os ultimos registros
     BNode_t* partitioned = BNode_CreateNoChildren(node->isLeaf, cache->header->rrnNextNode);
     cache->header->rrnNextNode++;
 
-    // Pega os registros e muda os 2 maiores para o novo nó partição
-    // Desconsidero o retorno pois sei que será NULL
-    LastRegTradeNode(cache, node, partitioned); // < (ant) reg (pos)  > (ant) reg (prox) 
-    InsertRegisterInNode(cache, node, newReg);  // < newReg
-    LastRegTradeNode(cache, node, partitioned);
-    
-    // Remover o 1o registro do nó particionado
-    BRegister_t* promovido = CreateRegister(partitioned->regKeys[0], partitioned->regOffsets[0], node->rrn, partitioned->rrn);
-    
-    partitioned->regKeys[0] = partitioned->regKeys[1];
-    partitioned->regKeys[1] = -1;
-
-    partitioned->regOffsets[0] = partitioned->regOffsets[1];
-    partitioned->regOffsets[1] = -1;
-    
-    partitioned->childrenRRNs[0] = partitioned->childrenRRNs[1];
-    partitioned->childrenRRNs[1] = partitioned->childrenRRNs[2];
-    partitioned->childrenRRNs[2] = -1;
-
-    partitioned->indexedKeysCount--;
+    for (int i=0; i<(BTREE_ORDER-1)/2; i++) {
+        partitioned->childrenRRNs[i] = filhos[i + BTREE_ORDER/2];
+        partitioned->regOffsets[i] = offsets[i + BTREE_ORDER/2];
+        partitioned->regKeys[i] = chaves[i+1 + BTREE_ORDER/2];
+    }
+    partitioned->indexedKeysCount = (BTREE_ORDER-1)/2;
     BinaryWriter_IncrementBTree(partitioned, cache);
 
-    return promovido;
+
+    // Promove o nó do meio
+    return CreateRegister(chaves[BTREE_ORDER/2], offsets[BTREE_ORDER/2], node->rrn, partitioned->rrn);
 }
 
 /**
@@ -235,7 +242,7 @@ BRegister_t* InsertRegisterInNode(BTreeCache_t* cache, BNode_t* node, BRegister_
     // Salvo o conteúdo da nova inserção
     node->regKeys[pos] = reg->key;
     node->regOffsets[pos] = reg->fileOffset;
-    node->childrenRRNs[pos] = reg->previousRRN;
+    node->childrenRRNs[pos] = reg->antRRN;
     node->childrenRRNs[pos+1] = reg->nextRRN;
 
     free(reg);
@@ -262,6 +269,7 @@ BRegister_t* InsertNodeRecur(BTreeCache_t* cache, BNode_t* node, BRegister_t* ne
         BNode_t* filho = GetNextNode(cache, node, newReg->key);
         promoted = InsertNodeRecur(cache, filho, newReg);
 
+        printf("%d, %d\n", cache->root->rrn, node->rrn);
         if (promoted != NULL)   promoted = InsertRegisterInNode(cache, node, promoted);
     }
     BinaryWriter_IncrementBTree(node, cache);
@@ -274,7 +282,7 @@ BRegister_t* InsertNodeRecur(BTreeCache_t* cache, BNode_t* node, BRegister_t* ne
 
 void  BTreeCache_Insert(BTreeCache_t* cache, RegKey_t key, ByteOffset_t fileOffset) {
     // <DEBUG>
-    // printf("%d\n", key);
+    printf("%d\n", key);
     
     // Confere se raiz existe
     if (cache->root == NULL) {
@@ -308,10 +316,10 @@ void  BTreeCache_Insert(BTreeCache_t* cache, RegKey_t key, ByteOffset_t fileOffs
     }
 
     // <DEBUG>
-    // int i=0;
-    // while (cache->nodes[i] != NULL) {
-    //     Printer_Node(cache, cache->nodes[i], 0);
-    //     i++;
-    // }
-    // printf("\n");
+    int i=0;
+    while (cache->nodes[i] != NULL) {
+        Printer_Node(cache, cache->nodes[i], 0);
+        i++;
+    }
+    printf("\n");
 }
