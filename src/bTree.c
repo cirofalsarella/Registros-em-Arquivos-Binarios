@@ -68,7 +68,12 @@ void BTreeCache_Free(BTreeCache_t* cache) {
     if (cache == NULL) return;
 
     if (cache->registers != NULL) fclose(cache->registers);
-    if (cache->index != NULL) fclose(cache->index);
+    
+    cache->header->status = '1';
+    if (cache->index != NULL) {
+        BinaryWriter_BTreeHeader(cache);
+        fclose(cache->index);
+    }
     
     BHeader_Free(cache->header);
 

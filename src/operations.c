@@ -312,15 +312,19 @@ void Op_CreateBTreeVehicles() {
         const RegKey_t key = Utils_VehiclePrefixHash(regs[i]->prefix);
         BTreeCache_Insert(cache, key, regs[i]->offset);
     }
+    BinaryWriter_BTreeHeader(cache);
+
+
+    // Frees the registers
+    for (int i = 0; i < regsHeader->numReg; i++)    Vehicle_Free(regs[i]);
+    BinaryHeaders_FreeVehicleHeader(regsHeader);
+    free(regs);
+
+    
+    // Frees the btree
+    BTreeCache_Free(cache);
+
 
     // Prints hash of resulting file
     PrintHash(bTreeFileName);
-
-    // Frees everything
-    for (int i = 0; i < regsHeader->numReg; i++) {
-        Vehicle_Free(regs[i]);
-    }
-
-    BinaryHeaders_FreeVehicleHeader(regsHeader);
-    free(regs);
 }
