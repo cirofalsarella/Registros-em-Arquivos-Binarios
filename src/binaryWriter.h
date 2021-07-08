@@ -62,14 +62,14 @@ int BinaryWriter_IncrementBusLineFile(BusLine_t** busLines, int buslinesCount, c
  * 
  * @return 1 == error, 0 == success
  */
-int BinaryWriter_IncrementBTree(BNode_t* node, BTreeCache_t* cache);
+int BinaryWriter_IncrementBTree(BNode_t* node, BTreeMetadata_t* cache);
 
 /**
  * @brief Writes the header of a BTree in the B-Tree file.
  * 
  * @param cache The cache that contains the header and file pointer.
  */
-void BinaryWriter_BTreeHeader(BTreeCache_t* cache);
+void BinaryWriter_BTreeHeader(BTreeMetadata_t* cache);
 
 
 #endif

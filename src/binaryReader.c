@@ -172,13 +172,11 @@ BusLine_t** BinaryReader_BusLines(BusLineHeader_t** header, char* fileName) {
 
 
 
-BNode_t* BinaryReader_BTreeNode(BTreeCache_t* cache, RRN_t nodeRRN) {
+BNode_t* BinaryReader_BTreeNode(BTreeMetadata_t* cache, RRN_t nodeRRN) {
     if (cache == NULL || cache->index == NULL)   return NULL;
 
-    if (nodeRRN < 0)    printf("merda\n"); //DEBUG
-    
-    if (cache->nodes[nodeRRN] != NULL) {
-        return cache->nodes[nodeRRN];
+    if (nodeRRN < 0) {
+        printf("NULL node passed to BinaryReader_BTreeNode.\n");
     }
 
     fseek(cache->index, RRNToOffset(nodeRRN), SEEK_SET);
@@ -207,7 +205,7 @@ BNode_t* BinaryReader_BTreeNode(BTreeCache_t* cache, RRN_t nodeRRN) {
  * @param cache The cache of the bTree
  * @return the file status 
  */
-int BinaryReader_BTreeHeaderAndRoot(BTreeCache_t* cache) {
+int BinaryReader_BTreeHeaderAndRoot(BTreeMetadata_t* cache) {
     cache->header = BHeader_Create(0, -1, -1);
 
     fread(&(cache->header->status), sizeof(char), 1, cache->index);
@@ -216,7 +214,5 @@ int BinaryReader_BTreeHeaderAndRoot(BTreeCache_t* cache) {
     fread(&(cache->header->unused[0]), sizeof(char), 68, cache->index);
 
     cache->root = BinaryReader_BTreeNode(cache, cache->header->rootRRN);
-    cache->nodes[cache->header->rootRRN] = cache->root;
-
     return cache->header->status;
 }

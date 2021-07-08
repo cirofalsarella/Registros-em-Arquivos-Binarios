@@ -305,7 +305,7 @@ void Op_CreateBTreeVehicles() {
     }
 
     // Creates an empty cache
-    BTreeCache_t* cache = BTreeCache_Create(bTreeFileName, "wb+", regsFileName, "rb+");
+    BTreeMetadata_t* cache = BTreeCache_Create(bTreeFileName, "wb+", regsFileName, "rb+");
 
     // Inserts the vehicles
     for (int i = 0; i < regsHeader->numReg; i++) {
@@ -347,7 +347,7 @@ void Op_CreateBTreeBusLines() {
     }
 
     // Creates an empty cache
-    BTreeCache_t* cache = BTreeCache_Create(bTreeFileName, "wb+", regsFileName, "rb+");
+    BTreeMetadata_t* cache = BTreeCache_Create(bTreeFileName, "wb+", regsFileName, "rb+");
 
     // Inserts the BusLines
     for (int i = 0; i < regsHeader->numReg; i++) {

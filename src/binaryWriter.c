@@ -123,7 +123,7 @@ void WriteBusLineHeader(const BusLineHeader_t* header, FILE *destFile) {
     fwrite(&header->describeLine[0], sizeof(char), 24, destFile);
 }
 
-void BinaryWriter_BTreeHeader(BTreeCache_t* cache) {    
+void BinaryWriter_BTreeHeader(BTreeMetadata_t* cache) {    
     fseek(cache->index, 0, SEEK_SET);
 
     fwrite(&(cache->header->status), sizeof(char), 1, cache->index);
@@ -219,7 +219,7 @@ void BinaryWriter_CreateBusLineFile(BusLine_t** busLines, int busLinesCount, Bus
     BinaryHeaders_FreeBusLineHeader(header);
 }
 
-void BinaryWriter_BTreeIndexFile(BTreeCache_t* cache){
+void BinaryWriter_BTreeIndexFile(BTreeMetadata_t* cache) {
     // TODO
 }
 
@@ -338,9 +338,8 @@ int BinaryWriter_IncrementBusLineFile(BusLine_t** buslines, int buslinesCount, c
     return 0;
 }
 
-int BinaryWriter_IncrementBTree(BNode_t* node, BTreeCache_t* cache) {
+int BinaryWriter_IncrementBTree(BNode_t* node, BTreeMetadata_t* cache) {
     if (cache == NULL || cache->index == NULL || node == NULL)  return 1;
-    cache->nodes[node->rrn] = node;
     
     fseek(cache->index, RRNToOffset(node->rrn), SEEK_SET);
     WriteBTreeNode(node, cache->index);

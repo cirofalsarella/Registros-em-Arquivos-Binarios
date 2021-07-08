@@ -117,9 +117,11 @@ void Printer_BusLine(BusLine_t *busLine) {
  * @brief Prints an node
  * @param rrn (use rrn-1)
  */
-void Printer_Node(BTreeCache_t* cache, BNode_t* node, RRN_t rrn) {
-    if (node == NULL) node = cache->nodes[rrn];
-    if (node == NULL)   return;
+void Printer_Node(BTreeMetadata_t* cache, BNode_t* node) {
+    if (node == NULL) {
+        printf("Printer_Node: NULL node.\n");
+        return;
+    }
 
     printf("%d %c -> ", node->rrn, (node->isLeaf ? 's' : 'n'));
     for (int i=0; i<4; i++) {

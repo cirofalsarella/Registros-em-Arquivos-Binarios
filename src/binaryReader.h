@@ -64,7 +64,7 @@ BusLine_t* BinaryReader_BusLineHeader(FILE *srcFile);
 
 // Arvore-B
     
-BHeader_t* BinaryReader_BTreeHeaderAndRoot(BTreeCache_t* cache, char* fileName);
+BHeader_t* BinaryReader_BTreeHeaderAndRoot(BTreeMetadata_t* cache, char* fileName);
 
 /**
  * @brief Gets a node from the B-Tree cache by RRN.
@@ -75,7 +75,7 @@ BHeader_t* BinaryReader_BTreeHeaderAndRoot(BTreeCache_t* cache, char* fileName);
  * 
  * @return an BNode_t*, the node or NULL if not found / rrn invalid
  */
-BNode_t* BinaryReader_BTreeNode(BTreeCache_t* cache, RRN_t nodeRRN);
+BNode_t* BinaryReader_BTreeNode(BTreeMetadata_t* cache, RRN_t nodeRRN);
 
 
 

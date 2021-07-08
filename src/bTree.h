@@ -5,17 +5,16 @@
 #include <stdlib.h>
 #include "bTreeDataModel.h"
 
-typedef struct BTreeCache BTreeCache_t;
+typedef struct BTreeMetadata BTreeMetadata_t;
 
 /**
- * @brief Cached B-Tree nodes currently in RAM.
+ * @brief Data useful when dealing with a B-Tree in the disk.
  */
-struct BTreeCache {
+struct BTreeMetadata {
     FILE* index; // File with the nodes from the B-Tree.
     FILE* registers; // File with the registers from the B-Tree.
     BHeader_t* header;
     BNode_t* root;
-    BNode_t** nodes;
 };
 
 /**
@@ -27,7 +26,7 @@ struct BTreeCache {
  * @param registerOpenType 
  * @return BTreeCache_t* 
  */
-BTreeCache_t* BTreeCache_Create(char* bTreeIndexFileName, char* indexOpenType, char* registersFileName, char* registerOpenType);
+BTreeMetadata_t* BTreeCache_Create(char* bTreeIndexFileName, char* indexOpenType, char* registersFileName, char* registerOpenType);
 
 /**
  * @brief Creates a B-Tree cache from the given files and returns it.
@@ -36,7 +35,7 @@ BTreeCache_t* BTreeCache_Create(char* bTreeIndexFileName, char* indexOpenType, c
  * @param registersFileName File containing the registers.
  * @return BTreeCache_t* 
  */
-BTreeCache_t* BTreeCache_CreateFromFile(char* bTreeIndexFileName, char* indexOpenType, char* registersFileName, char* registerOpenType);
+BTreeMetadata_t* BTreeCache_CreateFromFile(char* bTreeIndexFileName, char* indexOpenType, char* registersFileName, char* registerOpenType);
 
 /**
  * @brief Inserts a new register in the cache.
@@ -46,13 +45,13 @@ BTreeCache_t* BTreeCache_CreateFromFile(char* bTreeIndexFileName, char* indexOpe
  * @param key the key of the new register
  * @param regOffset the rrn of the new register
  */
-void BTreeCache_Insert(BTreeCache_t* cache, RegKey_t key, ByteOffset_t regOffset);
+void BTreeCache_Insert(BTreeMetadata_t* cache, RegKey_t key, ByteOffset_t regOffset);
 
 /**
  * @brief Frees the heap memory allocated for the given B-Tree Cache.
  * 
  * @param bTreeCache 
  */
-void BTreeCache_Free(BTreeCache_t* bTreeCache);
+void BTreeCache_Free(BTreeMetadata_t* bTreeCache);
 
 #endif
