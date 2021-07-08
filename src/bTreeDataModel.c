@@ -22,7 +22,7 @@ void BHeader_Free(BHeader_t* header) {
     free(header);
 }
 
-BNode_t* BNode_Create(Bool_t isLeaf, int32_t indexedKeysCount, RRN_t rrn, ByteOffset_t* regOffsets, RegKey_t* regKeys, RRN_t* childrenRRNs) {
+BNode_t* BNode_Create(char isLeaf, int32_t indexedKeysCount, RRN_t rrn, ByteOffset_t* regOffsets, RegKey_t* regKeys, RRN_t* childrenRRNs) {
     // Creates a new node and returns it
     BNode_t* node = (BNode_t*) calloc(1, sizeof(BNode_t));
     node->isLeaf = isLeaf;
@@ -39,7 +39,7 @@ BNode_t* BNode_Create(Bool_t isLeaf, int32_t indexedKeysCount, RRN_t rrn, ByteOf
     return node;
 }
 
-BNode_t* BNode_CreateWithRRN(BTreeMetadata_t* meta, Bool_t isLeaf) {
+BNode_t* BNode_CreateWithRRN(BTreeMetadata_t* meta, char isLeaf) {
     BNode_t* node = BNode_CreateNull();
     node->isLeaf = isLeaf;
     node->rrn = meta->header->rrnNextNode;
@@ -55,7 +55,7 @@ BNode_t* BNode_CreateNull() {
 }
 
 void BNode_Free(BNode_t* node) {
-    free(node);
+    if (node != NULL)   free(node);
 }
 
 ByteOffset_t RRNToOffset(RRN_t rrn) {

@@ -7,7 +7,6 @@
 typedef int32_t RRN_t;
 typedef int32_t RegKey_t;
 typedef int64_t ByteOffset_t;
-typedef char Bool_t;
 
 #define BTREE_ORDER 5 // Maximum number of children
 #define BTREE_REGKEY_COUNT (BTREE_ORDER-1)
@@ -68,7 +67,7 @@ void BHeader_Free(BHeader_t* header);
  * the parameters are the members of the struct BNode
  * @return the node created
  */
-BNode_t* BNode_Create(Bool_t isLeaf, int32_t indexedKeysCount, RRN_t rrn, ByteOffset_t* regOffsets, RegKey_t* regKeys, RRN_t* childrenRRNs);
+BNode_t* BNode_Create(char isLeaf, int32_t indexedKeysCount, RRN_t rrn, ByteOffset_t* regOffsets, RegKey_t* regKeys, RRN_t* childrenRRNs);
 
 /**
  * @brief Creates a B-Tree Node with no children (correctly initializes pointer and keys to -1).
@@ -76,7 +75,7 @@ BNode_t* BNode_Create(Bool_t isLeaf, int32_t indexedKeysCount, RRN_t rrn, ByteOf
  * @param isLeaf indicates if the node is a leaf
  * @return an empty Node
  */
-BNode_t* BNode_CreateWithRRN(BTreeMetadata_t* meta, Bool_t isLeaf);
+BNode_t* BNode_CreateWithRRN(BTreeMetadata_t* meta, char isLeaf);
 
 /**
  * @brief Creates a B-Tree Node with its fields assigned to -1.
