@@ -10,6 +10,6 @@
 //  Printam um registro seguindo as normas
 void Printer_Vehicle(Vehicle_t *vehicle);
 void Printer_BusLine(BusLine_t *busLine);
-void Printer_Node(BTreeMetadata_t* cache, BNode_t* node);
+void Printer_Node(BNode_t* node);
 
 #endif

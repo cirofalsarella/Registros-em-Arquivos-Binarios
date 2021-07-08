@@ -117,7 +117,7 @@ void Printer_BusLine(BusLine_t *busLine) {
  * @brief Prints an node
  * @param rrn (use rrn-1)
  */
-void Printer_Node(BTreeMetadata_t* cache, BNode_t* node) {
+void Printer_Node(BNode_t* node) {
     if (node == NULL) {
         printf("Printer_Node: NULL node.\n");
         return;
@@ -129,8 +129,6 @@ void Printer_Node(BTreeMetadata_t* cache, BNode_t* node) {
     }
     printf("(%d)", node->childrenRRNs[4]);
     printf(" %d,", node->indexedKeysCount);
-
-    if (cache->root->rrn == node->rrn)    printf(" r");
 
     printf("\n");
 }
