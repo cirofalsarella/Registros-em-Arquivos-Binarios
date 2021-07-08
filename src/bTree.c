@@ -140,7 +140,7 @@ BRegister_t* PartitionNode(BTreeMetadata_t* meta, BNode_t* node, BRegister_t* ne
         offsets[i] = offsets[i-1];
         chaves[i] = chaves[i-1];
     }
-    filhos[pos] = newReg->filhoRRN;
+    filhos[pos+1] = newReg->filhoRRN;
     chaves[pos] = newReg->key;
     offsets[pos] = newReg->fileOffset;
 
