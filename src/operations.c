@@ -329,7 +329,6 @@ void Op_CreateBTreeVehicles() {
     PrintHash(bTreeFileName);
 }
 
-
 void Op_CreateBTreeBusLines() {
     // Gets file names from terminal
     char regsFileName[128] = { '\0' };
