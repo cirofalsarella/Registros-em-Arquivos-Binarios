@@ -14,27 +14,6 @@
 
 // TODO: Manipulação do status / ler feedback do T1
 
-
-// void FileSeek(FILE* file, ByteOffset_t offset) {
-//     int seekStatus = fseek(file, offset, SEEK_SET);
-//     if (seekStatus != 0) {
-//         if (seekStatus == EBADF) {
-//             fprintf(stderr, "The file descriptor underlying the stream file is not open for writing or the stream's buffer needed to be flushed and the file is not open. Offset: %d\n", offset);
-//         } else if (seekStatus == EINVAL) {
-//             fprintf(stderr, "The whence argument is invalid. The resulting file-position indicator would be set to a negative value. Offset: %I64d\n", offset);
-//         } else if (seekStatus == EFBIG) {
-//             fprintf(stderr, "An attempt was made to write a file that exceeds the maximum file size or the process's file size limit, or the file is a regular file and an attempt was made to write at or beyond the offset maximum associated with the corresponding stream. Offset: %I64d\n", offset);
-//         } else {
-//             if (file == NULL) {
-//                 fprintf(stderr, "Tentou-se fazer fseek em um arquivo NULO. Offset: %I64d\n", offset);
-//             } else {
-//                 fprintf(stderr, "Um erro desconhecido ocorreu durante o fseek. Offset: %I64d\n", offset);
-//             }
-//         }
-//     }
-// }
-
-
 //  MARK: Functions that write single registers
 
 void BinaryWriter_Vehicle(const Vehicle_t* vehicle, FILE* destFile) {
