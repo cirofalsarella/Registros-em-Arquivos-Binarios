@@ -246,9 +246,12 @@ int BinaryWriter_IncrementBusLineFile(BusLine_t** buslines, int buslinesCount, c
     return 0;
 }
 
-int BinaryWriter_IncrementBTree(BNode_t* node, BTreeMetadata_t* meta) {
-    if (meta == NULL || meta->bTreeIndexFile == NULL || node == NULL)  return 1;
-    
+int BinaryWriter_SeekAndWriteNode(BNode_t* node, BTreeMetadata_t* meta) {
+    if (meta == NULL || meta->bTreeIndexFile == NULL || node == NULL || node->rrn < 0) {
+        fprintf(stderr, "Invalid call to BinaryWriter_SeekAndWriteNode. Either the node is invalid or the metadata is invalid.\n");
+        return 1;
+    }
+
     fseek(meta->bTreeIndexFile, RRNToOffset(node->rrn), SEEK_SET);
     WriteBTreeNode(node, meta->bTreeIndexFile);
 

@@ -54,13 +54,13 @@ int BinaryWriter_IncrementBusLineFile(BusLine_t** busLines, int buslinesCount, c
 
 
 /**
- * @brief Increments a B-Tree index with the given nodes.
+ * @brief Seeks to the right place in the file and writes the given BNode_t.
  * 
  * @param node
  * @param meta
  * @return 1 == error, 0 == success
  */
-int BinaryWriter_IncrementBTree(BNode_t* node, BTreeMetadata_t* meta);
+int BinaryWriter_SeekAndWriteNode(BNode_t* node, BTreeMetadata_t* meta);
 
 /**
  * @brief Writes the header of a BTree in the B-Tree file.

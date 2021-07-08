@@ -149,7 +149,7 @@ BRegister_t* PartitionNode(BTreeMetadata_t* meta, BNode_t* node, BRegister_t* ne
         node->regKeys[i] = -1;
     }
     node->indexedKeysCount = BTREE_ORDER/2;
-    BinaryWriter_IncrementBTree(node, meta);
+    BinaryWriter_SeekAndWriteNode(node, meta);
 
 
     // Cria novo nó e copia os ultimos registros
@@ -163,7 +163,7 @@ BRegister_t* PartitionNode(BTreeMetadata_t* meta, BNode_t* node, BRegister_t* ne
     }
 
     partitioned->indexedKeysCount = BTREE_ORDER/2;
-    BinaryWriter_IncrementBTree(partitioned, meta);
+    BinaryWriter_SeekAndWriteNode(partitioned, meta);
 
     // Cria o novo registro
     return CreateRegister(chaves[BTREE_ORDER/2], offsets[BTREE_ORDER/2], partitioned->rrn);
@@ -238,7 +238,7 @@ BRegister_t* InsertNodeRecur(BTreeMetadata_t* meta, BNode_t* node, BRegister_t* 
         }
     }
 
-    BinaryWriter_IncrementBTree(node, meta);
+    BinaryWriter_SeekAndWriteNode(node, meta);
     
     // Caso exista um nó promovido tenta inserir no próprio nó
     return promoted;
@@ -256,10 +256,10 @@ void BTreeMetadata_Insert(BTreeMetadata_t* meta, RegKey_t key, ByteOffset_t file
 
         // Adiciona novo registro
         BRegister_t* newReg = CreateRegister(key, fileOffset, -1);
-        InsertRegisterInNode(meta, meta->root, newReg);   // não haverá promoção
+        InsertRegisterInNode(meta, meta->root, newReg); // não haverá promoção
 
         // Escreve ele em memória
-        BinaryWriter_IncrementBTree(meta->root, meta);
+        BinaryWriter_SeekAndWriteNode(meta->root, meta);
     }
     else {
         // Cria e insere novo registro 
@@ -270,13 +270,13 @@ void BTreeMetadata_Insert(BTreeMetadata_t* meta, RegKey_t key, ByteOffset_t file
         // Confere se existe promoção
         if (promoted != NULL) {
             BNode_t* newRoot = BNode_CreateWithRRN(0, meta);
-            
+
             newRoot->childrenRRNs[0] = meta->root->rrn;
             meta->root = newRoot;
             meta->header->rootRRN = meta->root->rrn;
 
             InsertRegisterInNode(meta, meta->root, promoted);
-            BinaryWriter_IncrementBTree(meta->root, meta);
+            BinaryWriter_SeekAndWriteNode(meta->root, meta);
         }
     }
 }
