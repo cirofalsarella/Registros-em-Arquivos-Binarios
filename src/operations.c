@@ -49,6 +49,16 @@ void Op_CreateBTreeVehicles() {
 	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "wb+", regsFileName, "rb");
 	BinaryWriter_BTreeIndexFileVehicles(meta);
 
+	
+    int i=0;
+    BNode_t* aux = BinaryReader_BTreeNode(meta, i);
+    while (aux != NULL) {
+        Printer_Node(aux);
+        BNode_Free(aux);
+        i++;
+        aux = BinaryReader_BTreeNode(meta, i);
+    }
+
     // Prints hash of resulting file
     PrintHash(bTreeFileName);
 	BTreeMetadata_Free(meta);
