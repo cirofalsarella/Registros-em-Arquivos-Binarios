@@ -1,15 +1,44 @@
 #ifndef _BINARY_HEADERS_H_
 #define _BINARY_HEADERS_H_
 
-#include <stdint.h>
+#include "dataModel.h"
 
-// FUNÇÕES RESPONSÁVEIS PELA MANIPULAÇÃO DOS HEADERS
-
-//  Criam um cabeçalho a partir de uma tabela
+/**
+ * @brief Creates a new vehicle header with the given strings.
+ * 
+ * @param describePrefix 
+ * @param describeDate 
+ * @param describePlaces 
+ * @param describeLine 
+ * @param describeModel 
+ * @param describeCategory 
+ * @return VehicleHeader_t* 
+ */
 VehicleHeader_t* BinaryHeaders_CreateVehicleHeader(char* describePrefix, char* describeDate, char* describePlaces, char* describeLine, char* describeModel, char* describeCategory);
+
+/**
+ * @brief Creates a new bus line header with the given strings.
+ * 
+ * @param describeCode 
+ * @param describeCard 
+ * @param describeName 
+ * @param describeLine 
+ * @return BusLineHeader_t* 
+ */
 BusLineHeader_t* BinaryHeaders_CreateBusLineHeader(char* describeCode, char* describeCard, char* describeName, char* describeLine);
 
+/**
+ * @brief Frees the vehicles header.
+ * 
+ * @param header 
+ */
 void BinaryHeaders_FreeVehicleHeader(VehicleHeader_t* header);
+
+/**
+ * @brief Frees the bus line header.
+ * 
+ * @param header 
+ */
 void BinaryHeaders_FreeBusLineHeader(BusLineHeader_t* header);
 
 #endif

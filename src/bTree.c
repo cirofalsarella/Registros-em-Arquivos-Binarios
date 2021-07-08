@@ -32,32 +32,6 @@ BTreeMetadata_t* BTreeMetadata_CreateFromFile(char* bTreeIndexFileName, char* in
     return meta;
 }
 
-
-
-/**
- * @brief Helper function used during queries by key.
- * 
- * @param meta
- * @param nodeRRN 
- * @param key 
- * @return BNode_t* 
- */
-BNode_t* GetNodeByKeyRecur(BTreeMetadata_t* meta, RRN_t nodeRRN, RegKey_t key) {
-    BNode_t* current = BinaryReader_BTreeNode(meta, nodeRRN);
-    if (current == NULL)    return NULL;
-
-    for (int i = 0; i < current->indexedKeysCount; i++) {
-        if (current->regKeys[i] == key)     return current;
-        else if (current->regKeys[i] < key) return GetNodeByKeyRecur(meta, current->childrenRRNs[i], key);
-    }
-
-    return GetNodeByKeyRecur(meta, current->childrenRRNs[current->indexedKeysCount], key); 
-}
-
-BNode_t* GetBTreeNodeByKey(BTreeMetadata_t* meta, RegKey_t key) {
-    return GetNodeByKeyRecur(meta, meta->root->rrn, key);
-}
-
 void BTreeMetadata_Free(BTreeMetadata_t* meta) {
     if (meta == NULL) return;
 
@@ -300,4 +274,29 @@ void BTreeMetadata_Insert(BTreeMetadata_t* meta, RegKey_t key, ByteOffset_t file
             BinaryWriter_IncrementBTree(meta->root, meta);
         }
     }
+}
+
+
+/**
+ * @brief Helper function used during queries by key.
+ * 
+ * @param meta
+ * @param nodeRRN 
+ * @param key 
+ * @return BNode_t* 
+ */
+BNode_t* GetNodeByKeyRecur(BTreeMetadata_t* meta, RRN_t nodeRRN, RegKey_t key) {
+    BNode_t* current = BinaryReader_BTreeNode(meta, nodeRRN);
+    if (current == NULL)    return NULL;
+
+    for (int i = 0; i < current->indexedKeysCount; i++) {
+        if (current->regKeys[i] == key) return current;
+        else if (current->regKeys[i] < key) return GetNodeByKeyRecur(meta, current->childrenRRNs[i], key);
+    }
+
+    return GetNodeByKeyRecur(meta, current->childrenRRNs[current->indexedKeysCount], key); 
+}
+
+BNode_t* BTreeMetadata_GetNodeByKey(BTreeMetadata_t* meta, RegKey_t key) {
+    return GetNodeByKeyRecur(meta, meta->root->rrn, key);
 }

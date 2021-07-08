@@ -12,13 +12,8 @@
 #include "bTree.h"
 #include "bTreeDataModel.h"
 
+// TODO: Manipulação do status / ler feedback do T1
 
-// TODO: Manipulação do status
-
-/*  TODO:
- *      BinaryWriter_BTreeIndexFile
- *
- */
 
 // void FileSeek(FILE* file, ByteOffset_t offset) {
 //     int seekStatus = fseek(file, offset, SEEK_SET);
@@ -40,9 +35,9 @@
 // }
 
 
-//  Escrevem Registros Únicos
+//  MARK: Functions that write single registers
 
-void WriteVehicle(const Vehicle_t* vehicle, FILE* destFile) {
+void BinaryWriter_Vehicle(const Vehicle_t* vehicle, FILE* destFile) {
     // Fixed length fields
     fwrite(&vehicle->removed, sizeof(char), 1, destFile);
     fwrite(&vehicle->regSize, sizeof(int32_t), 1, destFile);
@@ -63,7 +58,7 @@ void WriteVehicle(const Vehicle_t* vehicle, FILE* destFile) {
         fwrite(vehicle->category, sizeof(char), vehicle->categoryLength, destFile);
 }
 
-void WriteBusLine(const BusLine_t* busLine, FILE* destFile) {
+void BinaryWriter_BusLine(const BusLine_t* busLine, FILE* destFile) {
     // Fixed length fields
     fwrite(&busLine->removed, sizeof(char), 1, destFile);
     fwrite(&busLine->regSize, sizeof(int32_t), 1, destFile);
@@ -96,7 +91,7 @@ void WriteBTreeNode(const BNode_t* node, FILE* destFile){
 }
 
 
-//  Escrevem um Header
+// MARK: Header-writing functions
 
 void WriteVehicleHeader(const VehicleHeader_t* header, FILE *destFile) {
     fwrite(&header->status, sizeof(char), 1, destFile);
@@ -126,50 +121,18 @@ void WriteBusLineHeader(const BusLineHeader_t* header, FILE *destFile) {
     fwrite(&header->describeLine[0], sizeof(char), 24, destFile);
 }
 
-void BinaryWriter_BTreeHeader(BTreeMetadata_t* cache) {    
-    fseek(cache->bTreeIndexFile, 0, SEEK_SET);
+void BinaryWriter_BTreeHeader(BTreeMetadata_t* meta) {    
+    fseek(meta->bTreeIndexFile, 0, SEEK_SET);
 
-    fwrite(&(cache->header->status), sizeof(char), 1, cache->bTreeIndexFile);
+    fwrite(&(meta->header->status), sizeof(char), 1, meta->bTreeIndexFile);
 
-    fwrite(&(cache->header->rootRRN), sizeof(RRN_t), 1, cache->bTreeIndexFile);
-    fwrite(&(cache->header->rrnNextNode), sizeof(RRN_t), 1, cache->bTreeIndexFile);
+    fwrite(&(meta->header->rootRRN), sizeof(RRN_t), 1, meta->bTreeIndexFile);
+    fwrite(&(meta->header->rrnNextNode), sizeof(RRN_t), 1, meta->bTreeIndexFile);
     
-    fwrite(&(cache->header->unused[0]), sizeof(char), 68, cache->bTreeIndexFile);
+    fwrite(&(meta->header->unused[0]), sizeof(char), 68, meta->bTreeIndexFile);
 }
 
-void BinaryWriter_BTreeIndexFile(BTreeMetadata_t* cache) {
-    // Checks if the file does not exist
-    if (cache->registersFile == NULL) {
-        printf("Falha no processamento do arquivo.\n");
-        return;
-    }
-
-    VehicleHeader_t* regsHeader = BinaryReader_VehicleHeader(cache->registersFile);
-    
-    // Checks if the file does not exist
-    if (regsHeader == NULL) {
-        printf("Falha no processamento do arquivo.\n");
-        return;
-    }
-
-    // Inserts the vehicles
-    for (int i = 0; i < regsHeader->numReg; i++) {
-        Vehicle_t* reg = BinaryReader_Vehicle(cache->registersFile);
-        if (reg->removed == '0') {
-            Vehicle_Free(reg);
-            continue;
-        }
-
-        const RegKey_t key = Utils_VehiclePrefixHash(reg->prefix);
-        BTreeMetadata_Insert(cache, key, reg->offset);
-        Vehicle_Free(reg);
-    }
-
-    BinaryWriter_BTreeHeader(cache);
-}
-
-
-// Incrementam um arquivo com novos registros
+// MARK: Append files
 
 int BinaryWriter_IncrementVehicleFile(Vehicle_t** vehicles, int vehiclesCount, char* fileName) {
     FILE *destFile = fopen(fileName, "rb+");
@@ -200,7 +163,7 @@ int BinaryWriter_IncrementVehicleFile(Vehicle_t** vehicles, int vehiclesCount, c
     // Writing the registers
     fseek(destFile, proxReg, SEEK_SET);
     for (int i = 0; i < vehiclesCount; i++){
-        WriteVehicle(vehicles[i], destFile);
+        BinaryWriter_Vehicle(vehicles[i], destFile);
         if (vehicles[i]->removed == '0') {
             numRegRem++;
         } else {
@@ -257,7 +220,7 @@ int BinaryWriter_IncrementBusLineFile(BusLine_t** buslines, int buslinesCount, c
     // Writing the registers
     fseek(destFile, proxReg, SEEK_SET);
     for (int i = 0; i < buslinesCount; i++){
-        WriteBusLine(buslines[i], destFile);
+        BinaryWriter_BusLine(buslines[i], destFile);
         if (buslines[i]->removed == '0') {
             numRegRem++;
         } else {
@@ -283,12 +246,75 @@ int BinaryWriter_IncrementBusLineFile(BusLine_t** buslines, int buslinesCount, c
     return 0;
 }
 
-int BinaryWriter_IncrementBTree(BNode_t* node, BTreeMetadata_t* cache) {
-    if (cache == NULL || cache->bTreeIndexFile == NULL || node == NULL)  return 1;
+int BinaryWriter_IncrementBTree(BNode_t* node, BTreeMetadata_t* meta) {
+    if (meta == NULL || meta->bTreeIndexFile == NULL || node == NULL)  return 1;
     
-    fseek(cache->bTreeIndexFile, RRNToOffset(node->rrn), SEEK_SET);
-    WriteBTreeNode(node, cache->bTreeIndexFile);
+    fseek(meta->bTreeIndexFile, RRNToOffset(node->rrn), SEEK_SET);
+    WriteBTreeNode(node, meta->bTreeIndexFile);
 
     return 0;
 }
 
+void BinaryWriter_BTreeIndexFileVehicles(BTreeMetadata_t* meta) {
+    // Checks if the file does not exist
+    if (meta->registersFile == NULL) {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
+    VehicleHeader_t* regsHeader = BinaryReader_VehicleHeader(meta->registersFile);
+    
+    // Checks if the file does not exist
+    if (regsHeader == NULL) {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
+    // Inserts the vehicles
+    for (int i = 0; i < regsHeader->numReg; i++) {
+        Vehicle_t* reg = BinaryReader_Vehicle(meta->registersFile);
+        if (reg->removed == '0') {
+            Vehicle_Free(reg);
+            continue;
+        }
+
+        const RegKey_t key = Utils_VehiclePrefixHash(reg->prefix);
+        BTreeMetadata_Insert(meta, key, reg->offset);
+        Vehicle_Free(reg);
+    }
+
+    BinaryWriter_BTreeHeader(meta);
+    BinaryHeaders_FreeVehicleHeader(regsHeader);
+}
+
+void BinaryWriter_BTreeIndexFileBusLines(BTreeMetadata_t* meta) {
+    // Checks if the file does not exist
+    if (meta->registersFile == NULL) {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
+    BusLineHeader_t* regsHeader = BinaryReader_BusLineHeader(meta->registersFile);
+    
+    // Checks if the file does not exist
+    if (regsHeader == NULL) {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
+    // Inserts the bus lines
+    for (int i = 0; i < regsHeader->numReg; i++) {
+        BusLine_t* reg = BinaryReader_BusLine(meta->registersFile);
+        if (reg->removed == '0') {
+            BusLine_Free(reg);
+            continue;
+        }
+
+        const RegKey_t key = reg->lineCode;
+        BTreeMetadata_Insert(meta, key, reg->offset);
+        BusLine_Free(reg);
+    }
+
+    BinaryWriter_BTreeHeader(meta);
+    BinaryHeaders_FreeBusLineHeader(regsHeader);
+}

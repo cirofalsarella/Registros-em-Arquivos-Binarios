@@ -46,12 +46,12 @@ void Op_CreateBTreeVehicles() {
     char bTreeFileName[128] = { '\0' };
     scanf("%s", &bTreeFileName[0]);
 
-    
-    // TODO: This
-
+	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "rb+", regsFileName, "rb");
+	BinaryWriter_BTreeIndexFileVehicles(meta);
 
     // Prints hash of resulting file
     PrintHash(bTreeFileName);
+	BTreeMetadata_Free(meta);
 }
 
 void Op_CreateBTreeBusLines() {
@@ -62,8 +62,10 @@ void Op_CreateBTreeBusLines() {
     char bTreeFileName[128] = { '\0' };
     scanf("%s", &bTreeFileName[0]);
 
-    // TODO: This
+	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "rb+", regsFileName, "rb");
+	BinaryWriter_BTreeIndexFileBusLines(meta);
 
     // Prints hash of resulting file
     PrintHash(bTreeFileName);
+	BTreeMetadata_Free(meta);
 }

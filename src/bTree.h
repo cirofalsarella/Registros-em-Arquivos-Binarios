@@ -18,7 +18,7 @@ struct BTreeMetadata {
 };
 
 /**
- * @brief 
+ * @brief Creates a new B-Tree metadata.
  * 
  * @param bTreeIndexFileName 
  * @param indexOpenType 
@@ -46,6 +46,15 @@ BTreeMetadata_t* BTreeMetadata_CreateFromFile(char* bTreeIndexFileName, char* in
  * @param regOffset the rrn of the new register
  */
 void BTreeMetadata_Insert(BTreeMetadata_t* meta, RegKey_t key, ByteOffset_t regOffset);
+
+/**
+ * @brief Gets a B-Tree node by key. Returns NULL if the node is not found.
+ * 
+ * @param meta The metadata containing the file pointer to the B-Tree.
+ * @param key The key to find.
+ * @return BNode_t* 
+ */
+BNode_t* BTreeMetadata_GetNodeByKey(BTreeMetadata_t* meta, RegKey_t key);
 
 /**
  * @brief Frees the heap memory allocated for the given B-Tree Cache.

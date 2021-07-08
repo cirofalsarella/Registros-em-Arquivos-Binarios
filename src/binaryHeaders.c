@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "dataModel.h"
+#include "binaryHeaders.h"
 #include "utils.h"
 
+// MARK: Create functions
 
 // Create an Vehicle header
 VehicleHeader_t* BinaryHeaders_CreateVehicleHeader(char* describePrefix, char* describeDate, char* describePlaces, char* describeLine, char* describeModel, char* describeCategory) {
@@ -45,4 +46,16 @@ BusLineHeader_t* BinaryHeaders_CreateBusLineHeader(char* describeCode, char* des
     Utils_StrCopyToFixedLen(header->describeLine, describeLine, 24);
 
     return header;                        
+}
+
+
+// MARK: Free functions
+
+
+void BinaryHeaders_FreeVehicleHeader(VehicleHeader_t* header) {
+    free(header);
+}
+
+void BinaryHeaders_FreeBusLineHeader(BusLineHeader_t* header) {
+    free(header);
 }
