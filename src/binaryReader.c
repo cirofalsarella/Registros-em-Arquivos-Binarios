@@ -115,8 +115,8 @@ BNode_t* BinaryReader_BTreeNode(BTreeMetadata_t* meta, RRN_t nodeRRN) {
 
     for (int i=0; i<BTREE_ORDER-2; i++) {
         fread(&node->childrenRRNs[i], sizeof(RRN_t), 1, meta->bTreeIndexFile);
-        fread(&node->regKeys[i], sizeof(RegKey_t), 1, meta->bTreeIndexFile);
-        fread(&node->regOffsets[i], sizeof(ByteOffset_t), 1, meta->bTreeIndexFile);
+        fread(&node->keys[i], sizeof(RegKey_t), 1, meta->bTreeIndexFile);
+        fread(&node->offsets[i], sizeof(ByteOffset_t), 1, meta->bTreeIndexFile);
     }
     fread(&node->childrenRRNs[BTREE_ORDER-1], sizeof(RRN_t), 1, meta->bTreeIndexFile);
 

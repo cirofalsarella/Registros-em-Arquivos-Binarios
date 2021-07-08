@@ -54,6 +54,16 @@ void BTreeMetadata_Free(BTreeMetadata_t* meta) {
 
 // Insertion algorithm
 
+/**
+ * @brief Helper function to set the root node of the metadata.
+ * 
+ * @param meta 
+ * @param newRoot 
+ */
+void MetadataSetRoot(BTreeMetadata_t* meta, BNode_t* newRoot) {
+    meta->header->rootRRN = newRoot->rrn;
+    meta->root = newRoot;
+}
 
 /**
  * @brief Struct to help manipulate registers
@@ -92,7 +102,7 @@ BRegister_t* CreateRegister(RegKey_t key, ByteOffset_t regOffset, RRN_t filho) {
  */
 BNode_t* GetNextNode(BTreeMetadata_t* meta, BNode_t* node, RegKey_t key) {
     int i=0;
-    while (key > node->regKeys[i] && i < node->indexedKeysCount) {
+    while (key > node->keys[i] && i < node->indexedKeysCount) {
         i++;
     }
 
@@ -116,8 +126,8 @@ BRegister_t* PartitionNode(BTreeMetadata_t* meta, BNode_t* node, BRegister_t* ne
     filhos[BTREE_ORDER-1] = node->childrenRRNs[BTREE_ORDER-1];
     for (int i=0; i<BTREE_ORDER-1; i++) {
         filhos[i] = node->childrenRRNs[i];
-        offsets[i] = node->regOffsets[i];
-        chaves[i] = node->regKeys[i];
+        offsets[i] = node->offsets[i];
+        chaves[i] = node->keys[i];
     }
 
     // Insere newReg ordenado nos vetores auxiliares
@@ -140,13 +150,13 @@ BRegister_t* PartitionNode(BTreeMetadata_t* meta, BNode_t* node, BRegister_t* ne
     node->childrenRRNs[0] = filhos[0];  // [FLAG] remover e ver se funciona
     for (int i=0; i<BTREE_ORDER/2; i++) {
         node->childrenRRNs[i+1] = filhos[i+1];
-        node->regOffsets[i] = offsets[i];
-        node->regKeys[i] = chaves[i];
+        node->offsets[i] = offsets[i];
+        node->keys[i] = chaves[i];
     }
     for (int i=BTREE_ORDER/2; i<BTREE_ORDER-1; i++) {
         node->childrenRRNs[i+1] = -1;
-        node->regOffsets[i] = -1;
-        node->regKeys[i] = -1;
+        node->offsets[i] = -1;
+        node->keys[i] = -1;
     }
     node->indexedKeysCount = BTREE_ORDER/2;
     BinaryWriter_SeekAndWriteNode(node, meta);
@@ -158,8 +168,8 @@ BRegister_t* PartitionNode(BTreeMetadata_t* meta, BNode_t* node, BRegister_t* ne
     partitioned->childrenRRNs[BTREE_ORDER/2] = filhos[BTREE_ORDER];
     for (int i=0; i<BTREE_ORDER/2; i++) {
         partitioned->childrenRRNs[i] = filhos[i + BTREE_ORDER/2 + 1];
-        partitioned->regKeys[i] = chaves[i + BTREE_ORDER/2 + 1];
-        partitioned->regOffsets[i] = chaves[i + BTREE_ORDER/2 + 1];
+        partitioned->keys[i] = chaves[i + BTREE_ORDER/2 + 1];
+        partitioned->offsets[i] = chaves[i + BTREE_ORDER/2 + 1];
     }
 
     partitioned->indexedKeysCount = BTREE_ORDER/2;
@@ -186,21 +196,21 @@ BRegister_t* InsertRegisterInNode(BTreeMetadata_t* meta, BNode_t* node, BRegiste
 
     // Encontro a posição que vou inserir
     int pos = 0;
-    while (reg->key > node->regKeys[pos] && pos < node->indexedKeysCount) {
+    while (reg->key > node->keys[pos] && pos < node->indexedKeysCount) {
         pos++;
     }
 
     // Movo os registros 1 pra frente
     for (int i=node->indexedKeysCount-1; i>=pos; i--) {
         node->childrenRRNs[i+2] = node->childrenRRNs[i+1];
-        node->regKeys[i+1] = node->regKeys[i];
-        node->regOffsets[i+1] = node->regOffsets[i];
+        node->keys[i+1] = node->keys[i];
+        node->offsets[i+1] = node->offsets[i];
     }
     node->childrenRRNs[pos+1] = node->childrenRRNs[pos];
 
     // Salvo o conteúdo da nova inserção
-    node->regKeys[pos] = reg->key;
-    node->regOffsets[pos] = reg->fileOffset;
+    node->keys[pos] = reg->key;
+    node->offsets[pos] = reg->fileOffset;
     node->childrenRRNs[pos+1] = reg->filhoRRN;
 
     free(reg);
@@ -251,8 +261,7 @@ void BTreeMetadata_Insert(BTreeMetadata_t* meta, RegKey_t key, ByteOffset_t file
     // Confere se raiz existe
     if (meta->root == NULL) {
         // Cria nó raiz
-        meta->root = BNode_CreateWithRRN(meta, TRUE);
-        meta->header->rootRRN = meta->root->rrn;
+        MetadataSetRoot(meta, BNode_CreateWithRRN(meta, TRUE));
 
         // Adiciona novo registro
         BRegister_t* newReg = CreateRegister(key, fileOffset, -1);
@@ -270,8 +279,7 @@ void BTreeMetadata_Insert(BTreeMetadata_t* meta, RegKey_t key, ByteOffset_t file
             BNode_t* newRoot = BNode_CreateWithRRN(meta, FALSE);
 
             newRoot->childrenRRNs[0] = meta->root->rrn;
-            meta->root = newRoot;
-            meta->header->rootRRN = meta->root->rrn;
+            MetadataSetRoot(meta, newRoot);
 
             InsertRegisterInNode(meta, meta->root, promoted);
             BinaryWriter_SeekAndWriteNode(meta->root, meta);
@@ -293,8 +301,8 @@ BNode_t* GetNodeByKeyRecur(BTreeMetadata_t* meta, RRN_t nodeRRN, RegKey_t key) {
     if (current == NULL)    return NULL;
 
     for (int i = 0; i < current->indexedKeysCount; i++) {
-        if (current->regKeys[i] == key) return current;
-        else if (current->regKeys[i] < key) return GetNodeByKeyRecur(meta, current->childrenRRNs[i], key);
+        if (current->keys[i] == key) return current;
+        else if (current->keys[i] < key) return GetNodeByKeyRecur(meta, current->childrenRRNs[i], key);
     }
 
     return GetNodeByKeyRecur(meta, current->childrenRRNs[current->indexedKeysCount], key); 

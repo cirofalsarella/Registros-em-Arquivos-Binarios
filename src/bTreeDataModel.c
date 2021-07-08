@@ -31,8 +31,8 @@ BNode_t* BNode_Create(Bool_t isLeaf, int32_t indexedKeysCount, RRN_t rrn, ByteOf
 
     for (int i = 0; i < BTREE_ORDER-1; i++) {
         node->childrenRRNs[i] = childrenRRNs[i];
-        node->regKeys[i] = regKeys[i];
-        node->regOffsets[i] = regOffsets[i];
+        node->keys[i] = regKeys[i];
+        node->offsets[i] = regOffsets[i];
     }
     node->childrenRRNs[BTREE_ORDER-1] = childrenRRNs[BTREE_ORDER-1];
 

@@ -84,8 +84,8 @@ void WriteBTreeNode(const BNode_t* node, FILE* destFile){
 
     for (int i = 0; i < BTREE_ORDER-2; i++) {
         fwrite(&node->childrenRRNs[i], sizeof(RRN_t), 1, destFile);
-        fwrite(&node->regKeys[i], sizeof(RegKey_t), 1, destFile);
-        fwrite(&node->regOffsets[i], sizeof(ByteOffset_t), 1, destFile);
+        fwrite(&node->keys[i], sizeof(RegKey_t), 1, destFile);
+        fwrite(&node->offsets[i], sizeof(ByteOffset_t), 1, destFile);
     }
     fwrite(&node->childrenRRNs[BTREE_ORDER-2], sizeof(RRN_t), 1, destFile);
 }

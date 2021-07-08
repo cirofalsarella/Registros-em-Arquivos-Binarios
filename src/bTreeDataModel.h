@@ -40,8 +40,8 @@ typedef struct BNode {
     RRN_t rrn;
     int32_t indexedKeysCount;
 
-    ByteOffset_t regOffsets[BTREE_ORDER -1];
-    RegKey_t regKeys[BTREE_ORDER -1];
+    ByteOffset_t offsets[BTREE_ORDER -1];
+    RegKey_t keys[BTREE_ORDER -1];
     RRN_t childrenRRNs[BTREE_ORDER];
 } BNode_t;
 

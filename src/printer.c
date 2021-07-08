@@ -125,7 +125,7 @@ void Printer_Node(BTreeMetadata_t* cache, BNode_t* node) {
 
     printf("%d %c -> ", node->rrn, (node->isLeaf ? 's' : 'n'));
     for (int i=0; i<4; i++) {
-        printf("(%d) %d ", node->childrenRRNs[i], node->regKeys[i]);
+        printf("(%d) %d ", node->childrenRRNs[i], node->keys[i]);
     }
     printf("(%d)", node->childrenRRNs[4]);
     printf(" %d,", node->indexedKeysCount);
