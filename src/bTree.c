@@ -153,8 +153,7 @@ BRegister_t* PartitionNode(BTreeMetadata_t* meta, BNode_t* node, BRegister_t* ne
 
 
     // Cria novo nó e copia os ultimos registros
-    BNode_t* partitioned = BNode_CreateNoChildren(node->isLeaf, meta->header->rrnNextNode);
-    meta->header->rrnNextNode++;
+    BNode_t* partitioned = BNode_CreateWithRRN(node->isLeaf, meta);
 
     partitioned->childrenRRNs[BTREE_ORDER/2] = filhos[BTREE_ORDER];
     for (int i=0; i<BTREE_ORDER/2; i++) {
@@ -252,9 +251,8 @@ void BTreeMetadata_Insert(BTreeMetadata_t* meta, RegKey_t key, ByteOffset_t file
     // Confere se raiz existe
     if (meta->root == NULL) {
         // Cria nó raiz
-        meta->root = BNode_CreateNoChildren(1, meta->header->rrnNextNode);
-        meta->header->rrnNextNode++;
-        meta->header->rootRRN = 0;
+        meta->root = BNode_CreateWithRRN(1, meta);
+        meta->header->rootRRN = meta->root->rrn;
 
         // Adiciona novo registro
         BRegister_t* newReg = CreateRegister(key, fileOffset, -1);
@@ -271,9 +269,8 @@ void BTreeMetadata_Insert(BTreeMetadata_t* meta, RegKey_t key, ByteOffset_t file
 
         // Confere se existe promoção
         if (promoted != NULL) {
-            BNode_t* newRoot = BNode_CreateNoChildren(0, meta->header->rrnNextNode);
-            meta->header->rrnNextNode++;
-
+            BNode_t* newRoot = BNode_CreateWithRRN(0, meta);
+            
             newRoot->childrenRRNs[0] = meta->root->rrn;
             meta->root = newRoot;
             meta->header->rootRRN = meta->root->rrn;

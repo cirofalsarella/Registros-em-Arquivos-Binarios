@@ -14,6 +14,8 @@ typedef int64_t ByteOffset_t;
 #define BTREE_PAGE_SIZE 77
 #define BTREE_RECORD_SIZE BTREE_PAGE_SIZE
 
+typedef struct BTreeMetadata BTreeMetadata_t; // Forward declaration
+
 typedef struct BHeader {
     char status; // '0' or '1'
     RRN_t rootRRN; // RRN of the root node
@@ -69,11 +71,17 @@ BNode_t* BNode_Create(char isLeaf, int32_t indexedKeysCount, RRN_t rrn, ByteOffs
 
 /**
  * @brief Creates a B-Tree Node with no children (correctly initializes pointer and keys to -1).
- * @param isLeaf indicates if the node is an leaf
- * @param rrn indicates the rrn of the node
+ * @param isLeaf indicates if the node is a leaf
+ * @param metadata the metadata to get the RRN from
  * @return an empty Node
  */
-BNode_t* BNode_CreateNoChildren(char isLeaf, RRN_t rrn);
+BNode_t* BNode_CreateWithRRN(char isLeaf, BTreeMetadata_t* meta);
+
+/**
+ * @brief Creates a B-Tree Node with its fields assigned to -1.
+ * @return an empty Node
+ */
+BNode_t* BNode_CreateNull();
 
 /**
  * @brief Frees the given B-Tree node.

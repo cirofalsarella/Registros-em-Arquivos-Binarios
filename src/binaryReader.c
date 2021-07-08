@@ -106,7 +106,7 @@ BNode_t* BinaryReader_BTreeNode(BTreeMetadata_t* meta, RRN_t nodeRRN) {
     fseek(meta->bTreeIndexFile, RRNToOffset(nodeRRN), SEEK_SET);
     
     // Creates a NULL node
-    BNode_t* node = BNode_CreateNoChildren(-1, -1);
+    BNode_t* node = BNode_CreateNull();
 
     // Reads fields
     fread(&node->isLeaf, sizeof(char), 1, meta->bTreeIndexFile);

@@ -1,3 +1,4 @@
+#include "bTreeDataModel.h"
 #include "bTree.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -38,12 +39,19 @@ BNode_t* BNode_Create(char isLeaf, int32_t indexedKeysCount, RRN_t rrn, ByteOffs
     return node;
 }
 
-BNode_t* BNode_CreateNoChildren(char isLeaf, RRN_t rrn) {
+BNode_t* BNode_CreateWithRRN(char isLeaf, BTreeMetadata_t* meta) {
+    BNode_t* node = BNode_CreateNull();
+    node->isLeaf = isLeaf;
+    node->rrn = meta->header->rrnNextNode;
+    meta->header->rrnNextNode += 1;
+    return node;
+}
+
+BNode_t* BNode_CreateNull() {
     ByteOffset_t regOffsets[BTREE_ORDER-1] = { -1, -1, -1, -1 };
     RegKey_t regKeys[BTREE_ORDER-1] = { -1, -1, -1, -1 };
     RRN_t childrenRRNs[BTREE_ORDER] = { -1, -1, -1, -1, -1 };
-    
-    return BNode_Create(isLeaf, 0, rrn, &regOffsets[0], &regKeys[0], &childrenRRNs[0]);
+    return BNode_Create(-1, 0, -1, &regOffsets[0], &regKeys[0], &childrenRRNs[0]);
 }
 
 void BNode_Free(BNode_t* node) {
