@@ -98,7 +98,7 @@ BNode_t* BinaryReader_BTreeNode(BTreeMetadata_t* meta, RRN_t nodeRRN) {
         return NULL;
     }
 
-    if (nodeRRN < 0) {
+    if (nodeRRN < 0 || nodeRRN >= meta->header->rrnNextNode) {
         printf("WARN: NULL node passed to BinaryReader_BTreeNode.\n");
         return NULL;
     }
@@ -109,11 +109,13 @@ BNode_t* BinaryReader_BTreeNode(BTreeMetadata_t* meta, RRN_t nodeRRN) {
     BNode_t* node = BNode_CreateNull();
 
     // Reads fields
-    fread(&node->isLeaf, sizeof(char), 1, meta->bTreeIndexFile);
+    fread(&(node->isLeaf), sizeof(char), 1, meta->bTreeIndexFile);
+    node->isLeaf -= '0';
+
     fread(&node->indexedKeysCount, sizeof(int32_t), 1, meta->bTreeIndexFile);
     fread(&node->rrn, sizeof(RRN_t), 1, meta->bTreeIndexFile);
 
-    for (int i=0; i<BTREE_ORDER-2; i++) {
+    for (int i = 0; i < BTREE_ORDER-1; i++) {
         fread(&node->childrenRRNs[i], sizeof(RRN_t), 1, meta->bTreeIndexFile);
         fread(&node->keys[i], sizeof(RegKey_t), 1, meta->bTreeIndexFile);
         fread(&node->offsets[i], sizeof(ByteOffset_t), 1, meta->bTreeIndexFile);
