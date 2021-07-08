@@ -3,6 +3,18 @@
 
 #include <stdint.h>
 
+#ifndef TRUE
+#define TRUE 1
+#endif
+
+#ifndef FALSE
+#define FALSE 0
+#endif
+
+#ifndef BOOL_NULL
+#define BOOL_NULL -1
+#endif
+
 //  FUNCIONALIDADES RESPONSÁVEIS POR ESTRUTURAR OS REGISTROS
 
 #define REG_SIZE_IGNORED 5 // Register size ignored by register->regSize (1 byte for removed and 4 for regSize)
