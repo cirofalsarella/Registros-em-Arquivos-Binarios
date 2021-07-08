@@ -77,7 +77,7 @@ void PrettyPrintWithMaxLength(const char* label, const char* str, int maxLength)
 
 //  Printam um registro seguindo as normas
 
-void Printer_Vehicle(Vehicle_t *vehicle) {
+void Printer_Vehicle(const Vehicle_t *vehicle) {
     PrettyPrintWithMaxLength("Prefixo do veiculo", vehicle->prefix, 5);
     PrettyPrintStr("Modelo do veiculo", vehicle->model);
     PrettyPrintStr("Categoria do veiculo", vehicle->category);
@@ -87,7 +87,7 @@ void Printer_Vehicle(Vehicle_t *vehicle) {
     printf("\n");
 }
 
-void Printer_BusLine(BusLine_t *busLine) {
+void Printer_BusLine(const BusLine_t *busLine) {
     PrettyPrintInt("Codigo da linha", busLine->lineCode);
     PrettyPrintStr("Nome da linha", busLine->name);
     PrettyPrintStr("Cor que descreve a linha", busLine->color);
@@ -117,7 +117,7 @@ void Printer_BusLine(BusLine_t *busLine) {
  * @brief Prints an node
  * @param rrn (use rrn-1)
  */
-void Printer_Node(BNode_t* node) {
+void Printer_Node(const BNode_t* node) {
     if (node == NULL) {
         printf("Printer_Node: NULL node.\n");
         return;

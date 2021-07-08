@@ -8,8 +8,8 @@
 // FUNÇÕES RESPONSÁVEIS PELA FORMATAÇÃO DOS PRINTS
 
 //  Printam um registro seguindo as normas
-void Printer_Vehicle(Vehicle_t *vehicle);
-void Printer_BusLine(BusLine_t *busLine);
-void Printer_Node(BNode_t* node);
+void Printer_Vehicle(const Vehicle_t *vehicle);
+void Printer_BusLine(const BusLine_t *busLine);
+void Printer_Node(const BNode_t* node);
 
 #endif
