@@ -4,28 +4,6 @@
 #include "dataModel.h"
 #include "bTreeDataModel.h"
 #include "bTree.h"
-// FUNÇÕES RESPONSÁVEIS PELA LEITURA DE ARQUIVOS BINÁRIOS
-
-// Arquivos de Registros
-
-/**
- * @brief Reads the entire binary file containing vehicle information.
- * 
- * @param header Pointer to the variable that will store the header.
- * @param fileName Name of the file.
- * @return Vehicle_t** 
- */
-Vehicle_t** BinaryReader_Vehicles(VehicleHeader_t** header, char *fileName);
-
-/**
- * @brief Reads the entire binary file containing bus line information.
- * 
- * @param header Pointer to the variable that will store the header.
- * @param fileName Name of the file.
- * @return BusLine_t** 
- */
-BusLine_t** BinaryReader_BusLines(BusLineHeader_t** header, char *fileName);
-
 
 /**
  * @brief Reads one vehicle from src file.
@@ -56,15 +34,17 @@ VehicleHeader_t* BinaryReader_VehicleHeader(FILE *srcFile);
  * @brief Reads bus line header from src file. Assumes file pointer is at the correct place!
  * 
  * @param srcFile The file to read the bus line from.
- * @return BusLine_t* 
+ * @return BusLineHeader_t* 
  */
-BusLine_t* BinaryReader_BusLineHeader(FILE *srcFile);
+BusLineHeader_t* BinaryReader_BusLineHeader(FILE *srcFile);
 
-
-
-// Arvore-B
-    
-BHeader_t* BinaryReader_BTreeHeaderAndRoot(BTreeMetadata_t* cache, char* fileName);
+/**
+ * @brief Reads the root and the B-Tree Header from file.
+ * 
+ * @param meta
+ * @return int status 
+ */
+int BinaryReader_BTreeHeaderAndRoot(BTreeMetadata_t* meta);
 
 /**
  * @brief Gets a node from the B-Tree cache by RRN.

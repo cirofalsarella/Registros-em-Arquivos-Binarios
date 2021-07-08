@@ -2,13 +2,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "stringTable.h"
 #include "dataModel.h"
 #include "utils.h"
 
 
 // Create an Vehicle header
-VehicleHeader_t* CreateVehicleHeader(char* describePrefix, char* describeDate, char* describePlaces, char* describeLine, char* describeModel, char* describeCategory) {
+VehicleHeader_t* BinaryHeaders_CreateVehicleHeader(char* describePrefix, char* describeDate, char* describePlaces, char* describeLine, char* describeModel, char* describeCategory) {
     // Describe lenghts: 18, 35, 42, 26, 17, 20
     VehicleHeader_t* header = (VehicleHeader_t*) malloc(sizeof(VehicleHeader_t));
     
@@ -28,18 +27,9 @@ VehicleHeader_t* CreateVehicleHeader(char* describePrefix, char* describeDate, c
     return header;
 }
 
-VehicleHeader_t* BinaryHeaders_CreateVehicleHeader(StringTable* table) {
-    return CreateVehicleHeader(StringTable_GetLabel(table, 0),
-                                StringTable_GetLabel(table, 1),
-                                StringTable_GetLabel(table, 2),
-                                StringTable_GetLabel(table, 3),
-                                StringTable_GetLabel(table, 4),
-                                StringTable_GetLabel(table, 5));
-}
-
 
 // Create an busline Header
-BusLineHeader_t* CreateBusLineHeader(char* describeCode, char* describeCard, char* describeName, char* describeLine) {
+BusLineHeader_t* BinaryHeaders_CreateBusLineHeader(char* describeCode, char* describeCard, char* describeName, char* describeLine) {
     // Describe lenghts: 15, 13, 13, 24
     BusLineHeader_t* header = (BusLineHeader_t*) malloc(sizeof(BusLineHeader_t));
     
@@ -55,21 +45,4 @@ BusLineHeader_t* CreateBusLineHeader(char* describeCode, char* describeCard, cha
     Utils_StrCopyToFixedLen(header->describeLine, describeLine, 24);
 
     return header;                        
-}
-
-BusLineHeader_t* BinaryHeaders_CreateBusLineHeader(StringTable *table) {
-    return CreateBusLineHeader(StringTable_GetLabel(table, 0),
-                                StringTable_GetLabel(table, 1),
-                                StringTable_GetLabel(table, 2),
-                                StringTable_GetLabel(table, 3));
-}
-
-
-// Free the register header
-void BinaryHeaders_FreeVehicleHeader(VehicleHeader_t* header) {
-    free(header);
-}
-
-void BinaryHeaders_FreeBusLineHeader(BusLineHeader_t* header) {
-    free(header);
 }

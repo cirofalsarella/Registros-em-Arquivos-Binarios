@@ -4,29 +4,6 @@
 #include "bTreeDataModel.h"
 #include "bTree.h"
 
-
-//  FUNÇÕES RESPONSÁVEIS POR ESCREVER ARQUIVOS BINÁRIOS
-
-/**
- * @brief Creates a vehicle binary file with the given vehicles.
- * 
- * @param vehicles vector of vehicles that will be writen
- * @param vehiclesCount number of vehicles to be writen
- * @param header header of the file
- * @param fileName name of the file
- */
-void BinaryWriter_CreateVehicleFile(Vehicle_t** vehicles, int vehiclesCount, VehicleHeader_t* header, char* fileName);
-
-/**
- * @brief Creates a bus line binary file with the given bus lines.
- * 
- * @param BusLine vector of BusLine that will be writen
- * @param BusLineCount number of BusLine to be writen
- * @param header header of the file
- * @param fileName name of the file
- */
-void BinaryWriter_CreateBusLineFile(BusLine_t** busLines, int busLinesCount, BusLineHeader_t* header, char* fileName);
-
 /**
  * @brief Writes a vector of vehicles to the end of dest file.
  * 
