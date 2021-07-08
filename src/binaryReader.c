@@ -93,10 +93,14 @@ BusLineHeader_t* BinaryReader_BusLineHeader(FILE *srcFile) {
 }
 
 BNode_t* BinaryReader_BTreeNode(BTreeMetadata_t* meta, RRN_t nodeRRN) {
-    if (meta == NULL || meta->bTreeIndexFile == NULL)   return NULL;
+    if (meta == NULL || meta->bTreeIndexFile == NULL) {
+        fprintf(stderr, "WARN: Tried to read a B-Tree node but passed a NULL metadata or a metadata without a B-Tree file opened.\n");
+        return NULL;
+    }
 
     if (nodeRRN < 0) {
-        printf("NULL node passed to BinaryReader_BTreeNode.\n");
+        printf("WARN: NULL node passed to BinaryReader_BTreeNode.\n");
+        return NULL;
     }
 
     fseek(meta->bTreeIndexFile, RRNToOffset(nodeRRN), SEEK_SET);

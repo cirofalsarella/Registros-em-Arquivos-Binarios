@@ -219,19 +219,26 @@ BRegister_t* InsertRegisterInNode(BTreeMetadata_t* meta, BNode_t* node, BRegiste
  * @return in case of promotion returns the promoted reg, otherwise returns NULL
  */
 BRegister_t* InsertNodeRecur(BTreeMetadata_t* meta, BNode_t* node, BRegister_t* newReg) {
+    if (node == NULL) {
+        fprintf(stderr, "Passed a NULL node to InsertNodeRecur. This should never happen. Returning...\n");
+        return NULL;
+    }
+
     BRegister_t* promoted = NULL;
 
-    if (node->isLeaf) {     // Insere no próprio nó
+    if (node->isLeaf) { // Insere no próprio nó
         promoted = InsertRegisterInNode(meta, node, newReg);
     }
-    else {                  // Insere em um nó filho
-        BNode_t* filho = GetNextNode(meta, node, newReg->key);
-        promoted = InsertNodeRecur(meta, filho, newReg);
+    else { // Insere em um nó child
+        BNode_t* child = GetNextNode(meta, node, newReg->key);
+        assert(child != NULL);
+        promoted = InsertNodeRecur(meta, child, newReg);
 
         if (promoted != NULL) {
             promoted = InsertRegisterInNode(meta, node, promoted);
         }
     }
+
     BinaryWriter_IncrementBTree(node, meta);
     
     // Caso exista um nó promovido tenta inserir no próprio nó
@@ -259,6 +266,7 @@ void BTreeMetadata_Insert(BTreeMetadata_t* meta, RegKey_t key, ByteOffset_t file
     else {
         // Cria e insere novo registro 
         BRegister_t* newReg = CreateRegister(key, fileOffset, -1);
+        assert(meta->root != NULL);
         BRegister_t* promoted = InsertNodeRecur(meta, meta->root, newReg);
 
         // Confere se existe promoção
