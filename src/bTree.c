@@ -44,6 +44,7 @@ void BTreeMetadata_Free(BTreeMetadata_t* meta) {
     }
     
     BHeader_Free(meta->header);
+    BNode_Free(meta->root);
     free(meta);
 }
 
@@ -62,6 +63,8 @@ void BTreeMetadata_Free(BTreeMetadata_t* meta) {
  */
 void MetadataSetRoot(BTreeMetadata_t* meta, BNode_t* newRoot) {
     meta->header->rootRRN = newRoot->rrn;
+    BNode_Free(meta->root);
+    
     meta->root = newRoot;
 }
 
@@ -77,8 +80,6 @@ typedef struct bRegister {
     ByteOffset_t fileOffset;
     RRN_t filhoRRN;
 } BRegister_t;
-
-BRegister_t* InsertRegisterInNode(BTreeMetadata_t* meta, BNode_t* node, BRegister_t* reg);
 
 /**
  * @brief Create and return an Register object
@@ -100,13 +101,13 @@ BRegister_t* CreateRegister(RegKey_t key, ByteOffset_t regOffset, RRN_t filho) {
  * @param key 
  * @return BNode_t* 
  */
-BNode_t* GetNextNode(BTreeMetadata_t* meta, BNode_t* node, RegKey_t key) {
+RRN_t GetNextNode(BTreeMetadata_t* meta, BNode_t* node, RegKey_t key) {
     int i=0;
     while (key > node->keys[i] && i < node->indexedKeysCount) {
         i++;
     }
 
-    return BinaryReader_BTreeNode(meta, node->childrenRRNs[i]);
+    return node->childrenRRNs[i];
 }
 
 /**
@@ -147,7 +148,7 @@ BRegister_t* PartitionNode(BTreeMetadata_t* meta, BNode_t* node, BRegister_t* ne
 
 
     // Copia os primeiros no antigo e apaga registros removidos dele
-    node->childrenRRNs[0] = filhos[0];  // [FLAG] remover e ver se funciona
+    node->childrenRRNs[BTREE_ORDER-1] = -1;
     for (int i=0; i<BTREE_ORDER/2; i++) {
         node->childrenRRNs[i+1] = filhos[i+1];
         node->offsets[i] = offsets[i];
@@ -176,7 +177,10 @@ BRegister_t* PartitionNode(BTreeMetadata_t* meta, BNode_t* node, BRegister_t* ne
     BinaryWriter_SeekAndWriteNode(partitioned, meta);
 
     // Cria o novo registro
-    return CreateRegister(chaves[BTREE_ORDER/2], offsets[BTREE_ORDER/2], partitioned->rrn);
+    newReg = CreateRegister(chaves[BTREE_ORDER/2], offsets[BTREE_ORDER/2], partitioned->rrn);
+    
+    BNode_Free(partitioned);
+    return newReg;
 }
 
 /**
@@ -190,6 +194,7 @@ BRegister_t* InsertRegisterInNode(BTreeMetadata_t* meta, BNode_t* node, BRegiste
 
     // Se não tiver espaço vou ter de particionar
     if (node->indexedKeysCount == BTREE_ORDER-1) {
+        node->isLeaf = node->isLeaf;
         return PartitionNode(meta, node, reg);
     }   // Caso contrário somente realizo a inserção simples
 
@@ -227,21 +232,20 @@ BRegister_t* InsertRegisterInNode(BTreeMetadata_t* meta, BNode_t* node, BRegiste
  * @param newReg the new register to be included
  * @return in case of promotion returns the promoted reg, otherwise returns NULL
  */
-BRegister_t* InsertNodeRecur(BTreeMetadata_t* meta, BNode_t* node, BRegister_t* newReg) {
+BRegister_t* InsertNodeRecur(BTreeMetadata_t* meta, RRN_t nodeRRN, BRegister_t* newReg) {
+    BNode_t* node = BinaryReader_BTreeNode(meta, nodeRRN);
+
     if (node == NULL) {
         fprintf(stderr, "Passed a NULL node to InsertNodeRecur. This should never happen. Returning...\n");
         return NULL;
     }
 
     BRegister_t* promoted = NULL;
-
-    if (node->isLeaf) { // Insere no próprio nó
+    if (node->isLeaf == 1) { // Insere no próprio nó
         promoted = InsertRegisterInNode(meta, node, newReg);
     }
     else { // Insere em um nó child
-        BNode_t* child = GetNextNode(meta, node, newReg->key);
-        assert(child != NULL);
-        promoted = InsertNodeRecur(meta, child, newReg);
+        promoted = InsertNodeRecur(meta, GetNextNode(meta, node, newReg->key), newReg);
 
         if (promoted != NULL) {
             promoted = InsertRegisterInNode(meta, node, promoted);
@@ -249,30 +253,29 @@ BRegister_t* InsertNodeRecur(BTreeMetadata_t* meta, BNode_t* node, BRegister_t* 
     }
 
     BinaryWriter_SeekAndWriteNode(node, meta);
+    BNode_Free(node);
     
     // Caso exista um nó promovido tenta inserir no próprio nó
     return promoted;
 }
 
+
 void BTreeMetadata_Insert(BTreeMetadata_t* meta, RegKey_t key, ByteOffset_t fileOffset) {
-    // [DEBUG]
-    // printf("%d\n", key);
-    
-    // Confere se raiz existe
+    BRegister_t* newReg = CreateRegister(key, fileOffset, -1);
+
+    // Se raiz existir ela vai estar guardada no meta
     if (meta->root == NULL) {
         // Cria nó raiz
         MetadataSetRoot(meta, BNode_CreateWithRRN(meta, TRUE));
 
         // Adiciona novo registro
-        BRegister_t* newReg = CreateRegister(key, fileOffset, -1);
-        InsertRegisterInNode(meta, meta->root, newReg); // não haverá promoção
+        InsertRegisterInNode(meta, meta->root, newReg);
 
         // Escreve ele em memória
         BinaryWriter_SeekAndWriteNode(meta->root, meta);
     } else {
-        // Cria e insere novo registro 
-        BRegister_t* newReg = CreateRegister(key, fileOffset, -1);
-        BRegister_t* promoted = InsertNodeRecur(meta, meta->root, newReg);
+        // Cria e insere novo registro
+        BRegister_t* promoted = InsertNodeRecur(meta, meta->root->rrn, newReg);
 
         // Confere se existe promoção
         if (promoted != NULL) {
