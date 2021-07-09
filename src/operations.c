@@ -47,7 +47,10 @@ void Op_CreateBTreeVehicles() {
     scanf("%s", &bTreeFileName[0]);
 
 	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "w+b", regsFileName, "rb");
-	BinaryWriter_BTreeIndexFileVehicles(meta);
+	if (BinaryWriter_BTreeIndexFileVehicles(meta)) {
+        printf("Falha no processamento do arquivo.\n");
+		return;
+	}
 
 
     // Prints hash of resulting file
@@ -64,7 +67,10 @@ void Op_CreateBTreeBusLines() {
     scanf("%s", &bTreeFileName[0]);
 
 	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "w+b", regsFileName, "rb");
-	BinaryWriter_BTreeIndexFileBusLines(meta);
+	if (BinaryWriter_BTreeIndexFileBusLines(meta)) {
+        printf("Falha no processamento do arquivo.\n");
+		return;
+	}
 
     // Prints hash of resulting file
 	BTreeMetadata_Free(meta);
