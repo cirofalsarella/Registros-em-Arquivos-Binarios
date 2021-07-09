@@ -6,7 +6,6 @@
 #include "binaryHeaders.h"
 #include "binaryReader.h"
 #include "binaryWriter.h"
-#include "selectWhere.h"
 #include "printer.h"
 #include "utils.h"
 
@@ -111,8 +110,8 @@ void Op_FindVehicle() {
 	BTreeMetadata_t* meta = BTreeMetadata_CreateFromFile(bTreeFileName, "rb", regsFileName, "rb");
 
 	// Checks for errors
-	if (meta == NULL || meta->bTreeIndexFile == NULL || meta->registersFile == NULL || meta->root == NULL || meta->header == NULL ||
-		meta->header->rootRRN < 0 || meta->header->status != '1') {
+	if (meta == NULL || meta->bTreeIndexFile == NULL || meta->registersFile == NULL || meta->root == NULL ||
+		meta->header == NULL || meta->header->rootRRN < 0 || meta->header->status != '1') {
 		printf("Falha no processamento do arquivo.\n");
 		return;
 	}
@@ -155,7 +154,60 @@ void Op_FindBusLine() {
 }
 
 void Op_PushVehicles() {
-	// TODO: This
+	// Gets file names from terminal
+    char regsFileName[128] = { '\0' };
+    scanf("%s", &regsFileName[0]);
+
+    char bTreeFileName[128] = { '\0' };
+    scanf("%s", &bTreeFileName[0]);
+
+	// Creates metadata
+	BTreeMetadata_t* meta = BTreeMetadata_CreateFromFile(bTreeFileName, "rb", regsFileName, "rb");
+
+	// Checks for errors
+	if (meta == NULL || meta->bTreeIndexFile == NULL || meta->registersFile == NULL || meta->root == NULL ||
+		meta->header == NULL || meta->header->rootRRN < 0 || meta->header->status != '1') {
+		printf("Falha no processamento do arquivo.\n");
+		return;
+	}
+
+	// Gets number of vehicles to insert & reads them from terminal
+	int newVehiclesCount;
+    scanf("%d", &newVehiclesCount);
+
+	if (newVehiclesCount <= 0) {
+		BTreeMetadata_Free(meta);
+		return;
+	}
+
+    Vehicle_t** newVehicles = Vehicle_Read(newVehiclesCount);
+	ByteOffset_t* offsets = (ByteOffset_t*) calloc(newVehiclesCount, sizeof(ByteOffset_t));
+	
+	// Checks for errors
+	if (BinaryWriter_AppendVehicles(newVehicles, newVehiclesCount, meta->registersFile, offsets) != 0) {
+		BTreeMetadata_Free(meta);
+		printf("Falha no processamento do arquivo.\n");
+		return;
+	}
+
+	for (int i = 0; i < newVehiclesCount; ++i) {
+		// Inserts the vehicle with a certain offset in the tree
+		Vehicle_t* vehicle = newVehicles[i];
+		RegKey_t vehicleKey = Utils_VehiclePrefixHash(vehicle->prefix);
+		BTreeMetadata_Insert(meta, vehicleKey, offsets[i]);
+
+		// Since the vehicle won't be used again, frees it
+		Vehicle_Free(vehicle);
+		newVehicles[i] = NULL;
+	}
+
+	// Prints the hash of the resulting file
+    PrintHash(regsFileName);
+
+	// Frees everything
+	free(offsets);
+	free(newVehicles);
+	BTreeMetadata_Free(meta);
 }
 
 void Op_PushBusLines() {

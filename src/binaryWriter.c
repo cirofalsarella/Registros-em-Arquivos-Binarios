@@ -114,14 +114,13 @@ void BinaryWriter_BTreeHeader(BTreeMetadata_t* meta) {
 
 // MARK: Append files
 
-int BinaryWriter_IncrementVehicleFile(Vehicle_t** vehicles, int vehiclesCount, char* fileName) {
-    FILE *destFile = fopen(fileName, "rb+");
+int BinaryWriter_AppendVehicles(Vehicle_t** vehicles, int vehiclesCount, FILE* destFile, ByteOffset_t* destOffsets) {
     if (destFile == NULL) {
         return 1;
     }  else {
         char status;
         fread(&status, sizeof(char), 1, destFile);
-        if (status == '0'){
+        if (status == '0') {
             fclose(destFile);
             return 1;
         }
@@ -142,7 +141,9 @@ int BinaryWriter_IncrementVehicleFile(Vehicle_t** vehicles, int vehiclesCount, c
 
     // Writing the registers
     fseek(destFile, proxReg, SEEK_SET);
-    for (int i = 0; i < vehiclesCount; i++){
+    for (int i = 0; i < vehiclesCount; i++) {
+        destOffsets[i] = ftell(destFile);
+
         BinaryWriter_Vehicle(vehicles[i], destFile);
         if (vehicles[i]->removed == '0') {
             numRegRem++;
@@ -169,20 +170,18 @@ int BinaryWriter_IncrementVehicleFile(Vehicle_t** vehicles, int vehiclesCount, c
     return 0;
 }
 
-int BinaryWriter_IncrementBusLineFile(BusLine_t** buslines, int buslinesCount, char* fileName) {
-    FILE *destFile = fopen(fileName, "rb+");
+int BinaryWriter_AppendBusLines(BusLine_t** buslines, int buslinesCount, FILE* destFile, ByteOffset_t* destOffsets) {
     if (destFile == NULL) {
         return 1;
     } else {
         char status;
         fread(&status, sizeof(char), 1, destFile);
-        if (status == '0'){
+        if (status == '0') {
             fclose(destFile);
             return 1;
         }
         fseek(destFile, 0, SEEK_SET);
     }
-
 
     // Set as editing mode
     char status = '0';
@@ -200,6 +199,8 @@ int BinaryWriter_IncrementBusLineFile(BusLine_t** buslines, int buslinesCount, c
     // Writing the registers
     fseek(destFile, proxReg, SEEK_SET);
     for (int i = 0; i < buslinesCount; i++){
+        destOffsets[i] = ftell(destFile);
+
         BinaryWriter_BusLine(buslines[i], destFile);
         if (buslines[i]->removed == '0') {
             numRegRem++;
@@ -208,8 +209,8 @@ int BinaryWriter_IncrementBusLineFile(BusLine_t** buslines, int buslinesCount, c
         }
         BusLine_Free(buslines[i]);
     }
+    
     proxReg = ftell(destFile);
-
 
     // Adjusting the header fields
     fseek(destFile, 1, SEEK_SET);

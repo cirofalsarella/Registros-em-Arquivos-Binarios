@@ -29,24 +29,26 @@ void BinaryWriter_BusLine(const BusLine_t* busLine, FILE* destFile);
 /**
  * @brief Writes a vector of vehicles to the end of dest file.
  * 
- * @param vehicles vector of vehicles that will be writen
- * @param vehiclesCount number of vehicles to be writen
- * @param fileName name of the file
+ * @param vehicles vector of vehicles that will be writen.
+ * @param vehiclesCount number of vehicles to be writen.
+ * @param file the registers file.
+ * @param destOffsets array to store the offsets of the inserted vehicles.
  * 
- * @return int 
+ * @return 1 == error, 0 == success
  */
-int BinaryWriter_IncrementVehicleFile(Vehicle_t** vehicles, int vehiclesCount, char* fileName);
+int BinaryWriter_AppendVehicles(Vehicle_t** vehicles, int vehiclesCount, FILE* file, ByteOffset_t* destOffsets);
 
 /**
  * @brief Writes a vector of bus lines to the end of dest file.
  * 
- * @param busLines vector of vehicles that will be written
- * @param buslinesCount number of vehicles to be written
- * @param fileName name of the file
- *
+ * @param busLines vector of vehicles that will be written.
+ * @param buslinesCount number of vehicles to be written.
+ * @param file the registers file.
+ * @param destOffsets array to store the offsets of the inserted bus lines.
+ * 
  * @return 1 == error, 0 == success
  */
-int BinaryWriter_IncrementBusLineFile(BusLine_t** busLines, int buslinesCount, char* fileName);
+int BinaryWriter_AppendBusLines(BusLine_t** busLines, int buslinesCount, FILE* file, ByteOffset_t* destOffsets);
 
 
 
