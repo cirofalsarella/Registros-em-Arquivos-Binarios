@@ -37,6 +37,7 @@ void PrintHash(char* nomeArquivoBinario) {
 	fclose(fs);
 }
 
+
 void Op_CreateBTreeVehicles() {
     // Gets file names from terminal
     char regsFileName[128] = { '\0' };
@@ -45,18 +46,9 @@ void Op_CreateBTreeVehicles() {
     char bTreeFileName[128] = { '\0' };
     scanf("%s", &bTreeFileName[0]);
 
-	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "wb+", regsFileName, "rb");
+	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "w+b", regsFileName, "rb");
 	BinaryWriter_BTreeIndexFileVehicles(meta);
 
-	
-    int i=0;
-    BNode_t* aux = BinaryReader_BTreeNode(meta, i);
-    while (aux != NULL) {
-        Printer_Node(aux);
-        BNode_Free(aux);
-        i++;
-        aux = BinaryReader_BTreeNode(meta, i);
-    }
 
     // Prints hash of resulting file
 	BTreeMetadata_Free(meta);
@@ -71,13 +63,14 @@ void Op_CreateBTreeBusLines() {
     char bTreeFileName[128] = { '\0' };
     scanf("%s", &bTreeFileName[0]);
 
-	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "wb+", regsFileName, "rb");
+	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "w+b", regsFileName, "rb");
 	BinaryWriter_BTreeIndexFileBusLines(meta);
 
     // Prints hash of resulting file
-    PrintHash(bTreeFileName);
 	BTreeMetadata_Free(meta);
+    PrintHash(bTreeFileName);
 }
+
 
 void Op_FindVehicle() {
 	// Gets file names from terminal
@@ -216,6 +209,7 @@ void Op_FindBusLine() {
 	BusLine_Free(busLine);
 	BTreeMetadata_Free(meta);
 }
+
 
 void Op_PushVehicles() {
 	// Gets file names from terminal
