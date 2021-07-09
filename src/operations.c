@@ -59,8 +59,8 @@ void Op_CreateBTreeVehicles() {
     }
 
     // Prints hash of resulting file
-    PrintHash(bTreeFileName);
 	BTreeMetadata_Free(meta);
+    PrintHash(bTreeFileName);
 }
 
 void Op_CreateBTreeBusLines() {
