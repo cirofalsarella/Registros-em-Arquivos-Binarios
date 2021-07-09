@@ -2,7 +2,7 @@
 #define _BINARY_WRITER_H_
 
 #include "bTreeDataModel.h"
-#include "bTree.h"
+#include "bTree.h
 
 // MARK: Register writing functions
 
