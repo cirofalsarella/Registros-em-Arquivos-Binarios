@@ -17,6 +17,7 @@ BTreeMetadata_t* BTreeMetadata_Create(char* bTreeIndexFileName, char* indexOpenT
     return meta;
 }
 
+
 BTreeMetadata_t* BTreeMetadata_CreateFromFile(char* bTreeIndexFileName, char* indexOpenType, char* registersFileName, char* registerOpenType) {
     // Inits a B-Tree Metadata
     BTreeMetadata_t* meta = calloc(1, sizeof(BTreeMetadata_t));
@@ -24,8 +25,8 @@ BTreeMetadata_t* BTreeMetadata_CreateFromFile(char* bTreeIndexFileName, char* in
     meta->bTreeIndexFile = fopen(bTreeIndexFileName, indexOpenType);
     meta->registersFile = fopen(registersFileName, registerOpenType);
     
-    // If FILE status == 1, error
-    if (BinaryReader_BTreeHeaderAndRoot(meta)) {
+    // If FILE status == '0', error
+    if (BinaryReader_BTreeHeaderAndRoot(meta) != '1') {
         return NULL;
     }
 
@@ -314,8 +315,12 @@ void BTreeMetadata_Insert(BTreeMetadata_t* meta, RegKey_t key, ByteOffset_t file
  * @return BNode_t* 
  */
 BNode_t* GetNodeByKeyRecur(BTreeMetadata_t* meta, RRN_t nodeRRN, RegKey_t key) {
+    if (nodeRRN < 0) return NULL;
+
     BNode_t* current = BinaryReader_BTreeNode(meta, nodeRRN);
-    if (current == NULL)    return NULL;
+    printf("current = %d\n", nodeRRN);
+
+    if (current == NULL) return NULL;
 
     for (int i = 0; i < current->indexedKeysCount; i++) {
         if (current->keys[i] == key) return current;
