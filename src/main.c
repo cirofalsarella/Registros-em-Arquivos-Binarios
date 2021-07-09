@@ -10,17 +10,29 @@
 #include "operations.h"
 
 int main() {
-    // Pega o número da Operação
+    // Gets op number
     int op;
     scanf("%d", &op);
 
-    // Seleciona qual a operação que sera realizada
+    // Chooses the right operation
     switch (op) {
     case 9:
         Op_CreateBTreeVehicles();
         break;
     case 10:
         Op_CreateBTreeBusLines();
+        break;
+    case 11:
+        Op_FindVehicle();
+        break;
+    case 12:
+        Op_FindBusLine();
+        break;
+    case 13:
+        Op_PushVehicles();
+        break;
+    case 14:
+        Op_PushBusLines();
         break;
     }
 

@@ -1,4 +1,4 @@
-OBJECTS = src/dataModel.c src/operations.c src/printer.c src/selectWhere.c src/bTreeDataModel.c src/binaryReader.c src/binaryWriter.c src/bTree.c src/binaryHeaders.c src/utils.c
+OBJECTS = src/dataModel.c src/operations.c src/printer.c src/bTreeDataModel.c src/binaryReader.c src/binaryWriter.c src/bTree.c src/binaryHeaders.c src/utils.c
 
 all:
 	gcc -ggdb3 src/main.c ${OBJECTS} -o programaTrab -Wall

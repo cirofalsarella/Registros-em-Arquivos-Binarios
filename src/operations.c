@@ -79,3 +79,85 @@ void Op_CreateBTreeBusLines() {
     PrintHash(bTreeFileName);
 	BTreeMetadata_Free(meta);
 }
+
+void Op_FindVehicle() {
+	// Gets file names from terminal
+    char regsFileName[128] = { '\0' };
+    scanf("%s", &regsFileName[0]);
+
+    char bTreeFileName[128] = { '\0' };
+    scanf("%s", &bTreeFileName[0]);
+
+	// Expects "prefixo"
+	char fieldName[128] = { '\0' };
+    scanf("%s", &fieldName[0]);
+
+	char prefix[128] = { '\0' };
+    Utils_ScanQuoteString(&prefix[0]);
+
+	// Checks if field name is valid (currently only support prefixo)
+	if (strcmp(fieldName, "prefixo") != 0) {
+		printf("Falha no processamento do arquivo.\n");
+		return;
+	}
+
+	// Checks for invalid queries
+	if (strcmp(prefix, "NULO") == 0 || strlen(prefix) <= 0) {
+		printf("Registro inexistente.\n");
+		return;
+	}
+
+	// Creates metadata
+	BTreeMetadata_t* meta = BTreeMetadata_CreateFromFile(bTreeFileName, "rb", regsFileName, "rb");
+
+	// Checks for errors
+	if (meta == NULL || meta->bTreeIndexFile == NULL || meta->registersFile == NULL || meta->root == NULL || meta->header == NULL ||
+		meta->header->rootRRN < 0 || meta->header->status != '1') {
+		printf("Falha no processamento do arquivo.\n");
+		return;
+	}
+
+	RegKey_t prefixAsKey = Utils_VehiclePrefixHash(prefix);
+
+	if (prefixAsKey < 0) {
+		printf("Registro inexistente.\n");
+		return;
+	}
+
+	BNode_t* node = BTreeMetadata_GetNodeByKey(meta, prefixAsKey);
+
+	if (node == NULL) {
+		printf("Registro inexistente.\n");
+		return;
+	}
+
+	// At this point, node is not NULL
+	int keyIndex = BNode_GetKeyIndex(node, prefixAsKey);
+
+	if (keyIndex < 0) {
+		// TODO: This should probably never happen
+		printf("Registro inexistente.\n");
+		return;
+	}
+
+	// Seeks to the right spot in the file
+	fseek(meta->registersFile, node->offsets[keyIndex], SEEK_SET);
+	Vehicle_t* vehicle = BinaryReader_Vehicle(meta->registersFile);
+
+	Printer_Vehicle(vehicle);
+
+	Vehicle_Free(vehicle);
+	BTreeMetadata_Free(meta);
+}
+
+void Op_FindBusLine() {
+	// TODO: Test Op_FindVehicle, then make this
+}
+
+void Op_PushVehicles() {
+	// TODO: This
+}
+
+void Op_PushBusLines() {
+	// TODO: Test Op_PushVehicles, then make this
+}

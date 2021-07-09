@@ -17,7 +17,7 @@ typedef int64_t ByteOffset_t;
 typedef struct BTreeMetadata BTreeMetadata_t; // Forward declaration
 
 typedef struct BHeader {
-    char status; // '0' or '1'
+    char status; // '0' or '1'. '1' when everything is OK. '0' otherwise.
     RRN_t rootRRN; // RRN of the root node
     RRN_t rrnNextNode; // RRN of the next node to be inserted
     char unused[68];
@@ -88,6 +88,14 @@ BNode_t* BNode_CreateNull();
  * @param node The node to free.
  */
 void BNode_Free(BNode_t* node);
+
+/**
+ * @brief Returns the key index of the given key at the given node. If not found, returns -1.
+ * 
+ * @param node Node to use during search
+ * @param key Key to find
+ */
+int BNode_GetKeyIndex(BNode_t* node, RegKey_t key);
 
 /**
  * @brief Helper function that converts an RRN to a file Offset.

@@ -54,6 +54,17 @@ BNode_t* BNode_CreateNull() {
     return BNode_Create(-1, 0, -1, &regOffsets[0], &regKeys[0], &childrenRRNs[0]);
 }
 
+int BNode_GetKeyIndex(BNode_t* node, RegKey_t key) {
+    if (node == NULL) return -1;
+
+    for (int i = 0; i < node->indexedKeysCount; ++i) {
+        if (node->keys[i] == key) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 void BNode_Free(BNode_t* node) {
     if (node != NULL)   free(node);
 }
