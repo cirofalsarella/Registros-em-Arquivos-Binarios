@@ -1,7 +1,7 @@
-OBJECTS = src/dataModel.c src/operations.c src/printer.c src/bTreeDataModel.c src/binaryReader.c src/binaryWriter.c src/bTree.c src/binaryHeaders.c src/utils.c
+OBJECTS = src/*.c
 
 all:
-	gcc -ggdb3 src/main.c ${OBJECTS} -o programaTrab -Wall
+	gcc -ggdb3 main.c ${OBJECTS} -o programaTrab -Wall
 
 run:
 	./programaTrab
@@ -15,14 +15,14 @@ gdb:
 
 # Windows-specific
 c:
-	gcc -ggdb3 src/main.c ${OBJECTS} -o programaTrab.exe -Wall
+	gcc -ggdb3 main.c ${OBJECTS} -o programaTrab.exe -Wall
 
 d:
-	gcc -g src/main.c ${OBJECTS} -o programaTrab.exe -Wall
+	gcc -g main.c ${OBJECTS} -o programaTrab.exe -Wall
 	gdb programaTrab.exe
 
 r:
-	gcc src/main.c ${OBJECTS} -o programaTrab.exe -Wall
+	gcc main.c ${OBJECTS} -o programaTrab.exe -Wall
 	programaTrab.exe
 
 clean:
