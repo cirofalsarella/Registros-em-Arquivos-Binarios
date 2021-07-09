@@ -3,6 +3,7 @@
 
 #include "bTreeDataModel.h"
 #include "bTree.h"
+#include "dataModel.h"
 
 // MARK: Register writing functions
 

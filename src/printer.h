@@ -4,6 +4,7 @@
 
 #include "bTree.h"
 #include "bTreeDataModel.h"
+#include "dataModel.h"
 
 // FUNÇÕES RESPONSÁVEIS PELA FORMATAÇÃO DOS PRINTS
 
