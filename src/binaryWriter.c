@@ -247,15 +247,14 @@ void BinaryWriter_BTreeIndexFileVehicles(BTreeMetadata_t* meta) {
     }
 
     VehicleHeader_t* regsHeader = BinaryReader_VehicleHeader(meta->registersFile);
-    
-    // Checks if the file does not exist
     if (regsHeader == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
     }
 
+
     // Inserts the vehicles
-    for (int i = 0; i < regsHeader->numReg; i++) {
+    for (int i = 0; i < regsHeader->numReg + regsHeader->numRegRemov; i++) {
         Vehicle_t* reg = BinaryReader_Vehicle(meta->registersFile);
         if (reg->removed == '0') {
             Vehicle_Free(reg);
@@ -266,6 +265,7 @@ void BinaryWriter_BTreeIndexFileVehicles(BTreeMetadata_t* meta) {
         BTreeMetadata_Insert(meta, key, reg->offset);
         Vehicle_Free(reg);
     }
+
 
     BinaryWriter_BTreeHeader(meta);
     BinaryHeaders_FreeVehicleHeader(regsHeader);
@@ -279,15 +279,13 @@ void BinaryWriter_BTreeIndexFileBusLines(BTreeMetadata_t* meta) {
     }
 
     BusLineHeader_t* regsHeader = BinaryReader_BusLineHeader(meta->registersFile);
-    
-    // Checks if the file does not exist
     if (regsHeader == NULL) {
         printf("Falha no processamento do arquivo.\n");
         return;
     }
 
     // Inserts the bus lines
-    for (int i = 0; i < regsHeader->numReg; i++) {
+    for (int i = 0; i < regsHeader->numReg + regsHeader->numRegRemov; i++) {
         BusLine_t* reg = BinaryReader_BusLine(meta->registersFile);
         if (reg->removed == '0') {
             BusLine_Free(reg);
