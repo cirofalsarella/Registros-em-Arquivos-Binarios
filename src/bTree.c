@@ -110,6 +110,15 @@ RRN_t GetNextNode(BTreeMetadata_t* meta, BNode_t* node, RegKey_t key) {
     return node->childrenRRNs[i];
 }
 
+void printAux(RRN_t* filhos, ByteOffset_t* offsets, RegKey_t* chaves){
+    for (int i=0; i<5; i++) {
+        printf("(%d) %d ", filhos[i], chaves[i]);
+    }
+    printf("(%d)", filhos[5]);
+
+    printf("\n");
+}
+
 /**
  * @brief Partitions a node to two.
  * 
@@ -124,9 +133,9 @@ BRegister_t* PartitionNode(BTreeMetadata_t* meta, BNode_t* node, BRegister_t* ne
     ByteOffset_t offsets[BTREE_ORDER];
     RegKey_t chaves[BTREE_ORDER];
 
-    filhos[BTREE_ORDER-1] = node->childrenRRNs[BTREE_ORDER-1];
+    filhos[0] = node->childrenRRNs[0];
     for (int i=0; i<BTREE_ORDER-1; i++) {
-        filhos[i] = node->childrenRRNs[i];
+        filhos[i+1] = node->childrenRRNs[i+1];
         offsets[i] = node->offsets[i];
         chaves[i] = node->keys[i];
     }
@@ -134,6 +143,13 @@ BRegister_t* PartitionNode(BTreeMetadata_t* meta, BNode_t* node, BRegister_t* ne
     // Insere newReg ordenado nos vetores auxiliares
     int pos = 0;
     while (pos < (BTREE_ORDER-1) && newReg->key > chaves[pos]) pos++;
+
+    // if (pos == BTREE_ORDER-1) {
+    //     printf("\nnewReg: %d\n", newReg->key);
+    //     printf("\tAntes da partição:\n");
+    //     Printer_Node(node);
+    //     printAux(filhos, offsets, chaves);
+    // }
 
     for (int i=BTREE_ORDER-1; i>=pos; i--) {
         filhos[i+1] = filhos[i];
@@ -161,8 +177,7 @@ BRegister_t* PartitionNode(BTreeMetadata_t* meta, BNode_t* node, BRegister_t* ne
     }
     node->indexedKeysCount = BTREE_ORDER/2;
     BinaryWriter_SeekAndWriteNode(node, meta);
-
-
+    
     // Cria novo nó e copia os ultimos registros
     BNode_t* partitioned = BNode_CreateWithRRN(meta, node->isLeaf);
 
@@ -194,7 +209,6 @@ BRegister_t* InsertRegisterInNode(BTreeMetadata_t* meta, BNode_t* node, BRegiste
 
     // Se não tiver espaço vou ter de particionar
     if (node->indexedKeysCount == BTREE_ORDER-1) {
-        node->isLeaf = node->isLeaf;
         return PartitionNode(meta, node, reg);
     }   // Caso contrário somente realizo a inserção simples
 
