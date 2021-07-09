@@ -111,15 +111,6 @@ RRN_t GetNextNode(BTreeMetadata_t* meta, BNode_t* node, RegKey_t key) {
     return node->childrenRRNs[i];
 }
 
-void printAux(RRN_t* filhos, ByteOffset_t* offsets, RegKey_t* chaves){
-    for (int i=0; i<5; i++) {
-        printf("(%d) %d ", filhos[i], chaves[i]);
-    }
-    printf("(%d)", filhos[5]);
-
-    printf("\n");
-}
-
 /**
  * @brief Partitions a node to two.
  * 
@@ -144,13 +135,6 @@ BRegister_t* PartitionNode(BTreeMetadata_t* meta, BNode_t* node, BRegister_t* ne
     // Insere newReg ordenado nos vetores auxiliares
     int pos = 0;
     while (pos < (BTREE_ORDER-1) && newReg->key > chaves[pos]) pos++;
-
-    // if (pos == BTREE_ORDER-1) {
-    //     printf("\nnewReg: %d\n", newReg->key);
-    //     printf("\tAntes da partição:\n");
-    //     Printer_Node(node);
-    //     printAux(filhos, offsets, chaves);
-    // }
 
     for (int i=BTREE_ORDER-1; i>=pos; i--) {
         filhos[i+1] = filhos[i];
@@ -186,7 +170,7 @@ BRegister_t* PartitionNode(BTreeMetadata_t* meta, BNode_t* node, BRegister_t* ne
     for (int i=0; i<BTREE_ORDER/2; i++) {
         partitioned->childrenRRNs[i] = filhos[i + BTREE_ORDER/2 + 1];
         partitioned->keys[i] = chaves[i + BTREE_ORDER/2 + 1];
-        partitioned->offsets[i] = chaves[i + BTREE_ORDER/2 + 1];
+        partitioned->offsets[i] = offsets[i + BTREE_ORDER/2 + 1];
     }
 
     partitioned->indexedKeysCount = BTREE_ORDER/2;
@@ -216,9 +200,7 @@ BRegister_t* InsertRegisterInNode(BTreeMetadata_t* meta, BNode_t* node, BRegiste
 
     // Encontro a posição que vou inserir
     int pos = 0;
-    while (reg->key > node->keys[pos] && pos < node->indexedKeysCount) {
-        pos++;
-    }
+    while (pos < node->indexedKeysCount && reg->key > node->keys[pos]) pos++;
 
     // Movo os registros 1 pra frente
     for (int i=node->indexedKeysCount-1; i>=pos; i--) {
