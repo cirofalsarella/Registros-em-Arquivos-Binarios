@@ -99,7 +99,7 @@ BNode_t* BinaryReader_BTreeNode(BTreeMetadata_t* meta, RRN_t nodeRRN) {
     }
 
     if (nodeRRN < 0 || nodeRRN >= meta->header->rrnNextNode) {
-        printf("WARN: NULL node passed to BinaryReader_BTreeNode.\n");
+        fprintf(stderr, "WARN: NULL node passed to BinaryReader_BTreeNode.\n");
         return NULL;
     }
 
@@ -131,7 +131,7 @@ BNode_t* BinaryReader_BTreeNode(BTreeMetadata_t* meta, RRN_t nodeRRN) {
  * @param meta The cache of the bTree
  * @return the file status 
  */
-int BinaryReader_BTreeHeaderAndRoot(BTreeMetadata_t* meta) {
+char BinaryReader_BTreeHeaderAndRoot(BTreeMetadata_t* meta) {
     meta->header = BHeader_Create(0, -1, -1);
 
     fread(&(meta->header->status), sizeof(char), 1, meta->bTreeIndexFile);

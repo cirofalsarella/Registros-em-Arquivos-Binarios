@@ -112,7 +112,7 @@ void Op_FindVehicle() {
 	// Checks for errors
 	if (meta == NULL || meta->bTreeIndexFile == NULL || meta->registersFile == NULL || meta->root == NULL ||
 		meta->header == NULL || meta->header->rootRRN < 0 || meta->header->status != '1') {
-		printf("Falha no processamento do arquivo.\n");
+		printf("Falha no processamento do arquivo AA.\n");
 		return;
 	}
 
@@ -134,7 +134,6 @@ void Op_FindVehicle() {
 	int keyIndex = BNode_GetKeyIndex(node, prefixAsKey);
 
 	if (keyIndex < 0) {
-		// TODO: This should probably never happen
 		printf("Registro inexistente.\n");
 		return;
 	}

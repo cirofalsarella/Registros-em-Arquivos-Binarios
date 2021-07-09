@@ -42,9 +42,9 @@ BusLineHeader_t* BinaryReader_BusLineHeader(FILE *srcFile);
  * @brief Reads the root and the B-Tree Header from file.
  * 
  * @param meta
- * @return int status 
+ * @return char status 
  */
-int BinaryReader_BTreeHeaderAndRoot(BTreeMetadata_t* meta);
+char BinaryReader_BTreeHeaderAndRoot(BTreeMetadata_t* meta);
 
 /**
  * @brief Gets a node from the B-Tree cache by RRN.
