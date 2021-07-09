@@ -77,13 +77,13 @@ void BinaryWriter_BTreeHeader(BTreeMetadata_t* meta);
  * 
  * @param meta 
  */
-void BinaryWriter_BTreeIndexFileVehicles(BTreeMetadata_t* meta);
+int BinaryWriter_BTreeIndexFileVehicles(BTreeMetadata_t* meta);
 
 /**
  * @brief Creates a new B-Tree index file for the bus lines.
  * 
  * @param meta 
  */
-void BinaryWriter_BTreeIndexFileBusLines(BTreeMetadata_t* meta);
+int BinaryWriter_BTreeIndexFileBusLines(BTreeMetadata_t* meta);
 
 #endif

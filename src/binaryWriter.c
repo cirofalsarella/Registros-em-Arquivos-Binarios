@@ -112,6 +112,7 @@ void BinaryWriter_BTreeHeader(BTreeMetadata_t* meta) {
     fwrite(&(meta->header->unused[0]), sizeof(char), 68, meta->bTreeIndexFile);
 }
 
+
 // MARK: Append files
 
 int BinaryWriter_AppendVehicles(Vehicle_t** vehicles, int vehiclesCount, FILE* destFile, ByteOffset_t* destOffsets) {
@@ -239,17 +240,15 @@ int BinaryWriter_SeekAndWriteNode(BNode_t* node, BTreeMetadata_t* meta) {
     return 0;
 }
 
-void BinaryWriter_BTreeIndexFileVehicles(BTreeMetadata_t* meta) {
+int BinaryWriter_BTreeIndexFileVehicles(BTreeMetadata_t* meta) {
     // Checks if the file does not exist
     if (meta->registersFile == NULL) {
-        printf("Falha no processamento do arquivo.\n");
-        return;
+        return 1;
     }
 
     VehicleHeader_t* regsHeader = BinaryReader_VehicleHeader(meta->registersFile);
     if (regsHeader == NULL) {
-        printf("Falha no processamento do arquivo.\n");
-        return;
+        return 1;
     }
 
 
@@ -269,19 +268,18 @@ void BinaryWriter_BTreeIndexFileVehicles(BTreeMetadata_t* meta) {
 
     BinaryWriter_BTreeHeader(meta);
     BinaryHeaders_FreeVehicleHeader(regsHeader);
+    return 0;
 }
 
-void BinaryWriter_BTreeIndexFileBusLines(BTreeMetadata_t* meta) {
+int BinaryWriter_BTreeIndexFileBusLines(BTreeMetadata_t* meta) {
     // Checks if the file does not exist
     if (meta->registersFile == NULL) {
-        printf("Falha no processamento do arquivo.\n");
-        return;
+        return 1;
     }
 
     BusLineHeader_t* regsHeader = BinaryReader_BusLineHeader(meta->registersFile);
     if (regsHeader == NULL) {
-        printf("Falha no processamento do arquivo.\n");
-        return;
+        return 1;
     }
 
     // Inserts the bus lines
@@ -299,4 +297,6 @@ void BinaryWriter_BTreeIndexFileBusLines(BTreeMetadata_t* meta) {
 
     BinaryWriter_BTreeHeader(meta);
     BinaryHeaders_FreeBusLineHeader(regsHeader);
+    
+    return 0;
 }
