@@ -131,14 +131,15 @@ BNode_t* BinaryReader_BTreeNode(BTreeMetadata_t* meta, RRN_t nodeRRN) {
  * @param meta The cache of the bTree
  * @return the file status 
  */
-char BinaryReader_BTreeHeaderAndRoot(BTreeMetadata_t* meta) {
-    meta->header = BHeader_Create(0, -1, -1);
+BHeader_t* BinaryReader_BTreeHeader(FILE* pt) {
+    fseek(pt, 0, SEEK_SET);
 
-    fread(&(meta->header->status), sizeof(char), 1, meta->bTreeIndexFile);
-    fread(&(meta->header->rootRRN), sizeof(RRN_t), 1, meta->bTreeIndexFile);
-    fread(&(meta->header->rrnNextNode), sizeof(RRN_t), 1, meta->bTreeIndexFile);
-    fread(&(meta->header->unused[0]), sizeof(char), 68, meta->bTreeIndexFile);
+    BHeader_t* header = BHeader_Create(0, -1, -1);
 
-    meta->root = BinaryReader_BTreeNode(meta, meta->header->rootRRN);
-    return meta->header->status;
+    fread(&(header->status), sizeof(char), 1, pt);
+    fread(&(header->rootRRN), sizeof(RRN_t), 1, pt);
+    fread(&(header->rrnNextNode), sizeof(RRN_t), 1, pt);
+    fread(&(header->unused[0]), sizeof(char), 68, pt);
+
+    return header;
 }
