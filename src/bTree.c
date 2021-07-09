@@ -318,13 +318,12 @@ BNode_t* GetNodeByKeyRecur(BTreeMetadata_t* meta, RRN_t nodeRRN, RegKey_t key) {
     if (nodeRRN < 0) return NULL;
 
     BNode_t* current = BinaryReader_BTreeNode(meta, nodeRRN);
-    printf("current = %d\n", nodeRRN);
 
     if (current == NULL) return NULL;
 
     for (int i = 0; i < current->indexedKeysCount; i++) {
         if (current->keys[i] == key) return current;
-        else if (current->keys[i] < key) return GetNodeByKeyRecur(meta, current->childrenRRNs[i], key);
+        else if (current->keys[i] > key) return GetNodeByKeyRecur(meta, current->childrenRRNs[i], key);
     }
 
     return GetNodeByKeyRecur(meta, current->childrenRRNs[current->indexedKeysCount], key); 

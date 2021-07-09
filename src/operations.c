@@ -94,7 +94,7 @@ void Op_FindVehicle() {
 	char prefix[128] = { '\0' };
     Utils_ScanQuoteString(&prefix[0]);
 
-	// Checks if field name is valid (currently only support prefixo)
+	// Checks if field name is valid
 	if (strcmp(fieldName, "prefixo") != 0) {
 		printf("Falha no processamento do arquivo.\n");
 		return;
@@ -112,7 +112,7 @@ void Op_FindVehicle() {
 	// Checks for errors
 	if (meta == NULL || meta->bTreeIndexFile == NULL || meta->registersFile == NULL || meta->root == NULL ||
 		meta->header == NULL || meta->header->rootRRN < 0 || meta->header->status != '1') {
-		printf("Falha no processamento do arquivo AA.\n");
+		printf("Falha no processamento do arquivo.\n");
 		return;
 	}
 
@@ -149,7 +149,72 @@ void Op_FindVehicle() {
 }
 
 void Op_FindBusLine() {
-	// TODO: Test Op_FindVehicle, then make this
+	// Gets file names from terminal
+    char regsFileName[128] = { '\0' };
+    scanf("%s", &regsFileName[0]);
+
+    char bTreeFileName[128] = { '\0' };
+    scanf("%s", &bTreeFileName[0]);
+
+	// Expects "codLinha"
+	char fieldName[128] = { '\0' };
+    scanf("%s", &fieldName[0]);
+
+	char lineCodeStr[128] = { '\0' };
+    scanf("%s", &lineCodeStr[0]);
+
+	// Checks if field name is valid
+	if (strcmp(fieldName, "codLinha") != 0) {
+		printf("Falha no processamento do arquivo.\n");
+		return;
+	}
+
+	// Checks for invalid queries
+	if (strcmp(lineCodeStr, "NULO") == 0 || strlen(lineCodeStr) <= 0) {
+		printf("Registro inexistente.\n");
+		return;
+	}
+
+	const RegKey_t lineCode = atoi(lineCodeStr);
+
+	// Creates metadata
+	BTreeMetadata_t* meta = BTreeMetadata_CreateFromFile(bTreeFileName, "rb", regsFileName, "rb");
+
+	// Checks for errors
+	if (meta == NULL || meta->bTreeIndexFile == NULL || meta->registersFile == NULL || meta->root == NULL ||
+		meta->header == NULL || meta->header->rootRRN < 0 || meta->header->status != '1') {
+		printf("Falha no processamento do arquivo.\n");
+		return;
+	}
+
+	if (lineCode < 0) {
+		printf("Registro inexistente.\n");
+		return;
+	}
+
+	BNode_t* node = BTreeMetadata_GetNodeByKey(meta, lineCode);
+
+	if (node == NULL) {
+		printf("Registro inexistente.\n");
+		return;
+	}
+
+	// At this point, node is not NULL
+	int keyIndex = BNode_GetKeyIndex(node, lineCode);
+
+	if (keyIndex < 0) {
+		printf("Registro inexistente.\n");
+		return;
+	}
+
+	// Seeks to the right spot in the file
+	fseek(meta->registersFile, node->offsets[keyIndex], SEEK_SET);
+	BusLine_t* busLine = BinaryReader_BusLine(meta->registersFile);
+
+	Printer_BusLine(busLine);
+
+	BusLine_Free(busLine);
+	BTreeMetadata_Free(meta);
 }
 
 void Op_PushVehicles() {
