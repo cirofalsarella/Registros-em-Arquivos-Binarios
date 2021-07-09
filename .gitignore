@@ -5,4 +5,5 @@ programaTrab
 !/bin/*.bin
 *.csv
 *.zip
+*.txt
 out
