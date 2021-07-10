@@ -1,8 +1,6 @@
 .vscode
 programaTrab.exe
 programaTrab
-*.bin
-!/bin/*.bin
 *.csv
 *.zip
 *.txt
