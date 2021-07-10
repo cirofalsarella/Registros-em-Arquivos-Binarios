@@ -2,12 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "dataModel.h"
-#include "binaryHeaders.h"
-#include "binaryReader.h"
-#include "binaryWriter.h"
-#include "printer.h"
-#include "utils.h"
+#include "../dataModel/dataModel.h"
+#include "../dataModel/binaryHeaders.h"
+#include "../io/binaryReader.h"
+#include "../io/binaryWriter.h"
+#include "../core/printer.h"
+#include "../core/utils.h"
 
 //  Printa uma Hash do arquivo (binário na tela)
 void PrintHash(char* nomeArquivoBinario) {
@@ -221,7 +221,6 @@ void Op_FindBusLine() {
 	BTreeMetadata_Free(meta);
 }
 
-
 void Op_PushVehicles() {
 	// Gets file names from terminal
     char regsFileName[128] = { '\0' };
@@ -336,7 +335,6 @@ void Op_PushBusLines() {
     }
 	fseek(meta->registersFile, 0, SEEK_END);
 	proxReg = 0; //ftell(meta->registersFile);
-	
 
 	// Adjust the headers of both files
 	fseek(meta->registersFile, 1, SEEK_SET);

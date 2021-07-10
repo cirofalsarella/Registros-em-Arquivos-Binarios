@@ -3,6 +3,8 @@
 
 #include "dataModel.h"
 
+// ANCHOR: Create functions
+
 /**
  * @brief Creates a new vehicle header with the given strings.
  * 
@@ -26,6 +28,9 @@ VehicleHeader_t* BinaryHeaders_CreateVehicleHeader(char* describePrefix, char* d
  * @return BusLineHeader_t* 
  */
 BusLineHeader_t* BinaryHeaders_CreateBusLineHeader(char* describeCode, char* describeCard, char* describeName, char* describeLine);
+
+
+// ANCHOR: Free functions
 
 /**
  * @brief Frees the vehicles header.

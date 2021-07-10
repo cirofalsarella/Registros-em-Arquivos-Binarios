@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "src/operations.h"
+#include "core/operations.h"
 
 int main() {
     // Gets op number

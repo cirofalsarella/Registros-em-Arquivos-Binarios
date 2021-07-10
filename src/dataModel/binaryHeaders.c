@@ -3,9 +3,9 @@
 #include <stdlib.h>
 
 #include "binaryHeaders.h"
-#include "utils.h"
+#include "../core/utils.h"
 
-// MARK: Create functions
+// ANCHOR: Create functions
 
 // Create an Vehicle header
 VehicleHeader_t* BinaryHeaders_CreateVehicleHeader(char* describePrefix, char* describeDate, char* describePlaces, char* describeLine, char* describeModel, char* describeCategory) {
@@ -49,8 +49,7 @@ BusLineHeader_t* BinaryHeaders_CreateBusLineHeader(char* describeCode, char* des
 }
 
 
-// MARK: Free functions
-
+// ANCHOR: Free functions
 
 void BinaryHeaders_FreeVehicleHeader(VehicleHeader_t* header) {
     free(header);

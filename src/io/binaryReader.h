@@ -1,9 +1,11 @@
 #ifndef _READ_BINARY_H_
 #define _READ_BINARY_H_
 
-#include "dataModel.h"
-#include "bTreeDataModel.h"
-#include "bTree.h"
+#include "../dataModel/dataModel.h"
+#include "../bTree/bTreeDataModel.h"
+#include "../bTree/bTree.h"
+
+// ANCHOR: Read registers & reg file headers
 
 /**
  * @brief Reads one vehicle from src file.
@@ -37,6 +39,9 @@ VehicleHeader_t* BinaryReader_VehicleHeader(FILE *srcFile);
  * @return BusLineHeader_t* 
  */
 BusLineHeader_t* BinaryReader_BusLineHeader(FILE *srcFile);
+
+
+// ANCHOR: B-Tree header & nodes
 
 /**
  * @brief reads the header of an B-Tree index File, if there isn't, creates an empty one

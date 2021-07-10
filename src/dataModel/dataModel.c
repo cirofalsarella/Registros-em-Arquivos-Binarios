@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #include "dataModel.h"
-#include "utils.h"
+#include "../core/utils.h"
 
 
 Vehicle_t* Vehicle_Create(char removed, char* prefix, char* date, int32_t numSeats, int32_t lineCode, char* model, char* category, int64_t offset) {    

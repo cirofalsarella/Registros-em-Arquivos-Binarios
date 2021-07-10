@@ -2,15 +2,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "bTree.h"
-#include "bTreeDataModel.h"
-#include "dataModel.h"
-#include "utils.h"
+#include "../bTree/bTree.h"
+#include "../bTree/bTreeDataModel.h"
+#include "../dataModel/dataModel.h"
+#include "../core/utils.h"
 
-
-// Printa um campo e seu label
-// Conferem se o valor do campo é nulo
-
+/**
+ * @brief Prints the given integer value, while also checking for NULL values (-1).
+ * 
+ * @param label 
+ * @param value 
+ */
 void PrettyPrintInt(const char* label, int value) {
     printf("%s: ", label);
     
@@ -21,6 +23,12 @@ void PrettyPrintInt(const char* label, int value) {
     }
 }
 
+/**
+ * @brief Prints the given string value, while also checking for NULL values (NULO).
+ * 
+ * @param label 
+ * @param value 
+ */
 void PrettyPrintStr(const char* label, const char* str) {
     printf("%s: ", label);
     
@@ -31,6 +39,12 @@ void PrettyPrintStr(const char* label, const char* str) {
     }
 }
 
+/**
+ * @brief Prints the given date.
+ * 
+ * @param label 
+ * @param value 
+ */
 void PrettyPrintDate(const char *date) {
     if (date == NULL || strlen(date) == 0) {
         printf("campo com valor nulo\n");
@@ -62,7 +76,13 @@ void PrettyPrintDate(const char *date) {
     }
 }
 
-// Printa uma string de tamanho fixo (sem \0 no final)
+/**
+ * @brief Prints a fixed-length string.
+ * 
+ * @param label 
+ * @param str 
+ * @param maxLength 
+ */
 void PrettyPrintWithMaxLength(const char* label, const char* str, int maxLength) {
     printf("%s: ", label);
     
@@ -125,7 +145,7 @@ void Printer_Node(const BNode_t* node) {
 
     printf("%d %c -> ", node->rrn, (node->isLeaf ? 's' : 'n'));
     for (int i=0; i<4; i++) {
-        printf("(%d) %d, %ld ", node->childrenRRNs[i], node->keys[i], node->offsets[i]);
+        printf("(%d) %d ", node->childrenRRNs[i], node->keys[i]);
     }
     printf("(%d)", node->childrenRRNs[4]);
     printf(" %d,", node->indexedKeysCount);

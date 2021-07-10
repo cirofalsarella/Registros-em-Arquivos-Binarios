@@ -1,7 +1,7 @@
 #include "bTree.h"
-#include "binaryReader.h"
-#include "binaryWriter.h"
-#include "printer.h"
+#include "../io/binaryReader.h"
+#include "../io/binaryWriter.h"
+#include "../core/printer.h"
 #include <assert.h>
 
 BTreeMetadata_t* BTreeMetadata_Create(char* bTreeIndexFileName, char* indexOpenType, char* registersFileName, char* registerOpenType) {
@@ -89,23 +89,22 @@ void BTreeMetadata_Free(BTreeMetadata_t* meta) {
  * @brief Struct to help manipulate registers
  * @param key the key of the register
  * @param fileOffset the offset of the record in the main file (in bytes)
- * @param p_ant the RRN of the node before
- * @param p_prox the RRN of the node after
+ * @param childRRN the RRN of the child node
  */
-typedef struct bRegister {
+typedef struct BRegister {
     RegKey_t key;
     ByteOffset_t fileOffset;
-    RRN_t filhoRRN;
+    RRN_t childRRN;
 } BRegister_t;
 
 /**
  * @brief Create and return an Register object
  */
-BRegister_t* CreateRegister(RegKey_t key, ByteOffset_t regOffset, RRN_t filho) {
+BRegister_t* CreateRegister(RegKey_t key, ByteOffset_t fileOffset, RRN_t childRRN) {
     BRegister_t* reg = (BRegister_t*) malloc(sizeof(BRegister_t));
     reg->key = key;
-    reg->fileOffset = regOffset;
-    reg->filhoRRN = filho;
+    reg->fileOffset = fileOffset;
+    reg->childRRN = childRRN;
 
     return reg;
 }
@@ -130,46 +129,47 @@ RRN_t GetNextNode(BTreeMetadata_t* meta, BNode_t* node, RegKey_t key) {
 /**
  * @brief Partitions a node to two.
  * 
- * @param meta the metadata of the tree
- * @param node the node that is fullfilled
- * @param newReg the register to be inserted in the node
- * @return the new node created
+ * @param meta The metadata of the tree
+ * @param node The node that is full
+ * @param newReg The register to be inserted in the node
+ * @return The new node created
  */
 BRegister_t* PartitionNode(BTreeMetadata_t* meta, BNode_t* node, BRegister_t* newReg) {
     // Criar vetores auxiliares
-    RRN_t filhos[BTREE_ORDER+1];
+    RRN_t children[BTREE_ORDER+1];
     ByteOffset_t offsets[BTREE_ORDER];
-    RegKey_t chaves[BTREE_ORDER];
+    RegKey_t keys[BTREE_ORDER];
 
-    filhos[0] = node->childrenRRNs[0];
+    children[0] = node->childrenRRNs[0];
     for (int i=0; i<BTREE_ORDER-1; i++) {
-        filhos[i+1] = node->childrenRRNs[i+1];
+        children[i+1] = node->childrenRRNs[i+1];
         offsets[i] = node->offsets[i];
-        chaves[i] = node->keys[i];
+        keys[i] = node->keys[i];
     }
 
-    // Insere newReg ordenado nos vetores auxiliares
+    // Inserts newReg ordered at our auxiliary array
     int pos = 0;
-    while (pos < (BTREE_ORDER-1) && newReg->key > chaves[pos]) pos++;
-
-    for (int i=BTREE_ORDER-1; i>=pos; i--) {
-        filhos[i+1] = filhos[i];
-        offsets[i] = offsets[i-1];
-        chaves[i] = chaves[i-1];
+    while (pos < (BTREE_ORDER-1) && newReg->key > keys[pos]) {
+        pos++;
     }
-    filhos[pos+1] = newReg->filhoRRN;
-    chaves[pos] = newReg->key;
+
+    for (int i = BTREE_ORDER-1; i >= pos; i--) {
+        children[i+1] = children[i];
+        offsets[i] = offsets[i-1];
+        keys[i] = keys[i-1];
+    }
+    children[pos+1] = newReg->childRRN;
+    keys[pos] = newReg->key;
     offsets[pos] = newReg->fileOffset;
 
     free(newReg);
 
-
-    // Copia os primeiros no antigo e apaga registros removidos dele
+    // Copies the first in the old and erases removed registers from it
     node->childrenRRNs[BTREE_ORDER-1] = -1;
     for (int i=0; i<BTREE_ORDER/2; i++) {
-        node->childrenRRNs[i+1] = filhos[i+1];
+        node->childrenRRNs[i+1] = children[i+1];
         node->offsets[i] = offsets[i];
-        node->keys[i] = chaves[i];
+        node->keys[i] = keys[i];
     }
     for (int i=BTREE_ORDER/2; i<BTREE_ORDER-1; i++) {
         node->childrenRRNs[i+1] = -1;
@@ -179,21 +179,21 @@ BRegister_t* PartitionNode(BTreeMetadata_t* meta, BNode_t* node, BRegister_t* ne
     node->indexedKeysCount = BTREE_ORDER/2;
     BinaryWriter_SeekAndWriteNode(node, meta);
     
-    // Cria novo nó e copia os ultimos registros
+    // Creates a new node and copies the last registers
     BNode_t* partitioned = BNode_CreateWithRRN(meta, node->isLeaf);
 
-    partitioned->childrenRRNs[BTREE_ORDER/2] = filhos[BTREE_ORDER];
-    for (int i=0; i<BTREE_ORDER/2; i++) {
-        partitioned->childrenRRNs[i] = filhos[i + BTREE_ORDER/2 + 1];
-        partitioned->keys[i] = chaves[i + BTREE_ORDER/2 + 1];
+    partitioned->childrenRRNs[BTREE_ORDER/2] = children[BTREE_ORDER];
+    for (int i = 0; i < BTREE_ORDER/2; i++) {
+        partitioned->childrenRRNs[i] = children[i + BTREE_ORDER/2 + 1];
+        partitioned->keys[i] = keys[i + BTREE_ORDER/2 + 1];
         partitioned->offsets[i] = offsets[i + BTREE_ORDER/2 + 1];
     }
 
     partitioned->indexedKeysCount = BTREE_ORDER/2;
     BinaryWriter_SeekAndWriteNode(partitioned, meta);
 
-    // Cria o novo registro
-    newReg = CreateRegister(chaves[BTREE_ORDER/2], offsets[BTREE_ORDER/2], partitioned->rrn);
+    // Creates the new register
+    newReg = CreateRegister(keys[BTREE_ORDER/2], offsets[BTREE_ORDER/2], partitioned->rrn);
     
     BNode_Free(partitioned);
     return newReg;
@@ -202,23 +202,23 @@ BRegister_t* PartitionNode(BTreeMetadata_t* meta, BNode_t* node, BRegister_t* ne
 /**
  * @brief Inserts a register into the given node. The node passed must have enough space for the new register.
  * 
- * @param node node that will be updated
- * @param reg register to be inserted; its memory will be freed
+ * @param node Node that will be updated
+ * @param reg Register to be inserted; its memory will be freed
  */
 BRegister_t* InsertRegisterInNode(BTreeMetadata_t* meta, BNode_t* node, BRegister_t* reg) {
     if (reg == NULL || node == NULL)   return NULL;
 
-    // Se não tiver espaço vou ter de particionar
-    if (node->indexedKeysCount == BTREE_ORDER-1) {
+    // If there is no available space, partition
+    if (node->indexedKeysCount >= BTREE_ORDER-1) {
         return PartitionNode(meta, node, reg);
-    }   // Caso contrário somente realizo a inserção simples
+    }   // Else, simple insertion is enough
 
 
-    // Encontro a posição que vou inserir
+    // Finds insertion index
     int pos = 0;
     while (pos < node->indexedKeysCount && reg->key > node->keys[pos]) pos++;
 
-    // Movo os registros 1 pra frente
+    // Shifts registers by 1
     for (int i=node->indexedKeysCount-1; i>=pos; i--) {
         node->childrenRRNs[i+2] = node->childrenRRNs[i+1];
         node->keys[i+1] = node->keys[i];
@@ -226,10 +226,10 @@ BRegister_t* InsertRegisterInNode(BTreeMetadata_t* meta, BNode_t* node, BRegiste
     }
     node->childrenRRNs[pos+1] = node->childrenRRNs[pos];
 
-    // Salvo o conteúdo da nova inserção
+    // Saves the content of the insertion
     node->keys[pos] = reg->key;
     node->offsets[pos] = reg->fileOffset;
-    node->childrenRRNs[pos+1] = reg->filhoRRN;
+    node->childrenRRNs[pos+1] = reg->childRRN;
 
     free(reg);
     
@@ -238,12 +238,12 @@ BRegister_t* InsertRegisterInNode(BTreeMetadata_t* meta, BNode_t* node, BRegiste
 }
 
 /**
- * @brief Insert the register in the tree, takes care of partitions and promotions
+ * @brief Insert the register in the tree, takes care of partitions and promotions.
  * 
- * @param meta the meta to acess the nodes in ram
- * @param node the current node of the insertion
- * @param newReg the new register to be included
- * @return in case of promotion returns the promoted reg, otherwise returns NULL
+ * @param meta The metadata
+ * @param node The current node of the insertion
+ * @param newReg The new register to be included
+ * @return In case of promotion, returns the promoted reg. Otherwise, returns NULL.
  */
 BRegister_t* InsertNodeRecur(BTreeMetadata_t* meta, RRN_t nodeRRN, BRegister_t* newReg) {
     BNode_t* node = BinaryReader_BTreeNode(meta, nodeRRN);
@@ -254,10 +254,10 @@ BRegister_t* InsertNodeRecur(BTreeMetadata_t* meta, RRN_t nodeRRN, BRegister_t* 
     }
 
     BRegister_t* promoted = NULL;
-    if (node->isLeaf == 1) { // Insere no próprio nó
+    if (node->isLeaf == 1) { // Inserts in node
         promoted = InsertRegisterInNode(meta, node, newReg);
     }
-    else { // Insere em um nó child
+    else { // Inserts in a child node
         promoted = InsertNodeRecur(meta, GetNextNode(meta, node, newReg->key), newReg);
 
         if (promoted != NULL) {
@@ -267,8 +267,8 @@ BRegister_t* InsertNodeRecur(BTreeMetadata_t* meta, RRN_t nodeRRN, BRegister_t* 
 
     BinaryWriter_SeekAndWriteNode(node, meta);
     BNode_Free(node);
-    
-    // Caso exista um nó promovido tenta inserir no próprio nó
+
+    // If the node exists, tries to insert in it    
     return promoted;
 }
 
@@ -276,13 +276,13 @@ BRegister_t* InsertNodeRecur(BTreeMetadata_t* meta, RRN_t nodeRRN, BRegister_t* 
 void BTreeMetadata_Insert(BTreeMetadata_t* meta, RegKey_t key, ByteOffset_t fileOffset) {
     BRegister_t* newReg = CreateRegister(key, fileOffset, -1);
 
-    // Se raiz existir ela vai estar guardada no meta
+    // The root is always defined in the metadata (if the tree is not empty)
     if (meta->header->rootRRN < 0) {
         // Create an root
         BNode_t* root = BNode_CreateWithRRN(meta, TRUE);
         meta->header->rootRRN = root->rrn;
 
-        // Add new register and update the file
+        // Add a new register and updates the file
         InsertRegisterInNode(meta, root, newReg);
         BinaryWriter_SeekAndWriteNode(root, meta);
 

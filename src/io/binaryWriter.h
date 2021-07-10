@@ -1,11 +1,11 @@
 #ifndef _BINARY_WRITER_H_
 #define _BINARY_WRITER_H_
 
-#include "bTreeDataModel.h"
-#include "bTree.h"
-#include "dataModel.h"
+#include "../bTree/bTreeDataModel.h"
+#include "../bTree/bTree.h"
+#include "../dataModel/dataModel.h"
 
-// MARK: Register writing functions
+// ANCHOR: Register writing functions
 
 /**
  * @brief Write a vehicle to the given file.
@@ -25,7 +25,7 @@ int64_t BinaryWriter_BusLine(const BusLine_t* busLine, FILE* destFile);
 
 
 
-// MARK: Appending functions
+// ANCHOR: Register appending functions
 
 /**
  * @brief Writes a vector of vehicles to the end of dest file.
@@ -53,7 +53,7 @@ int BinaryWriter_AppendBusLines(BusLine_t** busLines, int buslinesCount, FILE* f
 
 
 
-// MARK: B-Tree related writing
+// ANCHOR: B-Tree related writing
 
 
 /**

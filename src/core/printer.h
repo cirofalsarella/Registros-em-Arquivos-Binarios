@@ -2,9 +2,9 @@
 #define _PRINTER_H_
 
 
-#include "bTree.h"
-#include "bTreeDataModel.h"
-#include "dataModel.h"
+#include "../bTree/bTree.h"
+#include "../bTree/bTreeDataModel.h"
+#include "../dataModel/dataModel.h"
 
 // FUNÇÕES RESPONSÁVEIS PELA FORMATAÇÃO DOS PRINTS
 

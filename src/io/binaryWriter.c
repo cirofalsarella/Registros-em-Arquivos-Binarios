@@ -4,18 +4,16 @@
 #include <stdio.h>
 #include <errno.h>
 
-#include "dataModel.h"
 #include "binaryWriter.h"
 #include "binaryReader.h"
-#include "binaryHeaders.h"
-#include "utils.h"
-#include "bTree.h"
-#include "operations.h"
-#include "bTreeDataModel.h"
+#include "../dataModel/dataModel.h"
+#include "../dataModel/binaryHeaders.h"
+#include "../core/utils.h"
+#include "../bTree/bTree.h"
+#include "../core/operations.h"
+#include "../bTree/bTreeDataModel.h"
 
-// TODO: Manipulação do status / ler feedback do T1
-
-//  MARK: Functions that write single registers
+// ANCHOR: Register writing functions
 
 int64_t BinaryWriter_Vehicle(const Vehicle_t* vehicle, FILE* destFile) {
     int64_t offset = ftell(destFile);
@@ -122,7 +120,7 @@ void BinaryWriter_BTreeHeader(BTreeMetadata_t* meta) {
 }
 
 
-// MARK: Append files
+// ANCHOR: Register appending functions
 
 int BinaryWriter_AppendVehicles(Vehicle_t** vehicles, int vehiclesCount, FILE* destFile, ByteOffset_t* destOffsets) {
     if (destFile == NULL) {
@@ -238,6 +236,7 @@ int BinaryWriter_AppendBusLines(BusLine_t** buslines, int buslinesCount, FILE* d
 }
 
 
+// ANCHOR: B-Tree related writing
 
 int BinaryWriter_SeekAndWriteNode(BNode_t* node, BTreeMetadata_t* meta) {
     if (meta == NULL || meta->bTreeIndexFile == NULL || node == NULL || node->rrn < 0) {

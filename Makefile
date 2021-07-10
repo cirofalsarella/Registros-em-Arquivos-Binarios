@@ -1,7 +1,8 @@
-OBJECTS = src/*.c
+OBJECTS = src/bTree/*.c src/core/*.c src/dataModel/*.c src/io/*.c
+MAIN = src/main.c
 
 all:
-	gcc -ggdb3 main.c ${OBJECTS} -o programaTrab -Wall
+	gcc -ggdb3 ${MAIN} ${OBJECTS} -o programaTrab -Wall
 
 run:
 	./programaTrab
@@ -15,14 +16,14 @@ gdb:
 
 # Windows-specific
 c:
-	gcc -ggdb3 main.c ${OBJECTS} -o programaTrab.exe -Wall
+	gcc -ggdb3 ${MAIN} ${OBJECTS} -o programaTrab.exe -Wall
 
 d:
-	gcc -g main.c ${OBJECTS} -o programaTrab.exe -Wall
+	gcc -g ${MAIN} ${OBJECTS} -o programaTrab.exe -Wall
 	gdb programaTrab.exe
 
 r:
-	gcc main.c ${OBJECTS} -o programaTrab.exe -Wall
+	gcc ${MAIN} ${OBJECTS} -o programaTrab.exe -Wall
 	programaTrab.exe
 
 clean:

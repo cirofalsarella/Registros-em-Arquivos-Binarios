@@ -2,10 +2,13 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "binaryReader.h"
-#include "dataModel.h"
-#include "bTreeDataModel.h"
-#include "bTree.h"
+#include "../io/binaryReader.h"
+#include "../dataModel/dataModel.h"
+#include "../bTree/bTreeDataModel.h"
+#include "../bTree/bTree.h"
+
+
+// ANCHOR: Read registers & reg file headers
 
 Vehicle_t* BinaryReader_Vehicle(FILE *srcFile) {
     Vehicle_t* vehicle = calloc(1, sizeof(Vehicle_t));
@@ -91,6 +94,9 @@ BusLineHeader_t* BinaryReader_BusLineHeader(FILE *srcFile) {
 
     return header;
 }
+
+
+// ANCHOR: B-Tree header & nodes
 
 BNode_t* BinaryReader_BTreeNode(BTreeMetadata_t* meta, RRN_t nodeRRN) {
     if (meta == NULL || meta->bTreeIndexFile == NULL) {
