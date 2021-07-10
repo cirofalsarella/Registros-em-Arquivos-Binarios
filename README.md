@@ -3,6 +3,12 @@
 
 A database management system that uses B-Trees for quickly retrieving registers.
 
+## TODOs
+
+* Manipulação incorreta de numRegs (atualizar apos cada inserção de um reg)??
+* Manipulação incorreta de numRegsRemov (atualizar apos cada inserção de um reg removido)??
+* Checar se o status ta ok
+
 ## Folder structure
     .
     ├── bTree                   # bTree:     B-Tree indexing algorithms & data model
