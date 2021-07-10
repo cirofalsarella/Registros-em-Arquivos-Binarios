@@ -5,17 +5,15 @@
 #include <stdlib.h>
 #include "bTreeDataModel.h"
 
-typedef struct BTreeMetadata BTreeMetadata_t;
-
 /**
  * @brief Data useful when dealing with a B-Tree in the disk.
  */
-struct BTreeMetadata {
+typedef struct BTreeMetadata {
     FILE* bTreeIndexFile; // File with the nodes from the B-Tree.
     FILE* registersFile; // File with the registers from the B-Tree.
     BHeader_t* header;
     BNode_t* root;
-};
+} BTreeMetadata_t;
 
 /**
  * @brief Creates a new B-Tree metadata.
@@ -27,15 +25,6 @@ struct BTreeMetadata {
  * @return BTreeCache_t* 
  */
 BTreeMetadata_t* BTreeMetadata_Create(char* bTreeIndexFileName, char* indexOpenType, char* registersFileName, char* registerOpenType);
-
-/**
- * @brief Creates a B-Tree cache from the given files and returns it.
- * 
- * @param bTreeIndexFileName File containing the B-Tree index. 
- * @param registersFileName File containing the registers.
- * @return BTreeCache_t* 
- */
-BTreeMetadata_t* BTreeMetadata_CreateFromFile(char* bTreeIndexFileName, char* indexOpenType, char* registersFileName, char* registerOpenType);
 
 /**
  * @brief Inserts a new register in the cache.

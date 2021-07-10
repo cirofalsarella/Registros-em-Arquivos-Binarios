@@ -5,51 +5,80 @@
 #include <assert.h>
 
 BTreeMetadata_t* BTreeMetadata_Create(char* bTreeIndexFileName, char* indexOpenType, char* registersFileName, char* registerOpenType) {
-    // Inits a B-Tree Metadata
     BTreeMetadata_t* meta = calloc(1, sizeof(BTreeMetadata_t));
 
-    if (bTreeIndexFileName != NULL) meta->bTreeIndexFile = fopen(bTreeIndexFileName, indexOpenType);
-    if (registersFileName != NULL) meta->registersFile = fopen(registersFileName, registerOpenType);
-
-    meta->header = BHeader_Create('0', -1, 0);
-    meta->root = NULL;
-
-    return meta;
-}
-
-
-BTreeMetadata_t* BTreeMetadata_CreateFromFile(char* bTreeIndexFileName, char* indexOpenType, char* registersFileName, char* registerOpenType) {
-    // Inits a B-Tree Metadata
-    BTreeMetadata_t* meta = calloc(1, sizeof(BTreeMetadata_t));
-    
-    meta->bTreeIndexFile = fopen(bTreeIndexFileName, indexOpenType);
-    meta->registersFile = fopen(registersFileName, registerOpenType);
-    
-    // If FILE status == '0', error
-    if (BinaryReader_BTreeHeaderAndRoot(meta) != '1') {
-        return NULL;
+    // Initializes the registers File
+    if (registersFileName != NULL && registerOpenType != NULL) {
+        meta->registersFile = fopen(registersFileName, registerOpenType);
+        
+        if (meta->registersFile != NULL) {
+            char status;
+        
+            fseek(meta->registersFile, 0, SEEK_SET);
+            fread(&status, sizeof(char), 1, meta->registersFile);
+        
+            if (status == '0') {
+                fclose(meta->registersFile);
+                meta->registersFile = NULL;
+            } else {
+                status = '0';
+                fseek(meta->registersFile, 0, SEEK_SET);
+                fwrite(&status, sizeof(char), 1, meta->registersFile);
+            }
+        }
     }
 
+    // Initializes the index File
+    if (bTreeIndexFileName != NULL && indexOpenType != NULL) {
+        meta->bTreeIndexFile = fopen(bTreeIndexFileName, indexOpenType);
+        
+        if (meta->bTreeIndexFile != NULL) {
+            
+            fseek(meta->bTreeIndexFile, 0, SEEK_END);       
+            if (ftell(meta->bTreeIndexFile) >= BTREE_PAGE_SIZE){
+                fseek(meta->bTreeIndexFile, 0, SEEK_SET);
+                
+                char status;
+                fread(&status, sizeof(char), 1, meta->bTreeIndexFile);
+                if (status == '0') {
+                    fclose(meta->bTreeIndexFile);
+                    meta->bTreeIndexFile = NULL;
+                    meta->header = NULL;
+                } else {
+                    status = '0';
+                    fseek(meta->bTreeIndexFile, 0, SEEK_SET);
+                    fwrite(&status, sizeof(char), 1, meta->bTreeIndexFile);
+                    meta->header = BinaryReader_BTreeHeader(meta->bTreeIndexFile);
+                }
+            } else {
+                meta->header = BHeader_Create('0', -1, 0);
+                BinaryWriter_BTreeHeader(meta);
+            }
+        }
+    }
+    
     return meta;
 }
 
 void BTreeMetadata_Free(BTreeMetadata_t* meta) {
-    if (meta == NULL) return;
+    if (meta == NULL)   return;
 
-    if (meta->registersFile != NULL) fclose(meta->registersFile);
-    
-    meta->header->status = '1';
+    if (meta->registersFile != NULL) {
+        char status = '1';
+        fseek(meta->registersFile, 0, SEEK_SET);
+        fwrite(&status, sizeof(char), 1, meta->registersFile);
+        fclose(meta->registersFile);
+    }
+
     if (meta->bTreeIndexFile != NULL) {
+        meta->header->status = '1';
         BinaryWriter_BTreeHeader(meta);
         fclose(meta->bTreeIndexFile);
     }
-    
+
     BHeader_Free(meta->header);
-    BNode_Free(meta->root);
     free(meta);
 }
-
-
 
 
 

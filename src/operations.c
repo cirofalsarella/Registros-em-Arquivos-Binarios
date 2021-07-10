@@ -47,6 +47,11 @@ void Op_CreateBTreeVehicles() {
     scanf("%s", &bTreeFileName[0]);
 
 	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "w+b", regsFileName, "rb");
+	if (meta->bTreeIndexFile == NULL || meta->registersFile == NULL){
+		printf("Falha no processamento do arquivo.\n");
+		return;
+	}
+
 	if (BinaryWriter_BTreeIndexFileVehicles(meta)) {
         printf("Falha no processamento do arquivo.\n");
 		return;
@@ -67,6 +72,11 @@ void Op_CreateBTreeBusLines() {
     scanf("%s", &bTreeFileName[0]);
 
 	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "w+b", regsFileName, "rb");
+	if (meta->bTreeIndexFile == NULL || meta->registersFile == NULL){
+		printf("Falha no processamento do arquivo.\n");
+		return;
+	}
+
 	if (BinaryWriter_BTreeIndexFileBusLines(meta)) {
         printf("Falha no processamento do arquivo.\n");
 		return;
@@ -106,7 +116,11 @@ void Op_FindVehicle() {
 	}
 
 	// Creates metadata
-	BTreeMetadata_t* meta = BTreeMetadata_CreateFromFile(bTreeFileName, "rb", regsFileName, "rb");
+	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "rb", regsFileName, "rb");
+	if (meta->bTreeIndexFile == NULL || meta->registersFile == NULL){
+		printf("Falha no processamento do arquivo.\n");
+		return;
+	}
 
 	// Checks for errors
 	if (meta == NULL || meta->bTreeIndexFile == NULL || meta->registersFile == NULL || meta->root == NULL ||
@@ -177,7 +191,11 @@ void Op_FindBusLine() {
 	const RegKey_t lineCode = atoi(lineCodeStr);
 
 	// Creates metadata
-	BTreeMetadata_t* meta = BTreeMetadata_CreateFromFile(bTreeFileName, "rb", regsFileName, "rb");
+	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "rb", regsFileName, "rb");
+	if (meta->bTreeIndexFile == NULL || meta->registersFile == NULL){
+		printf("Falha no processamento do arquivo.\n");
+		return;
+	}
 
 	// Checks for errors
 	if (meta == NULL || meta->bTreeIndexFile == NULL || meta->registersFile == NULL || meta->root == NULL ||
@@ -226,11 +244,8 @@ void Op_PushVehicles() {
     scanf("%s", &bTreeFileName[0]);
 
 	// Creates metadata
-	BTreeMetadata_t* meta = BTreeMetadata_CreateFromFile(bTreeFileName, "rb", regsFileName, "rb");
-
-	// Checks for errors
-	if (meta == NULL || meta->bTreeIndexFile == NULL || meta->registersFile == NULL || meta->root == NULL ||
-		meta->header == NULL || meta->header->rootRRN < 0 || meta->header->status != '1') {
+	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "rb", regsFileName, "rb");
+	if (meta->bTreeIndexFile == NULL || meta->registersFile == NULL || meta->header->rootRRN < 0){
 		printf("Falha no processamento do arquivo.\n");
 		return;
 	}
