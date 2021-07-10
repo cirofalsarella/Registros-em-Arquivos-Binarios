@@ -1,8 +1,9 @@
 OBJECTS = src/bTree/*.c src/core/*.c src/dataModel/*.c src/io/*.c
 MAIN = src/main.c
+TEST_MAIN = test/testsMain.c
 
 all:
-	gcc -ggdb3 ${MAIN} ${OBJECTS} -o programaTrab -Wall
+	gcc ${MAIN} ${OBJECTS} -o programaTrab -Wall
 
 run:
 	./programaTrab
@@ -12,7 +13,6 @@ valgrind:
 
 gdb:
 	gdb programaTrab
-
 
 # Windows-specific
 c:

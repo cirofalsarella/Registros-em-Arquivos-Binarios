@@ -10,7 +10,7 @@
 #include "../core/utils.h"
 
 //  Printa uma Hash do arquivo (binário na tela)
-void PrintHash(char* nomeArquivoBinario) {
+void PrintHash(const char* nomeArquivoBinario) {
 	unsigned long i, cs;
 	unsigned char *mb;
 	size_t fl;
@@ -38,14 +38,7 @@ void PrintHash(char* nomeArquivoBinario) {
 }
 
 
-void Op_CreateBTreeVehicles() {
-    // Gets file names from terminal
-    char regsFileName[128] = { '\0' };
-    scanf("%s", &regsFileName[0]);
-
-    char bTreeFileName[128] = { '\0' };
-    scanf("%s", &bTreeFileName[0]);
-
+void Op_CreateBTreeVehicles(char* regsFileName, char* bTreeFileName) {
 	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "w+b", regsFileName, "rb");
 	if (meta->bTreeIndexFile == NULL || meta->registersFile == NULL){
 		printf("Falha no processamento do arquivo.\n");
@@ -63,14 +56,7 @@ void Op_CreateBTreeVehicles() {
     PrintHash(bTreeFileName);
 }
 
-void Op_CreateBTreeBusLines() {
-    // Gets file names from terminal
-    char regsFileName[128] = { '\0' };
-    scanf("%s", &regsFileName[0]);
-
-    char bTreeFileName[128] = { '\0' };
-    scanf("%s", &bTreeFileName[0]);
-
+void Op_CreateBTreeBusLines(char* regsFileName, char* bTreeFileName) {
 	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "w+b", regsFileName, "rb");
 	if (meta->bTreeIndexFile == NULL || meta->registersFile == NULL){
 		printf("Falha no processamento do arquivo.\n");
@@ -88,24 +74,10 @@ void Op_CreateBTreeBusLines() {
 }
 
 
-void Op_FindVehicle() {
-	// Gets file names from terminal
-    char regsFileName[128] = { '\0' };
-    scanf("%s", &regsFileName[0]);
-
-    char bTreeFileName[128] = { '\0' };
-    scanf("%s", &bTreeFileName[0]);
-
-	// Expects "prefixo"
-	char fieldName[128] = { '\0' };
-    scanf("%s", &fieldName[0]);
-
-	char prefix[128] = { '\0' };
-    Utils_ScanQuoteString(&prefix[0]);
-
+void Op_FindVehicle(char* regsFileName, char* bTreeFileName, char* fieldName, char* prefix) {
 	// Checks if field name is valid
 	if (strcmp(fieldName, "prefixo") != 0) {
-		printf("Falha no processamento do arquivo.\n");
+		printf("Registro inexistente.\n");
 		return;
 	}
 
@@ -154,24 +126,10 @@ void Op_FindVehicle() {
 	BTreeMetadata_Free(meta);
 }
 
-void Op_FindBusLine() {
-	// Gets file names from terminal
-    char regsFileName[128] = { '\0' };
-    scanf("%s", &regsFileName[0]);
-
-    char bTreeFileName[128] = { '\0' };
-    scanf("%s", &bTreeFileName[0]);
-
-	// Expects "codLinha"
-	char fieldName[128] = { '\0' };
-    scanf("%s", &fieldName[0]);
-
-	char lineCodeStr[128] = { '\0' };
-    scanf("%s", &lineCodeStr[0]);
-
+void Op_FindBusLine(char* regsFileName, char* bTreeFileName, char* fieldName, char* lineCodeStr) {
 	// Checks if field name is valid
 	if (strcmp(fieldName, "codLinha") != 0) {
-		printf("Falha no processamento do arquivo.\n");
+		printf("Registro inexistente.\n");
 		return;
 	}
 
@@ -221,14 +179,7 @@ void Op_FindBusLine() {
 	BTreeMetadata_Free(meta);
 }
 
-void Op_PushVehicles() {
-	// Gets file names from terminal
-    char regsFileName[128] = { '\0' };
-    scanf("%s", &regsFileName[0]);
-
-    char bTreeFileName[128] = { '\0' };
-    scanf("%s", &bTreeFileName[0]);
-
+void Op_PushVehicles(char* regsFileName, char* bTreeFileName) {
 	// Creates metadata
 	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "rb+", regsFileName, "rb+");
 	if (meta->bTreeIndexFile == NULL || meta->registersFile == NULL || meta->header->rootRRN < 0){
@@ -284,14 +235,7 @@ void Op_PushVehicles() {
 	PrintHash(bTreeFileName);
 }
 
-void Op_PushBusLines() {
-	// Gets file names from terminal
-    char regsFileName[128] = { '\0' };
-    scanf("%s", &regsFileName[0]);
-
-    char bTreeFileName[128] = { '\0' };
-    scanf("%s", &bTreeFileName[0]);
-
+void Op_PushBusLines(char* regsFileName, char* bTreeFileName) {
 	// Creates metadata
 	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "rb+", regsFileName, "rb+");
 	if (meta->bTreeIndexFile == NULL || meta->registersFile == NULL || meta->header->rootRRN < 0){
