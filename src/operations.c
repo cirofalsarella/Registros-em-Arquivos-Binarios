@@ -236,7 +236,6 @@ void Op_PushVehicles() {
 		printf("Falha no processamento do arquivo.\n");
 		return;
 	}
-	PrintHash(bTreeFileName);
 
 	// getting the header intel
 	fseek(meta->registersFile, 1, SEEK_SET);
@@ -300,7 +299,6 @@ void Op_PushBusLines() {
 		printf("Falha no processamento do arquivo.\n");
 		return;
 	}
-	PrintHash(bTreeFileName);
 
 	// getting the header intel
 	fseek(meta->registersFile, 1, SEEK_SET);
