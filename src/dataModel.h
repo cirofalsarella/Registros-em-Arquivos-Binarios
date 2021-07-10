@@ -109,9 +109,9 @@ BusLine_t* BusLine_Create(char removed, int32_t lineCode, char acceptsCreditCard
 
 //  Lê n registros do stdin
 
-Vehicle_t** Vehicle_Read(int n);
+Vehicle_t* Vehicle_Read();
 
-BusLine_t** BusLine_Read(int n);
+BusLine_t* BusLine_Read();
 
 
 

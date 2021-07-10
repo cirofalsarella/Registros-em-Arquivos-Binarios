@@ -44,48 +44,41 @@ Vehicle_t* Vehicle_Create(char removed, char* prefix, char* date, int32_t numSea
     return vehicle;
 }
 
-Vehicle_t** Vehicle_Read(int n) {
-    Vehicle_t** vehicles = calloc(n, sizeof(Vehicle_t*));
+Vehicle_t* Vehicle_Read() {
+    // Scans prefix, date, numSeats and lineCode (all fixed-length fields)
+    char prefix[20] = { '\0' };
+    Utils_ScanQuoteString(&prefix[0]);
     
-    for (int i = 0; i < n; i++) {
-        // Scans prefix, date, numSeats and lineCode (all fixed-length fields)
-        char prefix[20] = { '\0' };
-        Utils_ScanQuoteString(&prefix[0]);
-        
-        // Checks if the register is removed
-        char removed = '1';
-        if (prefix[0] == '*') {
-            removed = '0';
-            // Removes '*' from prefix
-            char* prefixCopy = Utils_StrCopy(prefix+1); // Copies without the '*'
-            int prefixCopyLen = strlen(prefixCopy);
-            strcpy(prefix, prefixCopy);
-            prefix[prefixCopyLen] = '\0';
-            free(prefixCopy);
-        }
-
-        char date[20] = { '\0' };
-        Utils_ScanQuoteString(&date[0]);
-
-        char numSeats[64] = { '\0' };
-        scanf("%s", &numSeats[0]);
-
-        char lineCode[64] = { '\0' };
-        scanf("%s", &lineCode[0]);
-
-        // Scans model and category (not fixed-length)
-        char* model = calloc(200, sizeof(char));
-        char* category = calloc(200, sizeof(char));
-
-        Utils_ScanQuoteString(model);
-        Utils_ScanQuoteString(category);
-
-        // Creates a new vehicle and pushes it
-        vehicles[i] = Vehicle_Create(removed, prefix, date, Utils_StrToInt(numSeats), Utils_StrToInt(lineCode), model, category, -1);        
+    // Checks if the register is removed
+    char removed = '1';
+    if (prefix[0] == '*') {
+        removed = '0';
+        // Removes '*' from prefix
+        char* prefixCopy = Utils_StrCopy(prefix+1); // Copies without the '*'
+        int prefixCopyLen = strlen(prefixCopy);
+        strcpy(prefix, prefixCopy);
+        prefix[prefixCopyLen] = '\0';
+        free(prefixCopy);
     }
 
+    char date[20] = { '\0' };
+    Utils_ScanQuoteString(&date[0]);
 
-    return vehicles;
+    char numSeats[64] = { '\0' };
+    scanf("%s", &numSeats[0]);
+
+    char lineCode[64] = { '\0' };
+    scanf("%s", &lineCode[0]);
+
+    // Scans model and category (not fixed-length)
+    char* model = calloc(200, sizeof(char));
+    char* category = calloc(200, sizeof(char));
+
+    Utils_ScanQuoteString(model);
+    Utils_ScanQuoteString(category);
+
+    // Creates a new vehicle and pushes it
+    return Vehicle_Create(removed, prefix, date, Utils_StrToInt(numSeats), Utils_StrToInt(lineCode), model, category, -1);        
 }
 
 void Vehicle_Free(Vehicle_t* vehicle) {
@@ -138,53 +131,41 @@ BusLine_t* BusLine_Create(char removed, int32_t lineCode, char acceptsCreditCard
     return busLine;
 }
 
-BusLine_t** BusLine_Read(int n) {
-    BusLine_t** buslines = calloc(n, sizeof(BusLine_t*));
-    
-    for (int i = 0; i < n; i++) {
+BusLine_t* BusLine_Read() {
+    // Lê o código da linha como string, confere se é removido
+    char removed = '1';
 
-        // Lê o código da linha como string, confere se é removido
-        char removed = '1';
+    char lineCodeStr[64] = { '\0' };
+    Utils_ScanQuoteString(&lineCodeStr[0]);
 
-        char lineCodeStr[64] = { '\0' };
-        Utils_ScanQuoteString(&lineCodeStr[0]);
-
-        if (lineCodeStr[0] == '*') {
-            removed = '0';
-            // Removes '*' from linecode
-            char* lineCodeStrCopy = Utils_StrCopy(lineCodeStr+1); // Copies without the '*'
-            int lineCodeStrCopyLen = strlen(lineCodeStrCopy);
-            strcpy(lineCodeStr, lineCodeStrCopy);
-            lineCodeStr[lineCodeStrCopyLen] = '\0';
-            free(lineCodeStrCopy);
-        }
-
-        // Checks if NULL
-        if (!strcmp(lineCodeStr, "NULO")) {
-            for (int j=0; j<i; j++) {
-                BusLine_Free(buslines[i]);
-            }
-            free(buslines);
-            return NULL;
-        }
-
-        int lineCode = atoi(lineCodeStr);
-
-        char aceitaCartao[10] = { '\0' };
-        Utils_ScanQuoteString(&aceitaCartao[0]);
-        
-        // Variable len fields
-        char* nomeLinha = calloc(200, sizeof(char));
-        char* corLinha = calloc(200, sizeof(char));
-
-        Utils_ScanQuoteString(nomeLinha);
-        Utils_ScanQuoteString(corLinha);
-
-        // Creates a new vehicle and pushes it
-        buslines[i] = BusLine_Create(removed, lineCode, aceitaCartao[0], nomeLinha, corLinha, -1);
+    if (lineCodeStr[0] == '*') {
+        removed = '0';
+        // Removes '*' from linecode
+        char* lineCodeStrCopy = Utils_StrCopy(lineCodeStr+1); // Copies without the '*'
+        int lineCodeStrCopyLen = strlen(lineCodeStrCopy);
+        strcpy(lineCodeStr, lineCodeStrCopy);
+        lineCodeStr[lineCodeStrCopyLen] = '\0';
+        free(lineCodeStrCopy);
     }
 
-    return buslines;
+    // Checks if NULL
+    if (!strcmp(lineCodeStr, "NULO"))   return NULL;
+
+    int lineCode = atoi(lineCodeStr);
+
+    char aceitaCartao[10] = { '\0' };
+    Utils_ScanQuoteString(&aceitaCartao[0]);
+    
+    // Variable len fields
+    char* nomeLinha = calloc(200, sizeof(char));
+    char* corLinha = calloc(200, sizeof(char));
+
+    Utils_ScanQuoteString(nomeLinha);
+    Utils_ScanQuoteString(corLinha);
+
+
+    // Creates a new busline
+    return BusLine_Create(removed, lineCode, aceitaCartao[0], nomeLinha, corLinha, -1);
 }
 
 void BusLine_Free(BusLine_t* busLine) {

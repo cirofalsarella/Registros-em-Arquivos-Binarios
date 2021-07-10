@@ -13,7 +13,7 @@
  * @param vehicle 
  * @param destFile 
  */
-void BinaryWriter_Vehicle(const Vehicle_t* vehicle, FILE* destFile);
+int64_t BinaryWriter_Vehicle(const Vehicle_t* vehicle, FILE* destFile);
 
 /**
  * @brief Writes a bus line to the given file.
@@ -21,7 +21,7 @@ void BinaryWriter_Vehicle(const Vehicle_t* vehicle, FILE* destFile);
  * @param busLine 
  * @param destFile 
  */
-void BinaryWriter_BusLine(const BusLine_t* busLine, FILE* destFile);
+int64_t BinaryWriter_BusLine(const BusLine_t* busLine, FILE* destFile);
 
 
 

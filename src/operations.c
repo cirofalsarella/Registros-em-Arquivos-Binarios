@@ -231,51 +231,122 @@ void Op_PushVehicles() {
     scanf("%s", &bTreeFileName[0]);
 
 	// Creates metadata
-	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "rb", regsFileName, "rb");
+	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "rb+", regsFileName, "rb+");
 	if (meta->bTreeIndexFile == NULL || meta->registersFile == NULL || meta->header->rootRRN < 0){
 		printf("Falha no processamento do arquivo.\n");
 		return;
 	}
+	PrintHash(bTreeFileName);
 
-	// Gets number of vehicles to insert & reads them from terminal
-	int newVehiclesCount;
-    scanf("%d", &newVehiclesCount);
+	// getting the header intel
+	fseek(meta->registersFile, 1, SEEK_SET);
+    int64_t proxReg;
+    fread(&proxReg, sizeof(int64_t), 1, meta->registersFile);
+    int32_t numReg, numRegRem;
+    fread(&numReg, sizeof(int32_t), 1, meta->registersFile);
+    fread(&numRegRem, sizeof(int32_t), 1, meta->registersFile);
 
-	if (newVehiclesCount <= 0) {
-		BTreeMetadata_Free(meta);
-		return;
-	}
 
-    Vehicle_t** newVehicles = Vehicle_Read(newVehiclesCount);
-	ByteOffset_t* offsets = (ByteOffset_t*) calloc(newVehiclesCount, sizeof(ByteOffset_t));
-	
-	// Checks for errors
-	if (BinaryWriter_AppendVehicles(newVehicles, newVehiclesCount, meta->registersFile, offsets) != 0) {
-		BTreeMetadata_Free(meta);
-		printf("Falha no processamento do arquivo.\n");
-		return;
-	}
+	// Gets number of registers to insert & reads them from terminal
+	int n;
+    scanf("%d", &n);
 
-	for (int i = 0; i < newVehiclesCount; ++i) {
-		// Inserts the vehicle with a certain offset in the tree
-		Vehicle_t* vehicle = newVehicles[i];
-		RegKey_t vehicleKey = Utils_VehiclePrefixHash(vehicle->prefix);
-		BTreeMetadata_Insert(meta, vehicleKey, offsets[i]);
+	fseek(meta->registersFile, proxReg, SEEK_SET);
+    // Insert the registers
+    for (int i = 0; i < n; i++) {
+        Vehicle_t* reg = Vehicle_Read();
+		if (reg == NULL) {
+			printf("Falha no processamento do arquivo.\n");
+			BTreeMetadata_Free(meta);
+			return;
+		}
 
-		// Since the vehicle won't be used again, frees it
-		Vehicle_Free(vehicle);
-		newVehicles[i] = NULL;
-	}
+        if (reg->removed == '0') {
+			numRegRem++;
+            Vehicle_Free(reg);
+            continue;
+        }
+		numReg++;
 
-	// Prints the hash of the resulting file
-    PrintHash(regsFileName);
+		reg->offset = BinaryWriter_Vehicle(reg, meta->registersFile);
+        BTreeMetadata_Insert(meta, Utils_VehiclePrefixHash(reg->prefix), reg->offset);
+        Vehicle_Free(reg);
+    }
+	fseek(meta->registersFile, 0, SEEK_END);
+	proxReg = 0; //ftell(meta->registersFile);
+	// [FLAG]	Porque 0 e não o ftell???
 
-	// Frees everything
-	free(offsets);
-	free(newVehicles);
+	// Adjust the headers of both files
+	fseek(meta->registersFile, 1, SEEK_SET);
+	fwrite(&proxReg, sizeof(int64_t), 1, meta->registersFile);
+	fwrite(&numReg, sizeof(int32_t), 1, meta->registersFile);
+	fwrite(&numRegRem, sizeof(int32_t), 1, meta->registersFile);
+
 	BTreeMetadata_Free(meta);
+	PrintHash(bTreeFileName);
 }
 
 void Op_PushBusLines() {
-	// TODO: Test Op_PushVehicles, then make this
+	// Gets file names from terminal
+    char regsFileName[128] = { '\0' };
+    scanf("%s", &regsFileName[0]);
+
+    char bTreeFileName[128] = { '\0' };
+    scanf("%s", &bTreeFileName[0]);
+
+	// Creates metadata
+	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "rb+", regsFileName, "rb+");
+	if (meta->bTreeIndexFile == NULL || meta->registersFile == NULL || meta->header->rootRRN < 0){
+		printf("Falha no processamento do arquivo.\n");
+		return;
+	}
+	PrintHash(bTreeFileName);
+
+	// getting the header intel
+	fseek(meta->registersFile, 1, SEEK_SET);
+    int64_t proxReg;
+    fread(&proxReg, sizeof(int64_t), 1, meta->registersFile);
+    int32_t numReg, numRegRem;
+    fread(&numReg, sizeof(int32_t), 1, meta->registersFile);
+    fread(&numRegRem, sizeof(int32_t), 1, meta->registersFile);
+
+
+	// Gets number of registers to insert & reads them from terminal
+	int n;
+    scanf("%d", &n);
+
+	fseek(meta->registersFile, proxReg, SEEK_SET);
+    // Insert the registers
+    for (int i = 0; i < n; i++) {
+        BusLine_t* reg = BusLine_Read();
+		if (reg == NULL) {
+			printf("Falha no processamento do arquivo.\n");
+			BTreeMetadata_Free(meta);
+			return;
+		}
+
+        if (reg->removed == '0') {
+			numRegRem++;
+            BusLine_Free(reg);
+            continue;
+        }
+		numReg++;
+
+		reg->offset = BinaryWriter_BusLine(reg, meta->registersFile);
+        BTreeMetadata_Insert(meta, reg->lineCode, reg->offset);
+        BusLine_Free(reg);
+    }
+	fseek(meta->registersFile, 0, SEEK_END);
+	proxReg = 0; //ftell(meta->registersFile);
+	
+
+	// Adjust the headers of both files
+	fseek(meta->registersFile, 1, SEEK_SET);
+	fwrite(&proxReg, sizeof(int64_t), 1, meta->registersFile);
+	fwrite(&numReg, sizeof(int32_t), 1, meta->registersFile);
+	fwrite(&numRegRem, sizeof(int32_t), 1, meta->registersFile);
+
+	BTreeMetadata_Free(meta);
+	PrintHash(bTreeFileName);
 }
+

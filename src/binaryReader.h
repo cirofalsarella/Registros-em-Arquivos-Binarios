@@ -39,10 +39,10 @@ VehicleHeader_t* BinaryReader_VehicleHeader(FILE *srcFile);
 BusLineHeader_t* BinaryReader_BusLineHeader(FILE *srcFile);
 
 /**
- * @brief Reads the root and the B-Tree Header from file.
+ * @brief reads the header of an B-Tree index File, if there isn't, creates an empty one
  * 
- * @param meta
- * @return char status 
+ * @param pt the index file ponter
+ * @return BHeader_t* 
  */
 BHeader_t* BinaryReader_BTreeHeader(FILE* bTreeFP);
 

@@ -10,13 +10,16 @@
 #include "binaryHeaders.h"
 #include "utils.h"
 #include "bTree.h"
+#include "operations.h"
 #include "bTreeDataModel.h"
 
 // TODO: Manipulação do status / ler feedback do T1
 
 //  MARK: Functions that write single registers
 
-void BinaryWriter_Vehicle(const Vehicle_t* vehicle, FILE* destFile) {
+int64_t BinaryWriter_Vehicle(const Vehicle_t* vehicle, FILE* destFile) {
+    int64_t offset = ftell(destFile);
+    
     // Fixed length fields
     fwrite(&vehicle->removed, sizeof(char), 1, destFile);
     fwrite(&vehicle->regSize, sizeof(int32_t), 1, destFile);
@@ -35,9 +38,13 @@ void BinaryWriter_Vehicle(const Vehicle_t* vehicle, FILE* destFile) {
     fwrite(&vehicle->categoryLength, sizeof(int32_t), 1, destFile);
     if (vehicle->category != NULL)
         fwrite(vehicle->category, sizeof(char), vehicle->categoryLength, destFile);
+
+    return offset;
 }
 
-void BinaryWriter_BusLine(const BusLine_t* busLine, FILE* destFile) {
+int64_t BinaryWriter_BusLine(const BusLine_t* busLine, FILE* destFile) {
+    int64_t offset = ftell(destFile);
+
     // Fixed length fields
     fwrite(&busLine->removed, sizeof(char), 1, destFile);
     fwrite(&busLine->regSize, sizeof(int32_t), 1, destFile);
@@ -53,6 +60,8 @@ void BinaryWriter_BusLine(const BusLine_t* busLine, FILE* destFile) {
     fwrite(&busLine->colorLength, sizeof(int32_t), 1, destFile);
     if (busLine->color != NULL)
         fwrite(busLine->color, sizeof(char), busLine->colorLength, destFile);
+
+    return offset;
 }
 
 void WriteBTreeNode(const BNode_t* node, FILE* destFile){
@@ -227,6 +236,8 @@ int BinaryWriter_AppendBusLines(BusLine_t** buslines, int buslinesCount, FILE* d
     fclose(destFile);
     return 0;
 }
+
+
 
 int BinaryWriter_SeekAndWriteNode(BNode_t* node, BTreeMetadata_t* meta) {
     if (meta == NULL || meta->bTreeIndexFile == NULL || node == NULL || node->rrn < 0) {
