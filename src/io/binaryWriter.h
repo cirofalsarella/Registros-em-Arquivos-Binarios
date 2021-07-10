@@ -10,16 +10,16 @@
 /**
  * @brief Write a vehicle to the given file.
  * 
- * @param vehicle 
- * @param destFile 
+ * @param vehicle Vehicle to be writen
+ * @param destFile Destine file
  */
 int64_t BinaryWriter_Vehicle(const Vehicle_t* vehicle, FILE* destFile);
 
 /**
  * @brief Writes a bus line to the given file.
  * 
- * @param busLine 
- * @param destFile 
+ * @param busLine Busline to be Writen
+ * @param destFile Destine File
  */
 int64_t BinaryWriter_BusLine(const BusLine_t* busLine, FILE* destFile);
 
@@ -59,9 +59,9 @@ int BinaryWriter_AppendBusLines(BusLine_t** busLines, int buslinesCount, FILE* f
 /**
  * @brief Seeks to the right place in the file and writes the given BNode_t.
  * 
- * @param node
- * @param meta
- * @return 1 == error, 0 == success
+ * @param node The node to be writen
+ * @param meta The BTree metadata
+ * @return The status (1 == error, 0 == success)
  */
 int BinaryWriter_SeekAndWriteNode(BNode_t* node, BTreeMetadata_t* meta);
 
@@ -75,14 +75,16 @@ void BinaryWriter_BTreeHeader(BTreeMetadata_t* meta);
 /**
  * @brief Creates a new B-Tree index file for the vehicles.
  * 
- * @param meta 
+ * @param meta The cache that contains the header and file pointer.
+ * @return The status (1 == error, 0 == success)
  */
 int BinaryWriter_BTreeIndexFileVehicles(BTreeMetadata_t* meta);
 
 /**
  * @brief Creates a new B-Tree index file for the bus lines.
  * 
- * @param meta 
+ * @param meta The cache that contains the header and file pointer.
+ * @return The status (1 == error, 0 == success)
  */
 int BinaryWriter_BTreeIndexFileBusLines(BTreeMetadata_t* meta);
 

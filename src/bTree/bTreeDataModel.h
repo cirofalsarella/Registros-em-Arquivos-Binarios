@@ -46,11 +46,11 @@ typedef struct BNode {
 
 
 /**
- * @brief Creates a new BTreeIndex Header and returns it.
+ * @brief 
  * 
- * @param status 
- * @param noRaiz 
- * @param RRNproxNo 
+ * @param status The file status
+ * @param rootRRN The rrn of the root
+ * @param nextNodeRRN The rrn of the next node to be created
  * @return BHeader_t* 
  */
 BHeader_t* BHeader_Create(char status, RRN_t rootRRN, RRN_t nextNodeRRN);

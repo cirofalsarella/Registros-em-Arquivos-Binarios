@@ -17,19 +17,18 @@ typedef struct BTreeMetadata {
 /**
  * @brief Creates a new B-Tree metadata.
  * 
- * @param bTreeIndexFileName 
- * @param indexOpenType 
- * @param registersFileName 
- * @param registerOpenType 
- * @return BTreeCache_t* 
+ * @param bTreeIndexFileName The btree FileName
+ * @param indexOpenType The open mode of the btree file
+ * @param registersFileName The registers filename
+ * @param registerOpenType The open mode of the btree file
+ * @return BTreeMetadata_t* the created meta
  */
 BTreeMetadata_t* BTreeMetadata_Create(char* bTreeIndexFileName, char* indexOpenType, char* registersFileName, char* registerOpenType);
 
 /**
  * @brief Inserts a new register in the cache.
  * 
- * @param header header to create new nodes
- * @param meta cache to acess the nodes in ram
+ * @param meta metadata of the btree
  * @param key the key of the new register
  * @param regOffset the rrn of the new register
  */
@@ -40,14 +39,14 @@ void BTreeMetadata_Insert(BTreeMetadata_t* meta, RegKey_t key, ByteOffset_t regO
  * 
  * @param meta The metadata containing the file pointer to the B-Tree.
  * @param key The key to find.
- * @return BNode_t* 
+ * @return BNode_t* with the key or NULL if not found
  */
 BNode_t* BTreeMetadata_GetNodeByKey(BTreeMetadata_t* meta, RegKey_t key);
 
 /**
  * @brief Frees the heap memory allocated for the given B-Tree Cache.
  * 
- * @param meta 
+ * @param meta The metadata containing the file pointer to the B-Tree.
  */
 void BTreeMetadata_Free(BTreeMetadata_t* meta);
 
