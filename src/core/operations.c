@@ -242,8 +242,6 @@ void Op_PushVehicles(char* regsFileName, char* bTreeFileName) {
 		proxReg = ftell(meta->registersFile);
     }
 	fseek(meta->registersFile, 0, SEEK_END);
-	proxReg = 0; //ftell(meta->registersFile);
-	// [FLAG]	Porque 0 e não o ftell???
 
 	// Adjust the headers of both files
 	fseek(meta->registersFile, 1, SEEK_SET);
