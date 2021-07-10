@@ -14,7 +14,7 @@
  * @param describeLine 
  * @param describeModel 
  * @param describeCategory 
- * @return VehicleHeader_t* 
+ * @return The created VehicleHeader_t*
  */
 VehicleHeader_t* BinaryHeaders_CreateVehicleHeader(char* describePrefix, char* describeDate, char* describePlaces, char* describeLine, char* describeModel, char* describeCategory);
 
@@ -25,7 +25,7 @@ VehicleHeader_t* BinaryHeaders_CreateVehicleHeader(char* describePrefix, char* d
  * @param describeCard 
  * @param describeName 
  * @param describeLine 
- * @return BusLineHeader_t* 
+ * @return The created BusLineHeader_t*
  */
 BusLineHeader_t* BinaryHeaders_CreateBusLineHeader(char* describeCode, char* describeCard, char* describeName, char* describeLine);
 
@@ -35,14 +35,14 @@ BusLineHeader_t* BinaryHeaders_CreateBusLineHeader(char* describeCode, char* des
 /**
  * @brief Frees the vehicles header.
  * 
- * @param header 
+ * @param header The structure to be freed
  */
 void BinaryHeaders_FreeVehicleHeader(VehicleHeader_t* header);
 
 /**
  * @brief Frees the bus line header.
  * 
- * @param header 
+ * @param header The structure to be freed
  */
 void BinaryHeaders_FreeBusLineHeader(BusLineHeader_t* header);
 
