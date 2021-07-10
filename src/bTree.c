@@ -86,19 +86,6 @@ void BTreeMetadata_Free(BTreeMetadata_t* meta) {
 // Insertion algorithm
 
 /**
- * @brief Helper function to set the root node of the metadata.
- * 
- * @param meta 
- * @param newRoot 
- */
-void MetadataSetRoot(BTreeMetadata_t* meta, BNode_t* newRoot) {
-    meta->header->rootRRN = newRoot->rrn;
-    BNode_Free(meta->root);
-    
-    meta->root = newRoot;
-}
-
-/**
  * @brief Struct to help manipulate registers
  * @param key the key of the register
  * @param fileOffset the offset of the record in the main file (in bytes)
@@ -290,28 +277,32 @@ void BTreeMetadata_Insert(BTreeMetadata_t* meta, RegKey_t key, ByteOffset_t file
     BRegister_t* newReg = CreateRegister(key, fileOffset, -1);
 
     // Se raiz existir ela vai estar guardada no meta
-    if (meta->root == NULL) {
-        // Cria nó raiz
-        MetadataSetRoot(meta, BNode_CreateWithRRN(meta, TRUE));
+    if (meta->header->rootRRN < 0) {
+        // Create an root
+        BNode_t* root = BNode_CreateWithRRN(meta, TRUE);
+        meta->header->rootRRN = root->rrn;
 
-        // Adiciona novo registro
-        InsertRegisterInNode(meta, meta->root, newReg);
+        // Add new register and update the file
+        InsertRegisterInNode(meta, root, newReg);
+        BinaryWriter_SeekAndWriteNode(root, meta);
 
-        // Escreve ele em memória
-        BinaryWriter_SeekAndWriteNode(meta->root, meta);
+        BNode_Free(root);
     } else {
-        // Cria e insere novo registro
-        BRegister_t* promoted = InsertNodeRecur(meta, meta->root->rrn, newReg);
+        // Inserts new register
+        BRegister_t* promoted = InsertNodeRecur(meta, meta->header->rootRRN, newReg);
 
-        // Confere se existe promoção
+        // Checks if there is a promotion
         if (promoted != NULL) {
+            // Create the new root
             BNode_t* newRoot = BNode_CreateWithRRN(meta, FALSE);
+            newRoot->childrenRRNs[0] = meta->header->rootRRN;
+            meta->header->rootRRN = newRoot->rrn;
 
-            newRoot->childrenRRNs[0] = meta->root->rrn;
-            MetadataSetRoot(meta, newRoot);
+            // Add new register and update the file
+            InsertRegisterInNode(meta, newRoot, promoted);
+            BinaryWriter_SeekAndWriteNode(newRoot, meta);
 
-            InsertRegisterInNode(meta, meta->root, promoted);
-            BinaryWriter_SeekAndWriteNode(meta->root, meta);
+            BNode_Free(newRoot);
         }
     }
 }
@@ -341,5 +332,5 @@ BNode_t* GetNodeByKeyRecur(BTreeMetadata_t* meta, RRN_t nodeRRN, RegKey_t key) {
 }
 
 BNode_t* BTreeMetadata_GetNodeByKey(BTreeMetadata_t* meta, RegKey_t key) {
-    return GetNodeByKeyRecur(meta, meta->root->rrn, key);
+    return GetNodeByKeyRecur(meta, meta->header->rootRRN, key);
 }

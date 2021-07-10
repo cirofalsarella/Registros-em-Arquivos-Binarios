@@ -117,14 +117,7 @@ void Op_FindVehicle() {
 
 	// Creates metadata
 	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "rb", regsFileName, "rb");
-	if (meta->bTreeIndexFile == NULL || meta->registersFile == NULL){
-		printf("Falha no processamento do arquivo.\n");
-		return;
-	}
-
-	// Checks for errors
-	if (meta == NULL || meta->bTreeIndexFile == NULL || meta->registersFile == NULL || meta->root == NULL ||
-		meta->header == NULL || meta->header->rootRRN < 0 || meta->header->status != '1') {
+	if (meta->bTreeIndexFile == NULL || meta->registersFile == NULL || meta->header->rootRRN < 0){
 		printf("Falha no processamento do arquivo.\n");
 		return;
 	}
@@ -192,17 +185,11 @@ void Op_FindBusLine() {
 
 	// Creates metadata
 	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "rb", regsFileName, "rb");
-	if (meta->bTreeIndexFile == NULL || meta->registersFile == NULL){
+	if (meta->bTreeIndexFile == NULL || meta->registersFile == NULL || meta->header->rootRRN < 0){
 		printf("Falha no processamento do arquivo.\n");
 		return;
 	}
 
-	// Checks for errors
-	if (meta == NULL || meta->bTreeIndexFile == NULL || meta->registersFile == NULL || meta->root == NULL ||
-		meta->header == NULL || meta->header->rootRRN < 0 || meta->header->status != '1') {
-		printf("Falha no processamento do arquivo.\n");
-		return;
-	}
 
 	if (lineCode < 0) {
 		printf("Registro inexistente.\n");

@@ -12,7 +12,6 @@ typedef struct BTreeMetadata {
     FILE* bTreeIndexFile; // File with the nodes from the B-Tree.
     FILE* registersFile; // File with the registers from the B-Tree.
     BHeader_t* header;
-    BNode_t* root;
 } BTreeMetadata_t;
 
 /**
