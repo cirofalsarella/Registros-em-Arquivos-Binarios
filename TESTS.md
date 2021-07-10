@@ -9,8 +9,6 @@ Find by key
     - Find bus lines -> OK
     - Find bus lines that do not exist -> OK
 
-* 12 bin/linha11.bin bin/indicePrefixo11.bin codLinha 52 -> Registro inexistente????
-
 Insert
     - Insert w/ null fields -> OK
     - Normal insertion -> OK
