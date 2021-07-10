@@ -325,10 +325,16 @@ BNode_t* GetNodeByKeyRecur(BTreeMetadata_t* meta, RRN_t nodeRRN, RegKey_t key) {
 
     for (int i = 0; i < current->indexedKeysCount; i++) {
         if (current->keys[i] == key) return current;
-        else if (current->keys[i] > key) return GetNodeByKeyRecur(meta, current->childrenRRNs[i], key);
+        else if (current->keys[i] > key){
+            RRN_t filhoRRN = current->childrenRRNs[i];
+            BNode_Free(current);
+            return GetNodeByKeyRecur(meta, filhoRRN, key);
+        } 
     }
 
-    return GetNodeByKeyRecur(meta, current->childrenRRNs[current->indexedKeysCount], key); 
+    RRN_t filhoRRN = current->childrenRRNs[current->indexedKeysCount];
+    BNode_Free(current);
+    return GetNodeByKeyRecur(meta, filhoRRN, key);
 }
 
 BNode_t* BTreeMetadata_GetNodeByKey(BTreeMetadata_t* meta, RegKey_t key) {

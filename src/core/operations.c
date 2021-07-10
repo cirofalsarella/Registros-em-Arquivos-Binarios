@@ -42,11 +42,13 @@ void Op_CreateBTreeVehicles(char* regsFileName, char* bTreeFileName) {
 	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "w+b", regsFileName, "rb");
 	if (meta->bTreeIndexFile == NULL || meta->registersFile == NULL){
 		printf("Falha no processamento do arquivo.\n");
+		BTreeMetadata_Free(meta);
 		return;
 	}
 
 	if (BinaryWriter_BTreeIndexFileVehicles(meta)) {
         printf("Falha no processamento do arquivo.\n");
+		BTreeMetadata_Free(meta);
 		return;
 	}
 
@@ -60,11 +62,13 @@ void Op_CreateBTreeBusLines(char* regsFileName, char* bTreeFileName) {
 	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "w+b", regsFileName, "rb");
 	if (meta->bTreeIndexFile == NULL || meta->registersFile == NULL){
 		printf("Falha no processamento do arquivo.\n");
+		BTreeMetadata_Free(meta);
 		return;
 	}
 
 	if (BinaryWriter_BTreeIndexFileBusLines(meta)) {
         printf("Falha no processamento do arquivo.\n");
+		BTreeMetadata_Free(meta);
 		return;
 	}
 
@@ -105,6 +109,8 @@ void Op_FindVehicle(char* regsFileName, char* bTreeFileName, char* fieldName, ch
 
 	if (node == NULL) {
 		printf("Registro inexistente.\n");
+		
+		BTreeMetadata_Free(meta);
 		return;
 	}
 
@@ -113,6 +119,9 @@ void Op_FindVehicle(char* regsFileName, char* bTreeFileName, char* fieldName, ch
 
 	if (keyIndex < 0) {
 		printf("Registro inexistente.\n");
+			
+		BNode_Free(node);
+		BTreeMetadata_Free(meta);
 		return;
 	}
 
@@ -123,6 +132,7 @@ void Op_FindVehicle(char* regsFileName, char* bTreeFileName, char* fieldName, ch
 	Printer_Vehicle(vehicle);
 
 	Vehicle_Free(vehicle);
+	BNode_Free(node);
 	BTreeMetadata_Free(meta);
 }
 
@@ -158,6 +168,8 @@ void Op_FindBusLine(char* regsFileName, char* bTreeFileName, char* fieldName, ch
 
 	if (node == NULL) {
 		printf("Registro inexistente.\n");
+
+		BTreeMetadata_Free(meta);
 		return;
 	}
 
@@ -166,6 +178,9 @@ void Op_FindBusLine(char* regsFileName, char* bTreeFileName, char* fieldName, ch
 
 	if (keyIndex < 0) {
 		printf("Registro inexistente.\n");
+		
+		BNode_Free(node);
+		BTreeMetadata_Free(meta);
 		return;
 	}
 
@@ -176,14 +191,17 @@ void Op_FindBusLine(char* regsFileName, char* bTreeFileName, char* fieldName, ch
 	Printer_BusLine(busLine);
 
 	BusLine_Free(busLine);
+	BNode_Free(node);
 	BTreeMetadata_Free(meta);
 }
+
 
 void Op_PushVehicles(char* regsFileName, char* bTreeFileName) {
 	// Creates metadata
 	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "rb+", regsFileName, "rb+");
 	if (meta->bTreeIndexFile == NULL || meta->registersFile == NULL || meta->header->rootRRN < 0){
 		printf("Falha no processamento do arquivo.\n");
+		BTreeMetadata_Free(meta);
 		return;
 	}
 
@@ -217,9 +235,11 @@ void Op_PushVehicles(char* regsFileName, char* bTreeFileName) {
         }
 		numReg++;
 
-		reg->offset = BinaryWriter_Vehicle(reg, meta->registersFile);
+		reg->offset = proxReg;
+		BinaryWriter_Vehicle(reg, meta->registersFile);
         BTreeMetadata_Insert(meta, Utils_VehiclePrefixHash(reg->prefix), reg->offset);
         Vehicle_Free(reg);
+		proxReg = ftell(meta->registersFile);
     }
 	fseek(meta->registersFile, 0, SEEK_END);
 	proxReg = 0; //ftell(meta->registersFile);
@@ -240,6 +260,7 @@ void Op_PushBusLines(char* regsFileName, char* bTreeFileName) {
 	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "rb+", regsFileName, "rb+");
 	if (meta->bTreeIndexFile == NULL || meta->registersFile == NULL || meta->header->rootRRN < 0){
 		printf("Falha no processamento do arquivo.\n");
+		BTreeMetadata_Free(meta);
 		return;
 	}
 
@@ -273,12 +294,12 @@ void Op_PushBusLines(char* regsFileName, char* bTreeFileName) {
         }
 		numReg++;
 
-		reg->offset = BinaryWriter_BusLine(reg, meta->registersFile);
+		reg->offset = proxReg;
+		BinaryWriter_BusLine(reg, meta->registersFile);
         BTreeMetadata_Insert(meta, reg->lineCode, reg->offset);
         BusLine_Free(reg);
+		proxReg = ftell(meta->registersFile);
     }
-	fseek(meta->registersFile, 0, SEEK_END);
-	proxReg = 0; //ftell(meta->registersFile);
 
 	// Adjust the headers of both files
 	fseek(meta->registersFile, 1, SEEK_SET);

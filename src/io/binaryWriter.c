@@ -15,9 +15,7 @@
 
 // ANCHOR: Register writing functions
 
-int64_t BinaryWriter_Vehicle(const Vehicle_t* vehicle, FILE* destFile) {
-    int64_t offset = ftell(destFile);
-    
+void BinaryWriter_Vehicle(const Vehicle_t* vehicle, FILE* destFile) {
     // Fixed length fields
     fwrite(&vehicle->removed, sizeof(char), 1, destFile);
     fwrite(&vehicle->regSize, sizeof(int32_t), 1, destFile);
@@ -36,13 +34,9 @@ int64_t BinaryWriter_Vehicle(const Vehicle_t* vehicle, FILE* destFile) {
     fwrite(&vehicle->categoryLength, sizeof(int32_t), 1, destFile);
     if (vehicle->category != NULL)
         fwrite(vehicle->category, sizeof(char), vehicle->categoryLength, destFile);
-
-    return offset;
 }
 
-int64_t BinaryWriter_BusLine(const BusLine_t* busLine, FILE* destFile) {
-    int64_t offset = ftell(destFile);
-
+void BinaryWriter_BusLine(const BusLine_t* busLine, FILE* destFile) {
     // Fixed length fields
     fwrite(&busLine->removed, sizeof(char), 1, destFile);
     fwrite(&busLine->regSize, sizeof(int32_t), 1, destFile);
@@ -58,8 +52,6 @@ int64_t BinaryWriter_BusLine(const BusLine_t* busLine, FILE* destFile) {
     fwrite(&busLine->colorLength, sizeof(int32_t), 1, destFile);
     if (busLine->color != NULL)
         fwrite(busLine->color, sizeof(char), busLine->colorLength, destFile);
-
-    return offset;
 }
 
 void WriteBTreeNode(const BNode_t* node, FILE* destFile){
