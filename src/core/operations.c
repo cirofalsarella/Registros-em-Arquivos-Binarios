@@ -205,7 +205,7 @@ void Op_PushVehicles(char* regsFileName, char* bTreeFileName) {
 		return;
 	}
 
-	// getting the header intel
+	// Gets the header
 	fseek(meta->registersFile, 1, SEEK_SET);
     int64_t proxReg;
     fread(&proxReg, sizeof(int64_t), 1, meta->registersFile);
