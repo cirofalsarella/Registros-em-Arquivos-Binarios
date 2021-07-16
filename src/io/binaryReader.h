@@ -44,6 +44,7 @@ BusLineHeader_t* BinaryReader_BusLineHeader(FILE *srcFile);
 // ANCHOR: read full file
 
 Vehicle_t** BinaryReader_Vehicles(const char* fileName, int* n_vehicles);
+BusLine_t** BinaryReader_BusLines(const char* fileName, int* n_buslines);
 
 
 // ANCHOR: B-Tree header & nodes

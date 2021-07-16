@@ -9,34 +9,6 @@
 #include "../core/printer.h"
 #include "../core/utils.h"
 
-//  Printa uma Hash do arquivo (binário na tela)
-void PrintHash(const char* nomeArquivoBinario) {
-	unsigned long i, cs;
-	unsigned char *mb;
-	size_t fl;
-	FILE *fs;
-
-	if (nomeArquivoBinario == NULL || !(fs = fopen(nomeArquivoBinario, "rb"))) {
-		fprintf(stderr, "ERRO AO ESCREVER O BINARIO NA TELA (função PrintHash): não foi possível abrir o arquivo que me passou para leitura. Ele existe e você tá passando o nome certo? Você lembrou de fechar ele com fclose depois de usar?\n");
-		return;
-	}
-	
-	fseek(fs, 0, SEEK_END);
-	fl = ftell(fs);
-	fseek(fs, 0, SEEK_SET);
-	mb = (unsigned char *) malloc(fl);
-	fread(mb, 1, fl, fs);
-
-	cs = 0;
-	for (i = 0; i < fl; i++) {
-		cs += (unsigned long) mb[i];
-	}
-
-	printf("%lf\n", (cs / (double) 100));
-	free(mb);
-	fclose(fs);
-}
-
 void Op_15(const char* vehicleFile, const char* buslineFile) {
 
 }
@@ -44,6 +16,7 @@ void Op_15(const char* vehicleFile, const char* buslineFile) {
 void Op_16(const char* vehicleFile, const char* buslineFile) {
 
 }
+
 
 void Op_17(const char* unorderedFile, const char* orderedFile) {
 	char field[64] = { "\0" };
@@ -59,39 +32,51 @@ void Op_17(const char* unorderedFile, const char* orderedFile) {
 	// Write file in orderedFile
 	BinaryWriter_VehicleFile(vehicles, n_vehicles, orderedFile);
 
-	for (int i=0; i<n_vehicles; i++) {
-		Vehicle_Free(vehicles[i]);
-	}
+	for (int i=0; i<n_vehicles; i++)	Vehicle_Free(vehicles[i]);
 	free(vehicles);
 }
 
-
-void Op_PushVehicles(char* regsFileName, char* bTreeFileName) {
-	// Creates metadata
-	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "rb+", regsFileName, "rb+");
-	if (meta->bTreeIndexFile == NULL || meta->registersFile == NULL || meta->header->rootRRN < 0){
-		printf("Falha no processamento do arquivo.\n");
-		BTreeMetadata_Free(meta);
-		return;
-	}
-
-	// Gets the header
-	fseek(meta->registersFile, 1, SEEK_SET);
-    int64_t proxReg;
-    fread(&proxReg, sizeof(int64_t), 1, meta->registersFile);
-    int32_t numReg, numRegRem;
-    fread(&numReg, sizeof(int32_t), 1, meta->registersFile);
-    fread(&numRegRem, sizeof(int32_t), 1, meta->registersFile);
-
-
-	// Gets number of registers to insert & reads them from terminal
-	int n;
-    scanf("%d", &n);
-
 void Op_18(const char* unorderedFile, const char* orderedFile) {
+	char field[64] = { "\0" };
+	scanf("%s", field);
+	
+	// Read unorderedFile to ram
+	int n_buslines;
+	BusLine_t** buslines = BinaryReader_BusLines(unorderedFile, &n_buslines);
 
+	// Order file acording to the especified field
+
+
+	// Write file in orderedFile
+	BinaryWriter_BusLineFile(buslines, n_buslines, orderedFile);
+
+	for (int i=0; i<n_buslines; i++)	BusLine_Free(buslines[i]);
+	free(buslines);
 }
 
 void Op_19(const char* vehicleFile, const char* buslineFile) {
+	// Get the fields
+	char fieldVehicles[64] = { "\0" };
+	scanf("%s", fieldVehicles);
 
+	char fieldBusLines[64] = { "\0" };
+	scanf("%s", fieldBusLines);
+
+
+	// Get registers
+	int n_vehicles;
+	Vehicle_t** vehicles = BinaryReader_Vehicles(vehicleFile, &n_vehicles);
+
+	int n_buslines;
+	BusLine_t** buslines = BinaryReader_BusLines(buslineFile, &n_buslines);
+
+	// Order registers by "codLinha" field
+
+	// Print registers merging
+
+	// Free the memory
+	for (int i=0; i<n_vehicles; i++)	Vehicle_Free(vehicles[i]);
+	free(vehicles);
+	for (int i=0; i<n_buslines; i++)	BusLine_Free(buslines[i]);
+	free(buslines);
 }

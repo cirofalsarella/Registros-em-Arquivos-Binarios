@@ -144,6 +144,54 @@ Vehicle_t** BinaryReader_Vehicles(const char* fileName, int* n_vehicles) {
     return vehicles;
 }
 
+BusLine_t** BinaryReader_BusLines(const char* fileName, int* n_buslines) {
+    FILE* srcFile = fopen(fileName, "rb");
+    if (srcFile == NULL) {
+        return NULL;
+    } else {
+        char status;
+        fread(&status, sizeof(char), 1, srcFile);
+        if (status == '0'){
+            fclose(srcFile);
+            return NULL;
+        }
+        fseek(srcFile, 0, SEEK_SET);
+
+        status = '0';
+        fwrite(&status, sizeof(char), 1, srcFile);
+    }
+
+    // Reads the header
+    BusLineHeader_t* header = BinaryReader_BusLineHeader(srcFile);
+
+    // Allocates space for the buslines
+    BusLine_t** buslines = calloc((header)->numReg, sizeof(BusLine_t*));
+    int n_registers = (header)->numReg + (header)->numRegRemov;
+    *n_buslines = header->numReg;
+
+    // Gets the buslines that arent removed from the file
+    int j = 0;
+    for (int i=0; i < n_registers; i++) {
+        BusLine_t* aux = BinaryReader_BusLine(srcFile);
+        if (aux != NULL) {
+            if (aux->removed == '0') {
+                BusLine_Free(aux);
+            } else {
+                buslines[j] = aux;
+                j++;
+            }
+        }
+    }
+
+    fseek(srcFile, 0, SEEK_SET);
+    char status = '1';
+    fwrite(&status, sizeof(char), 1, srcFile);
+    
+    fclose(srcFile);
+    BinaryHeaders_FreeBusLineHeader(header);
+    return buslines;
+}
+
 
 // ANCHOR: B-Tree header & nodes
 
