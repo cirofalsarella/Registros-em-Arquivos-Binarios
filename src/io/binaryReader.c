@@ -4,6 +4,7 @@
 
 #include "../io/binaryReader.h"
 #include "../dataModel/dataModel.h"
+#include "../dataModel/binaryHeaders.h"
 #include "../bTree/bTreeDataModel.h"
 #include "../bTree/bTree.h"
 
@@ -64,7 +65,6 @@ BusLine_t* BinaryReader_BusLine(FILE *srcFile) {
 VehicleHeader_t* BinaryReader_VehicleHeader(FILE *srcFile) {
     VehicleHeader_t* header = calloc(1, sizeof(VehicleHeader_t));
 
-    fread(&header->status, sizeof(char), 1, srcFile);
     fread(&header->nextReg, sizeof(int64_t), 1, srcFile);
     fread(&header->numReg, sizeof(int32_t), 1, srcFile);
     fread(&header->numRegRemov, sizeof(int32_t), 1, srcFile);
@@ -82,7 +82,6 @@ VehicleHeader_t* BinaryReader_VehicleHeader(FILE *srcFile) {
 BusLineHeader_t* BinaryReader_BusLineHeader(FILE *srcFile) {
     BusLineHeader_t* header = calloc(1, sizeof(VehicleHeader_t));
 
-    fread(&header->status, sizeof(char), 1, srcFile);
     fread(&header->nextReg, sizeof(int64_t), 1, srcFile);
     fread(&header->numReg, sizeof(int32_t), 1, srcFile);
     fread(&header->numRegRemov, sizeof(int32_t), 1, srcFile);
@@ -93,6 +92,56 @@ BusLineHeader_t* BinaryReader_BusLineHeader(FILE *srcFile) {
     fread(&header->describeLine, sizeof(char), 24, srcFile);
 
     return header;
+}
+
+// ANCHOR
+
+Vehicle_t** BinaryReader_Vehicles(const char* fileName, int* n_vehicles) {
+    FILE* srcFile = fopen(fileName, "rb");
+    if (srcFile == NULL) {
+        return NULL;
+    } else {
+        char status;
+        fread(&status, sizeof(char), 1, srcFile);
+        if (status == '0'){
+            fclose(srcFile);
+            return NULL;
+        }
+        fseek(srcFile, 0, SEEK_SET);
+
+        status = '0';
+        fwrite(&status, sizeof(char), 1, srcFile);
+    }
+
+    // Reads the header
+    VehicleHeader_t* header = BinaryReader_VehicleHeader(srcFile);
+
+    // Allocates space for the vehicles
+    Vehicle_t** vehicles = calloc((header)->numReg, sizeof(Vehicle_t*));
+    int n_registers = (header)->numReg + (header)->numRegRemov;
+    *n_vehicles = header->numReg;
+
+    // Gets the vehicles that arent removed from the file
+    int j = 0;
+    for (int i=0; i < n_registers; i++) {
+        Vehicle_t* aux = BinaryReader_Vehicle(srcFile);
+        if (aux != NULL) {
+            if (aux->removed == '0') {
+                Vehicle_Free(aux);
+            } else {
+                vehicles[j] = aux;
+                j++;
+            }
+        }
+    }
+
+    fseek(srcFile, 0, SEEK_SET);
+    char status = '1';
+    fwrite(&status, sizeof(char), 1, srcFile);
+    
+    fclose(srcFile);
+    BinaryHeaders_FreeVehicleHeader(header);
+    return vehicles;
 }
 
 

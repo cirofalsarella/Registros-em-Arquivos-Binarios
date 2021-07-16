@@ -16,7 +16,7 @@
  * @param describeCategory 
  * @return The created VehicleHeader_t*
  */
-VehicleHeader_t* BinaryHeaders_CreateVehicleHeader(char* describePrefix, char* describeDate, char* describePlaces, char* describeLine, char* describeModel, char* describeCategory);
+VehicleHeader_t* BinaryHeaders_CreateVehicleHeader(int nextReg, int numReg, int numRegRemov);
 
 /**
  * @brief Creates a new bus line header with the given strings.

@@ -16,41 +16,28 @@ int main() {
     scanf("%d", &op);
 
     // Gets file names from terminal
-    char regsFileName[128] = { '\0' };
-    scanf("%s", &regsFileName[0]);
+    char file_1[128] = { '\0' };
+    scanf("%s", file_1);
 
-    char bTreeFileName[128] = { '\0' };
-    scanf("%s", &bTreeFileName[0]);
-    
-    // Expects "prefixo" or "codLinha", depending on the operation
-	char fieldName[128] = { '\0' };
-
-    // Either a prefix or lineCode
-	char fieldValue[128] = { '\0' };
+    char file_2[128] = { '\0' };
+    scanf("%s", file_2);
 
     // Chooses the right operation
     switch (op) {
-    case 9:
-        Op_CreateBTreeVehicles(regsFileName, bTreeFileName);
+    case 15:
+        Op_15(file_1, file_2);
         break;
-    case 10:
-        Op_CreateBTreeBusLines(regsFileName, bTreeFileName);
+    case 16:
+        Op_16(file_1, file_2);
         break;
-    case 11:
-        scanf("%s", &fieldName[0]);
-        Utils_ScanQuoteString(&fieldValue[0]);
-        Op_FindVehicle(regsFileName, bTreeFileName, fieldName, fieldValue);
+    case 17:
+        Op_17(file_1, file_2);
         break;
-    case 12:
-        scanf("%s", &fieldName[0]);
-        scanf("%s", &fieldValue[0]);
-        Op_FindBusLine(regsFileName, bTreeFileName, fieldName, fieldValue);
+    case 18:
+        Op_18(file_1, file_2);
         break;
-    case 13:
-        Op_PushVehicles(regsFileName, bTreeFileName);
-        break;
-    case 14:
-        Op_PushBusLines(regsFileName, bTreeFileName);
+    case 19:
+        Op_19(file_1, file_2);
         break;
     }
 

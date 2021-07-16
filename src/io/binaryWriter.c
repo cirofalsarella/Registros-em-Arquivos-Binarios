@@ -73,7 +73,6 @@ void WriteBTreeNode(const BNode_t* node, FILE* destFile){
 // MARK: Header-writing functions
 
 void WriteVehicleHeader(const VehicleHeader_t* header, FILE *destFile) {
-    fwrite(&header->status, sizeof(char), 1, destFile);
     fwrite(&header->nextReg, sizeof(int64_t), 1, destFile);
     fwrite(&header->numReg, sizeof(int32_t), 1, destFile);
     fwrite(&header->numRegRemov, sizeof(int32_t), 1, destFile);
@@ -88,7 +87,6 @@ void WriteVehicleHeader(const VehicleHeader_t* header, FILE *destFile) {
 }
 
 void WriteBusLineHeader(const BusLineHeader_t* header, FILE *destFile) {
-    fwrite(&header->status, sizeof(char), 1, destFile);
     fwrite(&header->nextReg, sizeof(int64_t), 1, destFile);
     fwrite(&header->numReg, sizeof(int32_t), 1, destFile);
     fwrite(&header->numRegRemov, sizeof(int32_t), 1, destFile);
@@ -111,6 +109,39 @@ void BinaryWriter_BTreeHeader(BTreeMetadata_t* meta) {
     fwrite(&(meta->header->unused[0]), sizeof(char), 68, meta->bTreeIndexFile);
 }
 
+
+// ANCHOR: File Writing functions
+
+void BinaryWriter_VehicleFile(Vehicle_t** vehicles, int n_vehicles, const char* fileName) {
+    VehicleHeader_t* header = BinaryHeaders_CreateVehicleHeader(n_vehicles, 0, 0);
+    
+    // Opens the file and writes the header
+    FILE* destFile = fopen(fileName, "wb");
+    char status = '0';
+    fwrite(&status, sizeof(char), 1, destFile);
+    WriteVehicleHeader(header, destFile);
+    // TODO: fseek e escrever o header só depois
+
+    for (int i = 0; i < n_vehicles; i++){
+        BinaryWriter_Vehicle(vehicles[i], destFile);
+    }
+
+    // Writes nextReg
+    header->nextReg = ftell(destFile);
+    fseek(destFile, 1, SEEK_SET);
+    fwrite(&header->nextReg, sizeof(int64_t), 1, destFile);
+
+    // Writes status
+    fseek(destFile, 0, SEEK_SET);
+    status = '1';
+    fwrite(&status, 1, 1, destFile);
+    WriteVehicleHeader(header, destFile);
+
+    // Frees and closes everything
+    fclose(destFile);
+    free(vehicles);
+    BinaryHeaders_FreeVehicleHeader(header);
+}
 
 // ANCHOR: Register appending functions
 

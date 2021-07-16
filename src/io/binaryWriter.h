@@ -23,7 +23,12 @@ void BinaryWriter_Vehicle(const Vehicle_t* vehicle, FILE* destFile);
  */
 void BinaryWriter_BusLine(const BusLine_t* busLine, FILE* destFile);
 
-
+/**
+ * @brief 
+ * 
+ * @param vehicle 
+ */
+void BinaryWriter_VehicleFile(Vehicle_t** vehicles, int n_vehicles, const char* fileName);
 
 // ANCHOR: Register appending functions
 

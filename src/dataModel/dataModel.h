@@ -28,7 +28,6 @@
 //  Header dos arquivos Binários
 
 typedef struct VehicleHeader {
-    char status;
     int64_t nextReg;
 
     int32_t numReg;
@@ -44,7 +43,6 @@ typedef struct VehicleHeader {
 } VehicleHeader_t;
 
 typedef struct BusLineHeader {
-    char status;
     int64_t nextReg;
 
     int32_t numReg;
