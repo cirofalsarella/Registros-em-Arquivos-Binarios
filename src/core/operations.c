@@ -66,6 +66,27 @@ void Op_17(const char* unorderedFile, const char* orderedFile) {
 }
 
 
+void Op_PushVehicles(char* regsFileName, char* bTreeFileName) {
+	// Creates metadata
+	BTreeMetadata_t* meta = BTreeMetadata_Create(bTreeFileName, "rb+", regsFileName, "rb+");
+	if (meta->bTreeIndexFile == NULL || meta->registersFile == NULL || meta->header->rootRRN < 0){
+		printf("Falha no processamento do arquivo.\n");
+		BTreeMetadata_Free(meta);
+		return;
+	}
+
+	// Gets the header
+	fseek(meta->registersFile, 1, SEEK_SET);
+    int64_t proxReg;
+    fread(&proxReg, sizeof(int64_t), 1, meta->registersFile);
+    int32_t numReg, numRegRem;
+    fread(&numReg, sizeof(int32_t), 1, meta->registersFile);
+    fread(&numRegRem, sizeof(int32_t), 1, meta->registersFile);
+
+
+	// Gets number of registers to insert & reads them from terminal
+	int n;
+    scanf("%d", &n);
 
 void Op_18(const char* unorderedFile, const char* orderedFile) {
 
