@@ -30,19 +30,20 @@ VehicleHeader_t* BinaryHeaders_CreateVehicleHeader(int nextReg, int numReg, int 
 
 
 // Create an busline Header
-BusLineHeader_t* BinaryHeaders_CreateBusLineHeader(char* describeCode, char* describeCard, char* describeName, char* describeLine) {
+BusLineHeader_t* BinaryHeaders_CreateBusLineHeader(int nextReg, int numReg, int numRegRemov) {
     // Describe lenghts: 15, 13, 13, 24
     BusLineHeader_t* header = (BusLineHeader_t*) malloc(sizeof(BusLineHeader_t));
     
-    header->nextReg = 0;
-    header->numReg = 0;
-    header->numRegRemov = 0;
+    header->nextReg = nextReg;
+    header->numReg = numReg;
+    header->numRegRemov = numRegRemov;
 
     // Copies over fixed-length fields
-    Utils_StrCopyToFixedLen(header->describeCode, describeCode, 15);
-    Utils_StrCopyToFixedLen(header->describeCard, describeCard, 13);
-    Utils_StrCopyToFixedLen(header->describeName, describeName, 13);
-    Utils_StrCopyToFixedLen(header->describeLine, describeLine, 24);
+    // TODO: deixar os campos de descrição setados
+    Utils_StrCopyToFixedLen(header->describeCode, "", 15);
+    Utils_StrCopyToFixedLen(header->describeCard, "", 13);
+    Utils_StrCopyToFixedLen(header->describeName, "", 13);
+    Utils_StrCopyToFixedLen(header->describeLine, "", 24);
 
     return header;                        
 }

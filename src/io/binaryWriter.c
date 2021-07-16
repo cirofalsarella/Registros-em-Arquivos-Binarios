@@ -143,6 +143,38 @@ void BinaryWriter_VehicleFile(Vehicle_t** vehicles, int n_vehicles, const char* 
     BinaryHeaders_FreeVehicleHeader(header);
 }
 
+void BinaryWriter_BusLineFile(BusLine_t** buslines, int n_buslines, const char* fileName) {
+    BusLineHeader_t* header = BinaryHeaders_CreateBusLineHeader(n_buslines, 0, 0);
+    
+    // Opens the file and writes the header
+    FILE* destFile = fopen(fileName, "wb");
+    char status = '0';
+    fwrite(&status, sizeof(char), 1, destFile);
+    WriteBusLineHeader(header, destFile);
+    // TODO: fseek e escrever o header só depois
+
+    for (int i = 0; i < n_buslines; i++){
+        BinaryWriter_BusLine(buslines[i], destFile);
+    }
+
+    // Writes nextReg
+    header->nextReg = ftell(destFile);
+    fseek(destFile, 1, SEEK_SET);
+    fwrite(&header->nextReg, sizeof(int64_t), 1, destFile);
+
+    // Writes status
+    fseek(destFile, 0, SEEK_SET);
+    status = '1';
+    fwrite(&status, 1, 1, destFile);
+    WriteBusLineHeader(header, destFile);
+
+    // Frees and closes everything
+    fclose(destFile);
+    free(buslines);
+    BinaryHeaders_FreeBusLineHeader(header);
+}
+
+
 // ANCHOR: Register appending functions
 
 int BinaryWriter_AppendVehicles(Vehicle_t** vehicles, int vehiclesCount, FILE* destFile, ByteOffset_t* destOffsets) {

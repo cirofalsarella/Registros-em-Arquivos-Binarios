@@ -27,7 +27,7 @@ VehicleHeader_t* BinaryHeaders_CreateVehicleHeader(int nextReg, int numReg, int 
  * @param describeLine 
  * @return The created BusLineHeader_t*
  */
-BusLineHeader_t* BinaryHeaders_CreateBusLineHeader(char* describeCode, char* describeCard, char* describeName, char* describeLine);
+BusLineHeader_t* BinaryHeaders_CreateBusLineHeader(int nextReg, int numReg, int numRegRemov);
 
 
 // ANCHOR: Free functions
