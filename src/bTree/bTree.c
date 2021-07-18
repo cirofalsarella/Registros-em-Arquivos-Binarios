@@ -1,6 +1,6 @@
 #include "bTree.h"
-#include "../fio/binaryReader.h"
-#include "../fio/binaryWriter.h"
+#include "../fileIO/binaryReader.h"
+#include "../fileIO/binaryWriter.h"
 #include "../core/printer.h"
 #include <assert.h>
 

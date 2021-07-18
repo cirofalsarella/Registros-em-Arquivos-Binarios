@@ -5,8 +5,8 @@
 
 #include "../dataModel/dataModel.h"
 #include "../dataModel/binaryHeaders.h"
-#include "../fio/binaryReader.h"
-#include "../fio/binaryWriter.h"
+#include "../fileIO/binaryReader.h"
+#include "../fileIO/binaryWriter.h"
 #include "../core/printer.h"
 #include "../core/utils.h"
 
