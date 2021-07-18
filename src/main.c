@@ -45,30 +45,30 @@ int main() {
     scanf("%d", &op);
 
     // Gets file names from terminal
-    char file_1[128] = { '\0' };
-    scanf("%s", file_1);
+    char firstFileName[128] = { '\0' };
+    scanf("%s", firstFileName);
 
-    char file_2[128] = { '\0' };
-    scanf("%s", file_2);
+    char secondFileName[128] = { '\0' };
+    scanf("%s", secondFileName);
 
     // Chooses the right operation
     switch (op) {
     case 15:
-        Op_NestedLoopJoin(file_1, file_2);
+        Op_NestedLoopJoin(firstFileName, secondFileName);
         break;
     case 16:
-        Op_SingleLoopJoin(file_1, file_2);
+        Op_SingleLoopJoin(firstFileName, secondFileName);
         break;
     case 17:
-        Op_SortVehiclesByLineCode(file_1, file_2);
-        PrintHash(file_2);
+        Op_SortVehiclesByLineCode(firstFileName, secondFileName);
+        PrintHash(secondFileName);
         break;
     case 18:
-        Op_SortBusLinesByLineCode(file_1, file_2);
-        PrintHash(file_2);
+        Op_SortBusLinesByLineCode(firstFileName, secondFileName);
+        PrintHash(secondFileName);
         break;
     case 19:
-        Op_SortMergeJoin(file_1, file_2);
+        Op_SortMergeJoin(firstFileName, secondFileName);
         break;
     }
 

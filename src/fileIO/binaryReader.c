@@ -79,8 +79,8 @@ VehicleHeader_t* BinaryReader_VehicleHeader(FILE *srcFile) {
     VehicleHeader_t* header = calloc(1, sizeof(VehicleHeader_t));
 
     fread(&header->nextReg, sizeof(int64_t), 1, srcFile);
-    fread(&header->numReg, sizeof(int32_t), 1, srcFile);
-    fread(&header->numRegRemov, sizeof(int32_t), 1, srcFile);
+    fread(&header->validRegCount, sizeof(int32_t), 1, srcFile);
+    fread(&header->removedRegCount, sizeof(int32_t), 1, srcFile);
 
     fread(&header->describePrefix, sizeof(char), 18, srcFile);
     fread(&header->describeDate, sizeof(char), 35, srcFile);
@@ -96,8 +96,8 @@ BusLineHeader_t* BinaryReader_BusLineHeader(FILE *srcFile) {
     BusLineHeader_t* header = calloc(1, sizeof(VehicleHeader_t));
 
     fread(&header->nextReg, sizeof(int64_t), 1, srcFile);
-    fread(&header->numReg, sizeof(int32_t), 1, srcFile);
-    fread(&header->numRegRemov, sizeof(int32_t), 1, srcFile);
+    fread(&header->validRegCount, sizeof(int32_t), 1, srcFile);
+    fread(&header->removedRegCount, sizeof(int32_t), 1, srcFile);
 
     fread(&header->describeCode, sizeof(char), 15, srcFile);
     fread(&header->describeCard, sizeof(char), 13, srcFile);
@@ -136,9 +136,9 @@ Vehicle_t** BinaryReader_Vehicles(const char* fileName, int* n_vehicles) {
     }
 
     // Allocates space for the vehicles
-    Vehicle_t** vehicles = calloc((header)->numReg, sizeof(Vehicle_t*));
-    int n_registers = (header)->numReg + (header)->numRegRemov;
-    *n_vehicles = header->numReg;
+    Vehicle_t** vehicles = calloc((header)->validRegCount, sizeof(Vehicle_t*));
+    int n_registers = (header)->validRegCount + (header)->removedRegCount;
+    *n_vehicles = header->validRegCount;
 
     // Gets the vehicles that arent removed from the file
     int j = 0;
@@ -190,9 +190,9 @@ BusLine_t** BinaryReader_BusLines(const char* fileName, int* n_buslines) {
     }
 
     // Allocates space for the buslines
-    BusLine_t** buslines = calloc((header)->numReg, sizeof(BusLine_t*));
-    int n_registers = (header)->numReg + (header)->numRegRemov;
-    *n_buslines = header->numReg;
+    BusLine_t** buslines = calloc((header)->validRegCount, sizeof(BusLine_t*));
+    int n_registers = (header)->validRegCount + (header)->removedRegCount;
+    *n_buslines = header->validRegCount;
 
     // Gets the buslines that arent removed from the file
     int j = 0;

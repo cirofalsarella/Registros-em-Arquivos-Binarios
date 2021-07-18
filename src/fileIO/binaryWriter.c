@@ -74,8 +74,8 @@ void WriteBTreeNode(const BNode_t* node, FILE* destFile){
 
 void WriteVehicleHeader(const VehicleHeader_t* header, FILE *destFile) {
     fwrite(&header->nextReg, sizeof(int64_t), 1, destFile);
-    fwrite(&header->numReg, sizeof(int32_t), 1, destFile);
-    fwrite(&header->numRegRemov, sizeof(int32_t), 1, destFile);
+    fwrite(&header->validRegCount, sizeof(int32_t), 1, destFile);
+    fwrite(&header->removedRegCount, sizeof(int32_t), 1, destFile);
 
     // Strings with always the same sizes
     fwrite(&header->describePrefix[0], sizeof(char), 18, destFile);
@@ -88,8 +88,8 @@ void WriteVehicleHeader(const VehicleHeader_t* header, FILE *destFile) {
 
 void WriteBusLineHeader(const BusLineHeader_t* header, FILE *destFile) {
     fwrite(&header->nextReg, sizeof(int64_t), 1, destFile);
-    fwrite(&header->numReg, sizeof(int32_t), 1, destFile);
-    fwrite(&header->numRegRemov, sizeof(int32_t), 1, destFile);
+    fwrite(&header->validRegCount, sizeof(int32_t), 1, destFile);
+    fwrite(&header->removedRegCount, sizeof(int32_t), 1, destFile);
 
     // Strings with always the same sizes
     fwrite(&header->describeCode[0], sizeof(char), 15, destFile);
@@ -318,7 +318,7 @@ int BinaryWriter_BTreeIndexFileVehicles(BTreeMetadata_t* meta) {
 
 
     // Inserts the vehicles
-    for (int i = 0; i < regsHeader->numReg + regsHeader->numRegRemov; i++) {
+    for (int i = 0; i < regsHeader->validRegCount + regsHeader->removedRegCount; i++) {
         Vehicle_t* reg = BinaryReader_Vehicle(meta->registersFile);
         if (reg->removed == '0') {
             Vehicle_Free(reg);
@@ -348,7 +348,7 @@ int BinaryWriter_BTreeIndexFileBusLines(BTreeMetadata_t* meta) {
     }
 
     // Inserts the bus lines
-    for (int i = 0; i < regsHeader->numReg + regsHeader->numRegRemov; i++) {
+    for (int i = 0; i < regsHeader->validRegCount + regsHeader->removedRegCount; i++) {
         BusLine_t* reg = BinaryReader_BusLine(meta->registersFile);
         if (reg->removed == '0') {
             BusLine_Free(reg);

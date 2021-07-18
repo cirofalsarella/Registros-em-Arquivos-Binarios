@@ -66,28 +66,31 @@ void Op_NestedLoopJoin(const char* vehiclesFileName, const char* busLinesFileNam
 	char foundAnyMatches = FALSE;
 
 	// Goes through each vehicle...
-	for (int vehicleIndex = 0; vehicleIndex < vehicleHeader->numReg; ++vehicleIndex) {
+	for (int vehicleIndex = 0; vehicleIndex < vehicleHeader->validRegCount + vehicleHeader->removedRegCount; ++vehicleIndex) {
 		Vehicle_t* vehicle = BinaryReader_Vehicle(vehiclesFile);
 		BusLine_t* matchingBusLine = NULL;
 
-		// Performs a linear search through the bus lines to find the matching bus line
-		fseek(busLinesFile, 1, SEEK_SET);
-		for (int busLineIndex = 0; busLineIndex < busLineHeader->numReg; ++busLineIndex) {
-			// Reads a single bus line
-			BusLine_t* busLine = BinaryReader_BusLine(busLinesFile);
-			if (busLine->lineCode == vehicle->lineCode) {
-				matchingBusLine = busLine;
-				break;
+		if (vehicle->removed == '1') {
+			// Performs a linear search through the bus lines to find the matching bus line
+			fseek(busLinesFile, BUSLINE_HEADER_SIZE, SEEK_SET);
+			for (int busLineIndex = 0; busLineIndex < busLineHeader->validRegCount + busLineHeader->removedRegCount; ++busLineIndex) {
+				// Reads a single bus line
+				BusLine_t* busLine = BinaryReader_BusLine(busLinesFile);
+				if (busLine->removed == '1' && busLine->lineCode == vehicle->lineCode) {
+					matchingBusLine = busLine;
+					break;
+				}
+				BusLine_Free(busLine);
 			}
-			BusLine_Free(busLine);
-		}
 
-		// Prints the joint register
-		if (matchingBusLine != NULL) {
-			Printer_Vehicle(vehicle);
-			Printer_BusLine(matchingBusLine);
-			foundAnyMatches = TRUE;
-			BusLine_Free(matchingBusLine);
+			// Prints the joint register
+			if (matchingBusLine != NULL) {
+				Printer_Vehicle(vehicle);
+				Printer_BusLine(matchingBusLine);
+				printf("\n");
+				foundAnyMatches = TRUE;
+				BusLine_Free(matchingBusLine);
+			}
 		}
 
 		// Frees the vehicle
@@ -133,7 +136,7 @@ void Op_SingleLoopJoin(const char* vehiclesFileName, const char* busLinesFileNam
 	char foundAnyMatches = FALSE;
 
 	// For each vehicle...
-	for (int i = 0; i < vehicleHeader->numReg; ++i) {
+	for (int i = 0; i < vehicleHeader->validRegCount + vehicleHeader->removedRegCount; ++i) {
 		Vehicle_t* vehicle = BinaryReader_Vehicle(vehiclesFile);
 
 		// If the vehicle is not removed...

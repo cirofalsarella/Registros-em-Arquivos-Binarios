@@ -1,0 +1,3 @@
+gcc src/main.c src/bTree/*.c src/core/*.c src/dataModel/*.c src/fileIO/*.c -o programaTrab.exe -Wall
+programaTrab.exe
+Registro inexistente.

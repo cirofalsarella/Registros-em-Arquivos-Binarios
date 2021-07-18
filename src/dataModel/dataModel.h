@@ -30,8 +30,8 @@
 typedef struct VehicleHeader {
     int64_t nextReg;
 
-    int32_t numReg;
-    int32_t numRegRemov;
+    int32_t validRegCount;
+    int32_t removedRegCount;
     
     // Labels
     char describePrefix[18];
@@ -45,8 +45,8 @@ typedef struct VehicleHeader {
 typedef struct BusLineHeader {
     int64_t nextReg;
 
-    int32_t numReg;
-    int32_t numRegRemov;
+    int32_t validRegCount;
+    int32_t removedRegCount;
     
     // Labels
     char describeCode[15];

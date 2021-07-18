@@ -13,8 +13,8 @@ VehicleHeader_t* BinaryHeaders_CreateVehicleHeader(int nextReg, int numReg, int 
     VehicleHeader_t* header = (VehicleHeader_t*) malloc(sizeof(VehicleHeader_t));
     
     header->nextReg = nextReg;
-    header->numReg = numReg;
-    header->numRegRemov = numRegRemov;
+    header->validRegCount = numReg;
+    header->removedRegCount = numRegRemov;
 
     // Copies over fixed-length fields
     // TODO: deixar os campos de descrição setados
@@ -35,8 +35,8 @@ BusLineHeader_t* BinaryHeaders_CreateBusLineHeader(int nextReg, int numReg, int 
     BusLineHeader_t* header = (BusLineHeader_t*) malloc(sizeof(BusLineHeader_t));
     
     header->nextReg = nextReg;
-    header->numReg = numReg;
-    header->numRegRemov = numRegRemov;
+    header->validRegCount = numReg;
+    header->removedRegCount = numRegRemov;
 
     // Copies over fixed-length fields
     // TODO: deixar os campos de descrição setados
@@ -51,11 +51,11 @@ BusLineHeader_t* BinaryHeaders_CreateBusLineHeader(int nextReg, int numReg, int 
 // ANCHOR: Validation functions
 
 char BinaryHeaders_IsVehicleHeaderValid(VehicleHeader_t* header) {
-	return header->numReg >= 0 && header->numRegRemov <= header->numReg;
+	return header->validRegCount >= 0 && header->removedRegCount <= header->validRegCount;
 }
 
 char BinaryHeaders_IsBusLineHeaderValid(BusLineHeader_t* header) {
-	return header->numReg >= 0 && header->numRegRemov <= header->numReg;
+	return header->validRegCount >= 0 && header->removedRegCount <= header->validRegCount;
 }
 
 

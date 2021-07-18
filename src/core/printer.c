@@ -104,7 +104,6 @@ void Printer_Vehicle(const Vehicle_t *vehicle) {
     printf("Data de entrada do veiculo na frota: ");
     PrettyPrintDate(vehicle->date);
     PrettyPrintInt("Quantidade de lugares sentados disponiveis", vehicle->numSeats);
-    printf("\n");
 }
 
 void Printer_BusLine(const BusLine_t *busLine) {
@@ -129,7 +128,6 @@ void Printer_BusLine(const BusLine_t *busLine) {
     PrettyPrintStr("Aceita cartao", acceptsCardStr);
 
     if (acceptsCardStr != NULL) free(acceptsCardStr);
-    printf("\n");
 }
 
 
