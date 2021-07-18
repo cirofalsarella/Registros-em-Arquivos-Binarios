@@ -26,5 +26,8 @@ r:
 	gcc ${MAIN} ${OBJECTS} -o programaTrab.exe -Wall
 	programaTrab.exe
 
+TEST:
+	make r < test_cases/in/$(CASE).in > test_cases/out/$(CASE).out
+
 clean:
 	rm ./*bin ./*csv programaTrab.exe

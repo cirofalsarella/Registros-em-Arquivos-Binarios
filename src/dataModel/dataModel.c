@@ -169,8 +169,8 @@ BusLine_t* BusLine_Read() {
 }
 
 void BusLine_Free(BusLine_t* busLine) {
-    if (busLine != NULL){
-        if (busLine->name != NULL)  free(busLine->name);
+    if (busLine != NULL) {
+        if (busLine->name != NULL) free(busLine->name);
         if (busLine->color != NULL) free(busLine->color);
         free(busLine);
         busLine = NULL;

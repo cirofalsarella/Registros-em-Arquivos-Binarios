@@ -107,6 +107,19 @@ void Op_NestedLoopJoin(const char* vehiclesFileName, const char* busLinesFileNam
 	BinaryHeaders_FreeBusLineHeader(busLineHeader);
 }
 
+/**
+ * @brief Helper function called during single loop join that cleanups and prints error during early exits.
+ */
+void CleanupWithError(BNode_t* nodeFound, Vehicle_t* vehicle, BusLine_t* busLine, FILE* vehiclesFile, BTreeMetadata_t* busLineIndex, VehicleHeader_t* vehicleHeader) {
+	printf(BAD_FILE_ERROR);
+	BNode_Free(nodeFound);
+	Vehicle_Free(vehicle);
+	BusLine_Free(busLine);
+	fclose(vehiclesFile);
+	BTreeMetadata_Free(busLineIndex);
+	BinaryHeaders_FreeVehicleHeader(vehicleHeader);
+}
+
 void Op_SingleLoopJoin(const char* vehiclesFileName, const char* busLinesFileName) {
 	if (!ScanFieldNames()) {
 		return;
@@ -128,10 +141,24 @@ void Op_SingleLoopJoin(const char* vehiclesFileName, const char* busLinesFileNam
 	// Checks for inconsistent headers
 	if (!BinaryHeaders_IsVehicleHeaderValid(vehicleHeader)) {
 		printf(BAD_FILE_ERROR);
+		fclose(vehiclesFile);
 		return;
 	}
 
 	BTreeMetadata_t* busLineIndex = BTreeMetadata_Create(busLineIndexFileName, "rb", busLinesFileName, "rb");
+
+	if (busLineIndex->registersFile == NULL || busLineIndex->bTreeIndexFile == NULL) {
+		printf(BAD_FILE_ERROR);
+		BTreeMetadata_Free(busLineIndex);
+		BinaryHeaders_FreeVehicleHeader(vehicleHeader);
+		fclose(vehiclesFile);
+		return;
+	}
+
+	// Gets bus line file size
+	fseek(busLineIndex->registersFile, 0, SEEK_END);
+	ByteOffset_t busLineFileSize = ftell(busLineIndex->registersFile);
+	fseek(busLineIndex->registersFile, 1, SEEK_SET);
 
 	char foundAnyMatches = FALSE;
 
@@ -145,22 +172,26 @@ void Op_SingleLoopJoin(const char* vehiclesFileName, const char* busLinesFileNam
 			RegKey_t keyToFind = vehicle->lineCode;
 			BNode_t* nodeFound = BTreeMetadata_GetNodeByKey(busLineIndex, keyToFind);
 			int keyIndex = BNode_GetKeyIndex(nodeFound, keyToFind);
-
 			// If we could find a corresponding bus line...
 			if (keyIndex >= 0) {
 				// Reads the bus line reg
 				ByteOffset_t busLineOffset = nodeFound->offsets[keyIndex];
-				fseek(busLineIndex->registersFile, busLineOffset, SEEK_SET);
+
+				if (busLineOffset < 0 || busLineOffset >= busLineFileSize) {
+					CleanupWithError(nodeFound, vehicle, NULL, vehiclesFile, busLineIndex, vehicleHeader);
+					return;
+				}
+
+				if (fseek(busLineIndex->registersFile, busLineOffset, SEEK_SET) != 0) {
+					CleanupWithError(nodeFound, vehicle, NULL, vehiclesFile, busLineIndex, vehicleHeader);
+					return;
+				}
+
 				BusLine_t* busLine = BinaryReader_BusLine(busLineIndex->registersFile);
 
 				// Checks for corrupted files (something is very wrong, clean up and return)
-				if (busLine->lineCode != keyToFind || busLine->removed != '0') {
-					printf(BAD_FILE_ERROR);
-					BNode_Free(nodeFound);
-					Vehicle_Free(vehicle);
-					fclose(vehiclesFile);
-					BTreeMetadata_Free(busLineIndex);
-					BinaryHeaders_FreeVehicleHeader(vehicleHeader);
+				if (busLine->lineCode != keyToFind || busLine->removed != '1') {
+					CleanupWithError(nodeFound, vehicle, busLine, vehiclesFile, busLineIndex, vehicleHeader);
 					return;
 				}
 

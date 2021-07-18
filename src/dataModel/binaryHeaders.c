@@ -51,11 +51,11 @@ BusLineHeader_t* BinaryHeaders_CreateBusLineHeader(int nextReg, int numReg, int 
 // ANCHOR: Validation functions
 
 char BinaryHeaders_IsVehicleHeaderValid(VehicleHeader_t* header) {
-	return header->validRegCount >= 0 && header->removedRegCount <= header->validRegCount;
+	return header->validRegCount >= 0 && header->removedRegCount >= 0;
 }
 
 char BinaryHeaders_IsBusLineHeaderValid(BusLineHeader_t* header) {
-	return header->validRegCount >= 0 && header->removedRegCount <= header->validRegCount;
+	return header->validRegCount >= 0 && header->removedRegCount >= 0;
 }
 
 
