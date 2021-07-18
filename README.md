@@ -8,7 +8,7 @@ A database management system that uses B-Trees for quickly retrieving registers.
     ├── bTree                   # bTree:     B-Tree indexing algorithms & data model
     ├── core                    # core:      Related to the implementation of the operations
     ├── dataModel               # dataModel: "Constructors" and "destructors" for commonly used registers
-    ├── io                      # io:        Binary read/write
+    ├── fio                     # io:        Binary read/write
     ├── main.c                  # main.c:    The entry point
     └── README.md               # README.md
 

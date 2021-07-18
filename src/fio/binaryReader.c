@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "../io/binaryReader.h"
+#include "../fio/binaryReader.h"
 #include "../dataModel/dataModel.h"
 #include "../dataModel/binaryHeaders.h"
 #include "../bTree/bTreeDataModel.h"

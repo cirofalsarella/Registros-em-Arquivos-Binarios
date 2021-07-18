@@ -1,4 +1,4 @@
-OBJECTS = src/bTree/*.c src/core/*.c src/dataModel/*.c src/io/*.c
+OBJECTS = src/bTree/*.c src/core/*.c src/dataModel/*.c src/fio/*.c
 MAIN = src/main.c
 TEST_MAIN = test/testsMain.c
 

@@ -55,21 +55,21 @@ int main() {
     // Chooses the right operation
     switch (op) {
     case 15:
-        Op_15(file_1, file_2);
+        Op_NestedLoopJoin(file_1, file_2);
         break;
     case 16:
-        Op_16(file_1, file_2);
+        Op_SingleLoopJoin(file_1, file_2);
         break;
     case 17:
-        Op_17(file_1, file_2);
+        Op_SortVehiclesByLineCode(file_1, file_2);
         PrintHash(file_2);
         break;
     case 18:
-        Op_18(file_1, file_2);
+        Op_SortBusLinesByLineCode(file_1, file_2);
         PrintHash(file_2);
         break;
     case 19:
-        Op_19(file_1, file_2);
+        Op_SortMergeJoin(file_1, file_2);
         break;
     }
 

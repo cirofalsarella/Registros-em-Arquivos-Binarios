@@ -4,21 +4,21 @@
 
 #include "../dataModel/dataModel.h"
 #include "../dataModel/binaryHeaders.h"
-#include "../io/binaryReader.h"
-#include "../io/binaryWriter.h"
+#include "../fio/binaryReader.h"
+#include "../fio/binaryWriter.h"
 #include "../core/printer.h"
 #include "../core/utils.h"
 
-void Op_15(const char* vehicleFile, const char* buslineFile) {
+void Op_NestedLoopJoin(const char* vehicleFile, const char* buslineFile) {
 
 }
 
-void Op_16(const char* vehicleFile, const char* buslineFile) {
+void Op_SingleLoopJoin(const char* vehicleFile, const char* buslineFile) {
 
 }
 
 
-void Op_17(const char* unorderedFile, const char* orderedFile) {
+void Op_SortVehiclesByLineCode(const char* unorderedFile, const char* orderedFile) {
 	char field[64] = { "\0" };
 	scanf("%s", field);
 	
@@ -36,7 +36,7 @@ void Op_17(const char* unorderedFile, const char* orderedFile) {
 	free(vehicles);
 }
 
-void Op_18(const char* unorderedFile, const char* orderedFile) {
+void Op_SortBusLinesByLineCode(const char* unorderedFile, const char* orderedFile) {
 	char field[64] = { "\0" };
 	scanf("%s", field);
 	
@@ -54,7 +54,7 @@ void Op_18(const char* unorderedFile, const char* orderedFile) {
 	free(buslines);
 }
 
-void Op_19(const char* vehicleFile, const char* buslineFile) {
+void Op_SortMergeJoin(const char* vehicleFile, const char* buslineFile) {
 	// Get the fields
 	char fieldVehicles[64] = { "\0" };
 	scanf("%s", fieldVehicles);
