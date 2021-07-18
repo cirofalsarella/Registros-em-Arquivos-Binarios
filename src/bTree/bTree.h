@@ -23,7 +23,7 @@ typedef struct BTreeMetadata {
  * @param registerOpenType The open mode of the btree file
  * @return BTreeMetadata_t* the created meta
  */
-BTreeMetadata_t* BTreeMetadata_Create(char* bTreeIndexFileName, char* indexOpenType, char* registersFileName, char* registerOpenType);
+BTreeMetadata_t* BTreeMetadata_Create(const char* bTreeIndexFileName, const char* indexOpenType, const char* registersFileName, const char* registerOpenType);
 
 /**
  * @brief Inserts a new register in the cache.

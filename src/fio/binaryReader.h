@@ -23,6 +23,14 @@ Vehicle_t* BinaryReader_Vehicle(FILE* srcFile);
  */
 BusLine_t* BinaryReader_BusLine(FILE* srcFile);
 
+/**
+ * @brief Checks if the file does not exist or has an invalid status (is corrupted).
+ *        Returns TRUE if the status is OK ('1'). FALSE otherwise.
+ * 
+ * @param file file to check.
+ * @return char 
+ */
+char BinaryReader_ValidateStatus(FILE* file);
 
 /**
  * @brief Reads vehicle header from src file. Assumes file pointer is at the correct place!
@@ -50,7 +58,7 @@ BusLine_t** BinaryReader_BusLines(const char* fileName, int* n_buslines);
 // ANCHOR: B-Tree header & nodes
 
 /**
- * @brief reads the header of an B-Tree index File, if there isn't, creates an empty one
+ * @brief Reads the header of an B-Tree index File. If none exists, creates an empty one.
  * 
  * @param pt the index file ponter
  * @return BHeader_t* 
@@ -59,7 +67,6 @@ BHeader_t* BinaryReader_BTreeHeader(FILE* bTreeFP);
 
 /**
  * @brief Gets a node from the B-Tree cache by RRN.
- *        If the node is not cached, loads from disk.
  * 
  * @param cache
  * @param nodeRRN Must be -1 or a valid RRN.

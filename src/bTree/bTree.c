@@ -4,7 +4,7 @@
 #include "../core/printer.h"
 #include <assert.h>
 
-BTreeMetadata_t* BTreeMetadata_Create(char* bTreeIndexFileName, char* indexOpenType, char* registersFileName, char* registerOpenType) {
+BTreeMetadata_t* BTreeMetadata_Create(const char* bTreeIndexFileName, const char* indexOpenType, const char* registersFileName, const char* registerOpenType) {
     BTreeMetadata_t* meta = calloc(1, sizeof(BTreeMetadata_t));
 
     // Initializes the registers File
@@ -16,7 +16,8 @@ BTreeMetadata_t* BTreeMetadata_Create(char* bTreeIndexFileName, char* indexOpenT
         
             fseek(meta->registersFile, 0, SEEK_SET);
             fread(&status, sizeof(char), 1, meta->registersFile);
-        
+
+            // Validates status
             if (status == '0') {
                 fclose(meta->registersFile);
                 meta->registersFile = NULL;
@@ -32,14 +33,16 @@ BTreeMetadata_t* BTreeMetadata_Create(char* bTreeIndexFileName, char* indexOpenT
     if (bTreeIndexFileName != NULL && indexOpenType != NULL) {
         meta->bTreeIndexFile = fopen(bTreeIndexFileName, indexOpenType);
         
+        // Validates file size
         if (meta->bTreeIndexFile != NULL) {
-            
             fseek(meta->bTreeIndexFile, 0, SEEK_END);       
             if (ftell(meta->bTreeIndexFile) >= BTREE_PAGE_SIZE){
                 fseek(meta->bTreeIndexFile, 0, SEEK_SET);
                 
                 char status;
                 fread(&status, sizeof(char), 1, meta->bTreeIndexFile);
+
+                // Validates status
                 if (status == '0') {
                     fclose(meta->bTreeIndexFile);
                     meta->bTreeIndexFile = NULL;
@@ -51,6 +54,7 @@ BTreeMetadata_t* BTreeMetadata_Create(char* bTreeIndexFileName, char* indexOpenT
                     meta->header = BinaryReader_BTreeHeader(meta->bTreeIndexFile);
                 }
             } else {
+                // Something is wrong
                 meta->header = BHeader_Create('0', -1, 0);
                 BinaryWriter_BTreeHeader(meta);
             }

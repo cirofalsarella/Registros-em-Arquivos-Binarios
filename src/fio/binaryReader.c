@@ -62,6 +62,19 @@ BusLine_t* BinaryReader_BusLine(FILE *srcFile) {
     return busLine;
 }
 
+char BinaryReader_ValidateStatus(FILE* file) {
+    if (file == NULL) return FALSE;
+
+    char status;    
+    fseek(file, 0, SEEK_SET);
+    fread(&status, sizeof(char), 1, file);
+    if (status == '1') return TRUE; // Everything is OK
+    else {
+        fclose(file); // File is corrupted
+        return FALSE;
+    }
+}
+
 VehicleHeader_t* BinaryReader_VehicleHeader(FILE *srcFile) {
     VehicleHeader_t* header = calloc(1, sizeof(VehicleHeader_t));
 
@@ -116,6 +129,12 @@ Vehicle_t** BinaryReader_Vehicles(const char* fileName, int* n_vehicles) {
     // Reads the header
     VehicleHeader_t* header = BinaryReader_VehicleHeader(srcFile);
 
+    if (!BinaryHeaders_IsVehicleHeaderValid(header)) {
+        BinaryHeaders_FreeVehicleHeader(header);
+        fclose(srcFile);
+        return NULL;
+    }
+
     // Allocates space for the vehicles
     Vehicle_t** vehicles = calloc((header)->numReg, sizeof(Vehicle_t*));
     int n_registers = (header)->numReg + (header)->numRegRemov;
@@ -163,6 +182,12 @@ BusLine_t** BinaryReader_BusLines(const char* fileName, int* n_buslines) {
 
     // Reads the header
     BusLineHeader_t* header = BinaryReader_BusLineHeader(srcFile);
+
+    if (!BinaryHeaders_IsBusLineHeaderValid(header)) {
+        BinaryHeaders_FreeBusLineHeader(header);
+        fclose(srcFile);
+        return NULL;
+    }
 
     // Allocates space for the buslines
     BusLine_t** buslines = calloc((header)->numReg, sizeof(BusLine_t*));
@@ -228,12 +253,6 @@ BNode_t* BinaryReader_BTreeNode(BTreeMetadata_t* meta, RRN_t nodeRRN) {
     return node;
 }
 
-/**
- * @brief Function that reads the header and root of an bTree.
- * 
- * @param meta The cache of the bTree
- * @return the file status 
- */
 BHeader_t* BinaryReader_BTreeHeader(FILE* pt) {
     fseek(pt, 0, SEEK_SET);
 

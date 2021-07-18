@@ -19,6 +19,22 @@
 VehicleHeader_t* BinaryHeaders_CreateVehicleHeader(int nextReg, int numReg, int numRegRemov);
 
 /**
+ * @brief Returns TRUE if the vehicle header is valid.
+ * 
+ * @param header Header to consider.
+ * @return boolean 
+ */
+char BinaryHeaders_IsVehicleHeaderValid(VehicleHeader_t* header);
+
+/**
+ * @brief Returns TRUE if the bus lines header is valid.
+ * 
+ * @param header Header to consider.
+ * @return boolean 
+ */
+char BinaryHeaders_IsBusLineHeaderValid(BusLineHeader_t* header);
+
+/**
  * @brief Creates a new bus line header with the given strings.
  * 
  * @param describeCode 

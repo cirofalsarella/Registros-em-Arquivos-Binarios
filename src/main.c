@@ -10,7 +10,6 @@
 #include "core/utils.h"
 #include "core/operations.h"
 
-
 //  Printa uma Hash do arquivo (binário na tela)
 void PrintHash(const char* nomeArquivoBinario) {
 	unsigned long i, cs;

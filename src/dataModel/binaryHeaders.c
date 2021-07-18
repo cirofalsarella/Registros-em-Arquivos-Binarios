@@ -48,6 +48,16 @@ BusLineHeader_t* BinaryHeaders_CreateBusLineHeader(int nextReg, int numReg, int 
     return header;                        
 }
 
+// ANCHOR: Validation functions
+
+char BinaryHeaders_IsVehicleHeaderValid(VehicleHeader_t* header) {
+	return header->numReg >= 0 && header->numRegRemov <= header->numReg;
+}
+
+char BinaryHeaders_IsBusLineHeaderValid(BusLineHeader_t* header) {
+	return header->numReg >= 0 && header->numRegRemov <= header->numReg;
+}
+
 
 // ANCHOR: Free functions
 
