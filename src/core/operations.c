@@ -47,10 +47,17 @@ void Op_NestedLoopJoin(const char* vehiclesFileName, const char* busLinesFileNam
 	scanf("%s", busLineIndexFileName);
 
 	FILE* vehiclesFile = fopen(vehiclesFileName, "rb");
-	FILE* busLinesFile = fopen(busLinesFileName, "rb");
+	if (!BinaryReader_ValidateStatus(vehiclesFile)) {
+		printf(BAD_FILE_ERROR);
+		return;
+	}
 
-	// Checks for nonexistent files and for files with invalid status
-	if (!BinaryReader_ValidateStatus(vehiclesFile) || !BinaryReader_ValidateStatus(busLinesFile)) {
+	FILE* busLinesFile = fopen(busLinesFileName, "rb");
+	if (!BinaryReader_ValidateStatus(busLinesFile)) {
+		char status = '0';
+		fseek(vehiclesFile, 0, SEEK_SET);
+		fwrite(&status, sizeof(char), 1, vehiclesFile);
+		fclose(vehiclesFile);
 		printf(BAD_FILE_ERROR);
 		return;
 	}
@@ -199,6 +206,7 @@ void Op_SingleLoopJoin(const char* vehiclesFileName, const char* busLinesFileNam
 				// If everything is as expected, prints the joint register
 				Printer_Vehicle(vehicle);
 				Printer_BusLine(busLine);
+				BusLine_Free(busLine);
 				foundAnyMatches = TRUE;
 				printf("\n");
 			}
@@ -241,7 +249,7 @@ int Op_SortVehiclesByLineCode(const char* unorderedFile, const char* orderedFile
 	}
 
 	// Write ordered registers
-	Order_Vehicles(vehicles, 0, n_vehicles);
+	Order_Vehicles(vehicles, 0, n_vehicles-1);
 	BinaryWriter_VehicleFile(vehicles, n_vehicles, orderedFile);
 
 	// [FLAG] deixa o free assim pedro
@@ -296,7 +304,7 @@ int Op_SortMergeJoin(const char* vehicleFile, const char* buslineFile) {
 		free(vehicles);
 		return 1;
 	}
-	Order_Vehicles(vehicles, 0, n_vehicles);
+	Order_Vehicles(vehicles, 0, n_vehicles-1);
 
 	int n_buslines;
 	BusLine_t** buslines = BinaryReader_BusLines(buslineFile, &n_buslines);
@@ -317,15 +325,16 @@ int Op_SortMergeJoin(const char* vehicleFile, const char* buslineFile) {
 		
 		return 1;
 	}
-	Order_BusLines(buslines, 0, n_buslines);
+	Order_BusLines(buslines, 0, n_buslines-1);
 
 	// Prints registers merging
+	char flag = 1;
 	int it_v = 0;
 	int it_b = 0;
 	while (it_v < n_vehicles && it_b < n_buslines) {
-		printf("%d, %d\n", vehicles[it_v]->lineCode, buslines[it_b]->lineCode);
 		// Se v == b printa os 2 e anda com v
 		if (vehicles[it_v]->lineCode == buslines[it_b]->lineCode) {
+			flag = 0;
 			Printer_Merge(vehicles[it_v], buslines[it_b]);
 			it_v++;
 		} else {
@@ -339,6 +348,9 @@ int Op_SortMergeJoin(const char* vehicleFile, const char* buslineFile) {
 				it_v++;
 			}
 		}
+	}
+	if (flag) {
+		printf(NO_REGS_ERROR);
 	}
 
 	// Frees the memory

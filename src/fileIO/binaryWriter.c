@@ -123,7 +123,7 @@ void BinaryWriter_VehicleFile(Vehicle_t** vehicles, int n_vehicles, const char* 
 
     for (int i = 0; i < n_vehicles; i++){
         BinaryWriter_Vehicle(vehicles[i], destFile);
-        if (vehicles[i]->removed == '0')    header->removedRegCount++;
+        if (vehicles[i]->removed == '1')    header->removedRegCount++;
         else                                header->validRegCount++;
     }
 
@@ -154,8 +154,7 @@ void BinaryWriter_BusLineFile(BusLine_t** buslines, int n_buslines, const char* 
 
     for (int i = 0; i < n_buslines; i++){
         BinaryWriter_BusLine(buslines[i], destFile);
-        if (buslines[i]->removed == '0')    header->removedRegCount++;
-        else                                header->validRegCount++;
+        if (buslines[i]->removed == '0')    header->validRegCount++;
     }
 
     // Writes nextReg
