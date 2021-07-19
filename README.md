@@ -5,11 +5,12 @@ A database management system that uses B-Trees for quickly retrieving registers.
 
 ## Folder structure
     .
-    ├── bTree                   # bTree:     B-Tree indexing algorithms & data model
-    ├── core                    # core:      Related to the implementation of the operations
-    ├── dataModel               # dataModel: "Constructors" and "destructors" for commonly used registers
-    ├── fileIO                  # fileIO:    Binary read/write
-    ├── main.c                  # main.c:    The entry point
+    ├── bTree                   # bTree:        B-Tree indexing algorithms & data model
+    ├── core                    # core:         Related to the implementation of the operations
+    ├── dataModel               # dataModel:    "Constructors" and "destructors" for commonly used registers
+    ├── fileIO                  # fileIO:       Binary read/write
+    ├── order                   # order:     
+    ├── main.c                  # main.c:       The entry point
     └── README.md               # README.md
 
 ## Supported operations

@@ -9,6 +9,7 @@
 #include "../fileIO/binaryWriter.h"
 #include "../core/printer.h"
 #include "../core/utils.h"
+#include "../order/order.h"
 
 #define BAD_FILE_ERROR "Falha no processamento do arquivo.\n"
 #define NO_REGS_ERROR "Registro inexistente.\n"
@@ -222,72 +223,130 @@ void Op_SingleLoopJoin(const char* vehiclesFileName, const char* busLinesFileNam
 
 // ANCHOR: Sort-merge join related operations
 
-void Op_SortVehiclesByLineCode(const char* unorderedFile, const char* orderedFile) {
+int Op_SortVehiclesByLineCode(const char* unorderedFile, const char* orderedFile) {
 	char field[64] = { "\0" };
 	scanf("%s", field);
 	
 	// Read unorderedFile to ram
 	int n_vehicles;
 	Vehicle_t** vehicles = BinaryReader_Vehicles(unorderedFile, &n_vehicles);
+	if (vehicles == NULL) {
+		printf(BAD_FILE_ERROR);
+		return 1;
+	}
+	if (n_vehicles == 0) {
+		printf(NO_REGS_ERROR);
+		free(vehicles);
+		return 1;
+	}
 
-	// Order file acording to the especified field
-
-
-	// Write file in orderedFile
+	// Write ordered registers
+	Order_Vehicles(vehicles, 0, n_vehicles);
 	BinaryWriter_VehicleFile(vehicles, n_vehicles, orderedFile);
 
-	for (int i = 0; i < n_vehicles; i++) {
-		Vehicle_Free(vehicles[i]);
-	}
+	// [FLAG] deixa o free assim pedro
+	for (int i = 0; i < n_vehicles; i++)	Vehicle_Free(vehicles[i]);
 	free(vehicles);
+
+	return 0;
 }
 
-void Op_SortBusLinesByLineCode(const char* unorderedFile, const char* orderedFile) {
+int Op_SortBusLinesByLineCode(const char* unorderedFile, const char* orderedFile) {
 	char field[64] = { "\0" };
 	scanf("%s", field);
 	
 	// Read unorderedFile to ram
 	int n_buslines;
 	BusLine_t** buslines = BinaryReader_BusLines(unorderedFile, &n_buslines);
+	if (buslines == NULL) {
+		printf(BAD_FILE_ERROR);
+		return 1;
+	}
+	if (n_buslines == 0) {
+		printf(NO_REGS_ERROR);
+		free(buslines);
+		return 1;
+	}
 
-	// Order file acording to the especified field
-
-
-	// Write file in orderedFile
+	// Write ordered registers
+	Order_BusLines(buslines, 0, n_buslines-1);
 	BinaryWriter_BusLineFile(buslines, n_buslines, orderedFile);
 
-	for (int i = 0; i < n_buslines; i++) {
-		BusLine_Free(buslines[i]);
-	}
+	// [FLAG] deixa o free assim pedro
+	for (int i = 0; i < n_buslines; i++)	BusLine_Free(buslines[i]);
 	free(buslines);
+
+	return 0;
 }
 
-void Op_SortMergeJoin(const char* vehicleFile, const char* buslineFile) {
+int Op_SortMergeJoin(const char* vehicleFile, const char* buslineFile) {
 	if (!ScanFieldNames()) {
-		return;
+		return 1;
 	}
 
-	// Get registers
+	// Get registers and order
 	int n_vehicles;
 	Vehicle_t** vehicles = BinaryReader_Vehicles(vehicleFile, &n_vehicles);
+	if (vehicles == NULL) {
+		printf(BAD_FILE_ERROR);
+		return 1;
+	}
+	if (n_vehicles == 0) {
+		printf(NO_REGS_ERROR);
+		free(vehicles);
+		return 1;
+	}
+	Order_Vehicles(vehicles, 0, n_vehicles);
 
 	int n_buslines;
 	BusLine_t** buslines = BinaryReader_BusLines(buslineFile, &n_buslines);
+	if (buslines == NULL) {
+		printf(BAD_FILE_ERROR);
 
-	// Orders registers by "codLinha" field
+		for (int i = 0; i < n_vehicles; i++)	Vehicle_Free(vehicles[i]);
+		free(vehicles);
+		
+		return 1;
+	}
+	if (n_buslines == 0) {
+		printf(NO_REGS_ERROR);
+
+		for (int i = 0; i < n_vehicles; i++)	Vehicle_Free(vehicles[i]);
+		free(vehicles);
+		free(buslines);
+		
+		return 1;
+	}
+	Order_BusLines(buslines, 0, n_buslines);
 
 	// Prints registers merging
+	int it_v = 0;
+	int it_b = 0;
+	while (it_v < n_vehicles && it_b < n_buslines) {
+		printf("%d, %d\n", vehicles[it_v]->lineCode, buslines[it_b]->lineCode);
+		// Se v == b printa os 2 e anda com v
+		if (vehicles[it_v]->lineCode == buslines[it_b]->lineCode) {
+			Printer_Merge(vehicles[it_v], buslines[it_b]);
+			it_v++;
+		} else {
+			// Se v > b anda com b
+			if (vehicles[it_v]->lineCode > buslines[it_b]->lineCode) {
+				it_b++;
+			}
+			
+			// Se b > v anda com v
+			else {
+				it_v++;
+			}
+		}
+	}
 
 	// Frees the memory
-	for (int i = 0; i < n_vehicles; i++) {
-		Vehicle_Free(vehicles[i]);
-	}
-	
+	// [FLAG] deixa o free assim pedro
+	for (int i = 0; i < n_vehicles; i++)	Vehicle_Free(vehicles[i]);
+	for (int i = 0; i < n_buslines; i++)	BusLine_Free(buslines[i]);
 	free(vehicles);
-	
-	for (int i = 0; i < n_buslines; i++) {
-		BusLine_Free(buslines[i]);
-	}
-	
 	free(buslines);
+
+	return 0;
 }

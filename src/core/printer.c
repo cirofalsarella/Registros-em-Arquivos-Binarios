@@ -130,6 +130,39 @@ void Printer_BusLine(const BusLine_t *busLine) {
     if (acceptsCardStr != NULL) free(acceptsCardStr);
 }
 
+void Printer_Merge(const Vehicle_t *vehicle, const BusLine_t* busLine) {
+    PrettyPrintWithMaxLength("Prefixo do veiculo", vehicle->prefix, 5);
+    PrettyPrintStr("Modelo do veiculo", vehicle->model);
+    PrettyPrintStr("Categoria do veiculo", vehicle->category);
+    printf("Data de entrada do veiculo na frota: ");
+    PrettyPrintDate(vehicle->date);
+    PrettyPrintInt("Quantidade de lugares sentados disponiveis", vehicle->numSeats);
+
+    PrettyPrintInt("Codigo da linha", busLine->lineCode);
+    PrettyPrintStr("Nome da linha", busLine->name);
+    PrettyPrintStr("Cor que descreve a linha", busLine->color);
+
+    // Converts accepts credit card char to a string
+    char* acceptsCardStr = calloc(100, sizeof(char));
+    
+    if (busLine->acceptsCreditCard == 'S') {
+        strcpy(acceptsCardStr, "PAGAMENTO SOMENTE COM CARTAO SEM PRESENCA DE COBRADOR");        
+    } else if (busLine->acceptsCreditCard == 'N') {
+        strcpy(acceptsCardStr, "PAGAMENTO EM CARTAO E DINHEIRO");
+    } else if (busLine->acceptsCreditCard == 'F') {
+        strcpy(acceptsCardStr, "PAGAMENTO EM CARTAO SOMENTE NO FINAL DE SEMANA");
+    } else {
+        free(acceptsCardStr);
+        acceptsCardStr = NULL;
+    }
+
+    PrettyPrintStr("Aceita cartao", acceptsCardStr);
+
+    if (acceptsCardStr != NULL) free(acceptsCardStr);
+
+    printf("\n");
+}
+
 
 /**
  * @brief Prints an node

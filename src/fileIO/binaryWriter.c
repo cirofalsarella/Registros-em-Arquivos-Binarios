@@ -113,17 +113,18 @@ void BinaryWriter_BTreeHeader(BTreeMetadata_t* meta) {
 // ANCHOR: File Writing functions
 
 void BinaryWriter_VehicleFile(Vehicle_t** vehicles, int n_vehicles, const char* fileName) {
-    VehicleHeader_t* header = BinaryHeaders_CreateVehicleHeader(n_vehicles, 0, 0);
+    VehicleHeader_t* header = BinaryHeaders_CreateVehicleHeader(0, 0, 0);
     
     // Opens the file and writes the header
     FILE* destFile = fopen(fileName, "wb");
     char status = '0';
     fwrite(&status, sizeof(char), 1, destFile);
-    WriteVehicleHeader(header, destFile);
-    // TODO: fseek e escrever o header só depois
+    fseek(destFile, VEHICLE_HEADER_SIZE-1, SEEK_CUR);
 
     for (int i = 0; i < n_vehicles; i++){
         BinaryWriter_Vehicle(vehicles[i], destFile);
+        if (vehicles[i]->removed == '0')    header->removedRegCount++;
+        else                                header->validRegCount++;
     }
 
     // Writes nextReg
@@ -139,22 +140,22 @@ void BinaryWriter_VehicleFile(Vehicle_t** vehicles, int n_vehicles, const char* 
 
     // Frees and closes everything
     fclose(destFile);
-    free(vehicles);
     BinaryHeaders_FreeVehicleHeader(header);
 }
 
 void BinaryWriter_BusLineFile(BusLine_t** buslines, int n_buslines, const char* fileName) {
-    BusLineHeader_t* header = BinaryHeaders_CreateBusLineHeader(n_buslines, 0, 0);
+    BusLineHeader_t* header = BinaryHeaders_CreateBusLineHeader(0, n_buslines, 0);
     
     // Opens the file and writes the header
     FILE* destFile = fopen(fileName, "wb");
     char status = '0';
     fwrite(&status, sizeof(char), 1, destFile);
-    WriteBusLineHeader(header, destFile);
-    // TODO: fseek e escrever o header só depois
+    fseek(destFile, BUSLINE_HEADER_SIZE-1, SEEK_CUR);
 
     for (int i = 0; i < n_buslines; i++){
         BinaryWriter_BusLine(buslines[i], destFile);
+        if (buslines[i]->removed == '0')    header->removedRegCount++;
+        else                                header->validRegCount++;
     }
 
     // Writes nextReg
@@ -170,7 +171,6 @@ void BinaryWriter_BusLineFile(BusLine_t** buslines, int n_buslines, const char* 
 
     // Frees and closes everything
     fclose(destFile);
-    free(buslines);
     BinaryHeaders_FreeBusLineHeader(header);
 }
 

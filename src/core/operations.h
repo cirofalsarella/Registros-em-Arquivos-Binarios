@@ -25,7 +25,7 @@ void Op_SingleLoopJoin(const char* vehicleFile, const char* buslineFile);
  * @param unorderedFile Source file.
  * @param orderedFile   Dest file.
  */
-void Op_SortVehiclesByLineCode(const char* unorderedFile, const char* orderedFile);
+int Op_SortVehiclesByLineCode(const char* unorderedFile, const char* orderedFile);
 
 /**
  * @brief Operation 18. Sorts a bus lines file by line code. O(n log n).
@@ -33,7 +33,7 @@ void Op_SortVehiclesByLineCode(const char* unorderedFile, const char* orderedFil
  * @param unorderedFile Source file.
  * @param orderedFile   Dest file.
  */
-void Op_SortBusLinesByLineCode(const char* unorderedFile, const char* orderedFile);
+int Op_SortBusLinesByLineCode(const char* unorderedFile, const char* orderedFile);
 
 /**
  * @brief Operation 19. Performs a linear search simultaneously on both (sorted) files.
@@ -42,6 +42,6 @@ void Op_SortBusLinesByLineCode(const char* unorderedFile, const char* orderedFil
  * @param vehicleFile Path to the vehicles file.
  * @param buslineFile Path to the bus lines file.
  */
-void Op_SortMergeJoin(const char* vehicleFile, const char* buslineFile);
+int Op_SortMergeJoin(const char* vehicleFile, const char* buslineFile);
 
 #endif

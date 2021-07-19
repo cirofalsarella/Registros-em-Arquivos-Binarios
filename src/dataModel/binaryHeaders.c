@@ -7,7 +7,6 @@
 
 // ANCHOR: Create functions
 
-// Create an Vehicle header
 VehicleHeader_t* BinaryHeaders_CreateVehicleHeader(int nextReg, int numReg, int numRegRemov) {
     // Describe lenghts: 18, 35, 42, 26, 17, 20
     VehicleHeader_t* header = (VehicleHeader_t*) malloc(sizeof(VehicleHeader_t));
@@ -17,19 +16,16 @@ VehicleHeader_t* BinaryHeaders_CreateVehicleHeader(int nextReg, int numReg, int 
     header->removedRegCount = numRegRemov;
 
     // Copies over fixed-length fields
-    // TODO: deixar os campos de descrição setados
-    Utils_StrCopyToFixedLen(header->describePrefix, "", 18);
-    Utils_StrCopyToFixedLen(header->describeDate, "", 35);
-    Utils_StrCopyToFixedLen(header->describePlaces, "", 42);
-    Utils_StrCopyToFixedLen(header->describeLine, "", 26);
-    Utils_StrCopyToFixedLen(header->describeModel, "", 17);
-    Utils_StrCopyToFixedLen(header->describeCategory, "", 20);
+    Utils_StrCopyToFixedLen(header->describePrefix, "Prefixo do veiculo", 18);
+    Utils_StrCopyToFixedLen(header->describeDate, "Data de entrada do veiculo na frota", 35);
+    Utils_StrCopyToFixedLen(header->describePlaces, "Quantidade de lugares sentados disponiveis", 42);
+    Utils_StrCopyToFixedLen(header->describeLine, "Linha associada ao veiculo", 26);
+    Utils_StrCopyToFixedLen(header->describeModel, "Modelo do veiculo", 17);
+    Utils_StrCopyToFixedLen(header->describeCategory, "Categoria do veiculo", 20);
 
     return header;
 }
 
-
-// Create an busline Header
 BusLineHeader_t* BinaryHeaders_CreateBusLineHeader(int nextReg, int numReg, int numRegRemov) {
     // Describe lenghts: 15, 13, 13, 24
     BusLineHeader_t* header = (BusLineHeader_t*) malloc(sizeof(BusLineHeader_t));
@@ -39,14 +35,14 @@ BusLineHeader_t* BinaryHeaders_CreateBusLineHeader(int nextReg, int numReg, int 
     header->removedRegCount = numRegRemov;
 
     // Copies over fixed-length fields
-    // TODO: deixar os campos de descrição setados
-    Utils_StrCopyToFixedLen(header->describeCode, "", 15);
-    Utils_StrCopyToFixedLen(header->describeCard, "", 13);
-    Utils_StrCopyToFixedLen(header->describeName, "", 13);
-    Utils_StrCopyToFixedLen(header->describeLine, "", 24);
+    Utils_StrCopyToFixedLen(header->describeCode, "Codigo da linha", 15);
+    Utils_StrCopyToFixedLen(header->describeCard, "Aceita cartao", 13);
+    Utils_StrCopyToFixedLen(header->describeName, "Nome da linha", 13);
+    Utils_StrCopyToFixedLen(header->describeLine, "Cor que descreve a linha", 24);
 
     return header;                        
 }
+
 
 // ANCHOR: Validation functions
 

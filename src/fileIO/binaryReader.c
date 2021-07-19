@@ -5,8 +5,10 @@
 #include "../fileIO/binaryReader.h"
 #include "../dataModel/dataModel.h"
 #include "../dataModel/binaryHeaders.h"
+#include "../fileIO/binaryWriter.h"
 #include "../bTree/bTreeDataModel.h"
 #include "../bTree/bTree.h"
+#include "../core/printer.h"
 
 
 // ANCHOR: Read registers & reg file headers
@@ -127,10 +129,15 @@ Vehicle_t** BinaryReader_Vehicles(const char* fileName, int* n_vehicles) {
     }
 
     // Reads the header
+    fseek(srcFile, 1, SEEK_SET);
     VehicleHeader_t* header = BinaryReader_VehicleHeader(srcFile);
 
     if (!BinaryHeaders_IsVehicleHeaderValid(header)) {
         BinaryHeaders_FreeVehicleHeader(header);
+        char status = '1';
+
+        fseek(srcFile, 0, SEEK_SET);
+        fwrite(&status, sizeof(char), 1, srcFile);
         fclose(srcFile);
         return NULL;
     }
@@ -181,10 +188,16 @@ BusLine_t** BinaryReader_BusLines(const char* fileName, int* n_buslines) {
     }
 
     // Reads the header
+    fseek(srcFile, 1, SEEK_SET);
     BusLineHeader_t* header = BinaryReader_BusLineHeader(srcFile);
 
     if (!BinaryHeaders_IsBusLineHeaderValid(header)) {
         BinaryHeaders_FreeBusLineHeader(header);
+        fclose(srcFile);
+        char status = '1';
+
+        fseek(srcFile, 0, SEEK_SET);
+        fwrite(&status, sizeof(char), 1, srcFile);
         fclose(srcFile);
         return NULL;
     }

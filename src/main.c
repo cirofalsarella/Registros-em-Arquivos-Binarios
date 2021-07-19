@@ -60,12 +60,10 @@ int main() {
         Op_SingleLoopJoin(firstFileName, secondFileName);
         break;
     case 17:
-        Op_SortVehiclesByLineCode(firstFileName, secondFileName);
-        PrintHash(secondFileName);
+        if (!Op_SortVehiclesByLineCode(firstFileName, secondFileName))  PrintHash(secondFileName);
         break;
     case 18:
-        Op_SortBusLinesByLineCode(firstFileName, secondFileName);
-        PrintHash(secondFileName);
+        if (!Op_SortBusLinesByLineCode(firstFileName, secondFileName))  PrintHash(secondFileName);
         break;
     case 19:
         Op_SortMergeJoin(firstFileName, secondFileName);
