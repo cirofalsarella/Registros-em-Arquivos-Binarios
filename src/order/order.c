@@ -5,6 +5,8 @@
 
 #include "order.h"
 
+// Simple merge sort ordenation
+
 void Order_Vehicles(Vehicle_t** v, int ini, int end){
     if (ini >= end) return;
     int mid = ini + (end - ini)/2;
@@ -46,7 +48,6 @@ void Order_Vehicles(Vehicle_t** v, int ini, int end){
     free(new);
     return;
 }
-
 
 void Order_BusLines(BusLine_t** v, int ini, int end){
     if (ini >= end) return;

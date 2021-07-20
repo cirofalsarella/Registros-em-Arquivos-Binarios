@@ -5,74 +5,57 @@
 #include "../bTree/bTree.h"
 #include "../dataModel/dataModel.h"
 
-// ANCHOR: Register writing functions
+// ANCHOR: Single Register
 
 /**
- * @brief Write a vehicle to the given file.
+ * @brief Write register in source file.
  * 
- * @param vehicle Vehicle to be writen
- * @param destFile Destine file
+ * @param register The register that will be written
+ * @param destFile The file pointer. Assumes it is at the correct place!
  */
 void BinaryWriter_Vehicle(const Vehicle_t* vehicle, FILE* destFile);
-
 /**
- * @brief Writes a bus line to the given file.
+ * @brief Write register in source file.
  * 
- * @param busLine Busline to be Writen
- * @param destFile Destine File
+ * @param register The register that will be written
+ * @param destFile The file pointer. Assumes it is at the correct place!
  */
 void BinaryWriter_BusLine(const BusLine_t* busLine, FILE* destFile);
 
+
+// ANCHOR: Complete File
+
 /**
- * @brief 
+ * @brief Writes a complete registers file.
  * 
- * @param vehicle 
+ * @param registers The registers that will be written.
+ * @param n_registers The number of registers.
+ * @param fileName The name of the destiny file.
  */
 void BinaryWriter_VehicleFile(Vehicle_t** vehicles, int n_vehicles, const char* fileName);
+/**
+ * @brief Writes a complete registers file.
+ * 
+ * @param registers The registers that will be written.
+ * @param n_registers The number of registers.
+ * @param fileName The name of the destiny file.
+ */
 void BinaryWriter_BusLineFile(BusLine_t** buslines, int n_buslines, const char* fileName);
 
-// ANCHOR: Register appending functions
+
+// ANCHOR: B-Tree
 
 /**
- * @brief Writes a vector of vehicles to the end of dest file.
+ * @brief Seek and Write the given node.
  * 
- * @param vehicles vector of vehicles that will be writen.
- * @param vehiclesCount number of vehicles to be writen.
- * @param file the registers file.
- * @param destOffsets array to store the offsets of the inserted vehicles.
- * 
- * @return 1 == error, 0 == success
- */
-int BinaryWriter_AppendVehicles(Vehicle_t** vehicles, int vehiclesCount, FILE* file, ByteOffset_t* destOffsets);
-
-/**
- * @brief Writes a vector of bus lines to the end of dest file.
- * 
- * @param busLines vector of vehicles that will be written.
- * @param buslinesCount number of vehicles to be written.
- * @param file the registers file.
- * @param destOffsets array to store the offsets of the inserted bus lines.
- * 
- * @return 1 == error, 0 == success
- */
-int BinaryWriter_AppendBusLines(BusLine_t** busLines, int buslinesCount, FILE* file, ByteOffset_t* destOffsets);
-
-
-
-// ANCHOR: B-Tree related writing
-
-
-/**
- * @brief Seeks to the right place in the file and writes the given BNode_t.
- * 
- * @param node The node to be writen
+ * @param node The node to be written
  * @param meta The BTree metadata
  * @return The status (1 == error, 0 == success)
  */
 int BinaryWriter_SeekAndWriteNode(BNode_t* node, BTreeMetadata_t* meta);
 
 /**
- * @brief Writes the header of a BTree in the B-Tree file.
+ * @brief Write the header of a B-Tree in the B-Tree file.
  * 
  * @param meta The cache that contains the header and file pointer.
  */
@@ -81,7 +64,7 @@ void BinaryWriter_BTreeHeader(BTreeMetadata_t* meta);
 /**
  * @brief Creates a new B-Tree index file for the vehicles.
  * 
- * @param meta The cache that contains the header and file pointer.
+ * @param meta The the B-Tree metadata.
  * @return The status (1 == error, 0 == success)
  */
 int BinaryWriter_BTreeIndexFileVehicles(BTreeMetadata_t* meta);
