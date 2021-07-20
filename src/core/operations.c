@@ -38,6 +38,7 @@ int ScanFieldNames() {
 	return 1;
 }
 
+
 void Op_NestedLoopJoin(const char* vehiclesFileName, const char* busLinesFileName) {
 	if (!ScanFieldNames()) {
 		return;
@@ -54,9 +55,6 @@ void Op_NestedLoopJoin(const char* vehiclesFileName, const char* busLinesFileNam
 
 	FILE* busLinesFile = fopen(busLinesFileName, "rb");
 	if (!BinaryReader_ValidateStatus(busLinesFile)) {
-		char status = '0';
-		fseek(vehiclesFile, 0, SEEK_SET);
-		fwrite(&status, sizeof(char), 1, vehiclesFile);
 		fclose(vehiclesFile);
 		printf(BAD_FILE_ERROR);
 		return;
@@ -234,6 +232,10 @@ void Op_SingleLoopJoin(const char* vehiclesFileName, const char* busLinesFileNam
 int Op_SortVehiclesByLineCode(const char* unorderedFile, const char* orderedFile) {
 	char field[64] = { "\0" };
 	scanf("%s", field);
+	if (strcmp(field, "codLinha")){
+		printf(BAD_FILE_ERROR);
+		return 1;
+	}
 	
 	// Read unorderedFile to ram
 	int n_vehicles;
@@ -252,7 +254,6 @@ int Op_SortVehiclesByLineCode(const char* unorderedFile, const char* orderedFile
 	Order_Vehicles(vehicles, 0, n_vehicles-1);
 	BinaryWriter_VehicleFile(vehicles, n_vehicles, orderedFile);
 
-	// [FLAG] deixa o free assim pedro
 	for (int i = 0; i < n_vehicles; i++)	Vehicle_Free(vehicles[i]);
 	free(vehicles);
 
@@ -262,7 +263,10 @@ int Op_SortVehiclesByLineCode(const char* unorderedFile, const char* orderedFile
 int Op_SortBusLinesByLineCode(const char* unorderedFile, const char* orderedFile) {
 	char field[64] = { "\0" };
 	scanf("%s", field);
-	
+	if (strcmp(field, "codLinha")){
+		printf(BAD_FILE_ERROR);
+		return 1;
+	}
 	// Read unorderedFile to ram
 	int n_buslines;
 	BusLine_t** buslines = BinaryReader_BusLines(unorderedFile, &n_buslines);
@@ -280,7 +284,6 @@ int Op_SortBusLinesByLineCode(const char* unorderedFile, const char* orderedFile
 	Order_BusLines(buslines, 0, n_buslines-1);
 	BinaryWriter_BusLineFile(buslines, n_buslines, orderedFile);
 
-	// [FLAG] deixa o free assim pedro
 	for (int i = 0; i < n_buslines; i++)	BusLine_Free(buslines[i]);
 	free(buslines);
 
@@ -354,7 +357,6 @@ int Op_SortMergeJoin(const char* vehicleFile, const char* buslineFile) {
 	}
 
 	// Frees the memory
-	// [FLAG] deixa o free assim pedro
 	for (int i = 0; i < n_vehicles; i++)	Vehicle_Free(vehicles[i]);
 	for (int i = 0; i < n_buslines; i++)	BusLine_Free(buslines[i]);
 	free(vehicles);
@@ -362,3 +364,4 @@ int Op_SortMergeJoin(const char* vehicleFile, const char* buslineFile) {
 
 	return 0;
 }
+
