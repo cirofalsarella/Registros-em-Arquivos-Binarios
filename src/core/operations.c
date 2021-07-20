@@ -332,22 +332,23 @@ int Op_SortMergeJoin(const char* vehicleFile, const char* buslineFile) {
 
 	// Prints registers merging
 	char flag = 1;
-	int it_v = 0;
-	int it_b = 0;
-	while (it_v < n_vehicles && it_b < n_buslines) {
+	int vehiclesIterator = 0;
+	int busLinesIterator = 0;
+	
+	while (vehiclesIterator < n_vehicles && busLinesIterator < n_buslines) {
 		// Se v == b printa os 2 e anda com v
-		if (vehicles[it_v]->lineCode == buslines[it_b]->lineCode) {
+		if (vehicles[vehiclesIterator]->lineCode == buslines[busLinesIterator]->lineCode) {
 			flag = 0;
-			Printer_Merge(vehicles[it_v], buslines[it_b]);
-			it_v++;
+			Printer_Merge(vehicles[vehiclesIterator], buslines[busLinesIterator]);
+			vehiclesIterator++;
 		} else {
 			// Se v > b anda com b
-			if (vehicles[it_v]->lineCode > buslines[it_b]->lineCode) {
-				it_b++;
+			if (vehicles[vehiclesIterator]->lineCode > buslines[busLinesIterator]->lineCode) {
+				busLinesIterator++;
 			}
 			// Se b > v anda com v
 			else {
-				it_v++;
+				vehiclesIterator++;
 			}
 		}
 	}
