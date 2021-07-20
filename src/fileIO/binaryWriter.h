@@ -8,14 +8,14 @@
 // ANCHOR: Single Register
 
 /**
- * @brief Write register in source file.
+ * @brief Writes a register in the source file.
  * 
  * @param register The register that will be written
  * @param destFile The file pointer. Assumes it is at the correct place!
  */
 void BinaryWriter_Vehicle(const Vehicle_t* vehicle, FILE* destFile);
 /**
- * @brief Write register in source file.
+ * @brief Writes a register in the source file.
  * 
  * @param register The register that will be written
  * @param destFile The file pointer. Assumes it is at the correct place!

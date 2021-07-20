@@ -7,85 +7,88 @@
 
 // Simple merge sort ordenation
 
-void Order_Vehicles(Vehicle_t** v, int ini, int end){
-    if (ini >= end) return;
-    int mid = ini + (end - ini)/2;
+void Order_Vehicles(Vehicle_t** array, int left, int right) {
+    if (left >= right) return;
+    int mid = left + (right - left)/2;
 
-    Order_Vehicles(v, ini, mid);
-    Order_Vehicles(v, mid+1, end);
+    Order_Vehicles(array, left, mid);
+    Order_Vehicles(array, mid+1, right);
 
 
-    Vehicle_t** new = calloc (end-ini+1, sizeof(Vehicle_t*));
-    int it_i = ini;
-    int it_m = mid+1;
-    int it_n = 0;
+    Vehicle_t** new = calloc (right-left+1, sizeof(Vehicle_t*));
+    int leftIterator = left;
+    int midIterator = mid+1;
+    int newIterator = 0;
     
-    while (it_i <= mid && it_m <= end) {
-        if (v[it_i]->lineCode <= v[it_m]->lineCode){
-            new[it_n] = v[it_i];
-            it_i++;
+    while (leftIterator <= mid && midIterator <= right) {
+        if (array[leftIterator]->lineCode <= array[midIterator]->lineCode){
+            new[newIterator] = array[leftIterator];
+            leftIterator++;
         } else {
-            new[it_n] = v[it_m];
-            it_m++;
+            new[newIterator] = array[midIterator];
+            midIterator++;
         }
-        it_n++;
+        newIterator++;
     }
     
-    while (it_i <= mid){
-        new[it_n] = v[it_i];
-        it_i++;
-        it_n++;
+    while (leftIterator <= mid){
+        new[newIterator] = array[leftIterator];
+        leftIterator++;
+        newIterator++;
     }
 
-    while (it_m <= end){
-        new[it_n] = v[it_m];
-        it_m++;
-        it_n++;
+    while (midIterator <= right){
+        new[newIterator] = array[midIterator];
+        midIterator++;
+        newIterator++;
     }
 
-    for (int i=ini, k=0; i<=end; i++, k++) v[i] = new[k];
+    for (int i=left, k=0; i<=right; i++, k++) {
+        array[i] = new[k];
+    }
 
     free(new);
     return;
 }
 
-void Order_BusLines(BusLine_t** v, int ini, int end){
-    if (ini >= end) return;
-    int mid = ini + (end - ini)/2;
+void Order_BusLines(BusLine_t** array, int left, int right) {
+    if (left >= right) return;
+    int mid = left + (right - left)/2;
 
-    Order_BusLines(v, ini, mid);
-    Order_BusLines(v, mid+1, end);
+    Order_BusLines(array, left, mid);
+    Order_BusLines(array, mid+1, right);
 
-
-    BusLine_t** new = calloc (end-ini+1, sizeof(BusLine_t*));
-    int it_i = ini;
-    int it_m = mid+1;
-    int it_n = 0;
+    BusLine_t** new = calloc (right-left+1, sizeof(BusLine_t*));
+    int leftIterator = left;
+    int midIterator = mid+1;
+    int newIterator = 0;
     
-    while (it_i <= mid && it_m <= end) {
-        if (v[it_i]->lineCode <= v[it_m]->lineCode){
-            new[it_n] = v[it_i];
-            it_i++;
+    while (leftIterator <= mid && midIterator <= right) {
+        if (array[leftIterator]->lineCode <= array[midIterator]->lineCode){
+            new[newIterator] = array[leftIterator];
+            leftIterator++;
         } else {
-            new[it_n] = v[it_m];
-            it_m++;
+            new[newIterator] = array[midIterator];
+            midIterator++;
         }
-        it_n++;
+        newIterator++;
     }
     
-    while (it_i <= mid){
-        new[it_n] = v[it_i];
-        it_i++;
-        it_n++;
+    while (leftIterator <= mid){
+        new[newIterator] = array[leftIterator];
+        leftIterator++;
+        newIterator++;
     }
 
-    while (it_m <= end){
-        new[it_n] = v[it_m];
-        it_m++;
-        it_n++;
+    while (midIterator <= right){
+        new[newIterator] = array[midIterator];
+        midIterator++;
+        newIterator++;
     }
 
-    for (int i=ini, k=0; i<=end; i++, k++) v[i] = new[k];
+    for (int i = left, k = 0; i <= right; i++, k++) {
+        array[i] = new[k];
+    }
 
     free(new);
     return;

@@ -345,7 +345,6 @@ int Op_SortMergeJoin(const char* vehicleFile, const char* buslineFile) {
 			if (vehicles[it_v]->lineCode > buslines[it_b]->lineCode) {
 				it_b++;
 			}
-			
 			// Se b > v anda com v
 			else {
 				it_v++;
