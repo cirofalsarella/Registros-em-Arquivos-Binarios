@@ -53,6 +53,7 @@ void Op_NestedLoopJoin(const char* vehiclesFileName, const char* busLinesFileNam
 
 	FILE* busLinesFile = fopen(busLinesFileName, "rb");
 	if (!BinaryReader_ValidateStatus(busLinesFile)) {
+		if (vehiclesFile != NULL) fclose(vehiclesFile);
 		if (busLinesFile != NULL) fclose(busLinesFile);
 		printf(BAD_FILE_ERROR);
 		return;
