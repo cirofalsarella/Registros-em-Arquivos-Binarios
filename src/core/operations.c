@@ -308,7 +308,6 @@ int Op_SortMergeJoin(const char* vehicleFile, const char* buslineFile) {
 	}
 
 	if (n_vehicles <= 0) {
-		if (vehicleFile != NULL) fclose(vehicleFile);
 		printf(NO_REGS_ERROR);
 		free(vehicles);
 		return 1;
