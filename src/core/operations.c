@@ -44,9 +44,6 @@ void Op_NestedLoopJoin(const char* vehiclesFileName, const char* busLinesFileNam
 		return;
 	}
 
-	char busLineIndexFileName[128] = { "\0" };
-	scanf("%s", busLineIndexFileName);
-
 	FILE* vehiclesFile = fopen(vehiclesFileName, "rb");
 	if (!BinaryReader_ValidateStatus(vehiclesFile)) {
 		if (vehiclesFile != NULL) fclose(vehiclesFile);
