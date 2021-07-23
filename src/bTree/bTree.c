@@ -36,7 +36,7 @@ BTreeMetadata_t* BTreeMetadata_Create(const char* bTreeIndexFileName, const char
         // Validates file size
         if (meta->bTreeIndexFile != NULL) {
             fseek(meta->bTreeIndexFile, 0, SEEK_END);       
-            if (ftell(meta->bTreeIndexFile) >= BTREE_PAGE_SIZE){
+            if (ftell(meta->bTreeIndexFile) >= BTREE_PAGE_SIZE) {
                 fseek(meta->bTreeIndexFile, 0, SEEK_SET);
                 
                 char status;

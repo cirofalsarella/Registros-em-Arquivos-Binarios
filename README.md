@@ -70,3 +70,27 @@ Example usage:
 "AT090" "2019-05-20" 30 333 NULO "VERMELHO"
 "XX997" "2015-09-30" 20 672 NULO NULO
 ```
+
+### Brute-force join algorithm (op code 15)
+```bash
+15 [vehicleBinary] [busLineBinary] [fieldNameVehicle] [fieldNameBusLine]
+``` 
+
+### Single-loop B-Tree join algorithm (op code 16)
+```bash
+16 [vehicleBinary] [busLineBinary] [fieldNameVehicle] [fieldNameBusLine] [busLineIndex]
+``` 
+
+### RAM sorting (op codes 17 & 18)
+```bash
+17 [notSortedVehicles] [sortedVehicles] [fieldNameForSort]
+``` 
+
+```bash
+18 [notSortedBusLines] [sortedBusLines] [fieldNameForSort]
+``` 
+
+### Linear sorted join (op code 19)
+```bash
+19 [vehiclesFile] [busLinesFile] [fieldNameVehicles] [fieldNameBusLines] 
+``` 

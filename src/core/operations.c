@@ -240,19 +240,15 @@ int Op_SortVehiclesByLineCode(const char* unorderedFile, const char* orderedFile
 	// Read unorderedFile to ram
 	int n_vehicles;
 	Vehicle_t** vehicles = BinaryReader_Vehicles(unorderedFile, &n_vehicles);
-	if (vehicles == NULL) {
+	if (vehicles == NULL || n_vehicles < 0) {
 		printf(BAD_FILE_ERROR);
 		return 1;
 	}
 
-	if (n_vehicles <= 0) {
-		printf(NO_REGS_ERROR);
-		free(vehicles);
-		return 1;
-	}
-
 	// Write ordered registers
-	Order_Vehicles(vehicles, 0, n_vehicles-1);
+	if (n_vehicles > 0) {
+		Order_Vehicles(vehicles, 0, n_vehicles-1);
+	}
 	BinaryWriter_VehicleFile(vehicles, n_vehicles, orderedFile);
 
 	for (int i = 0; i < n_vehicles; i++)	Vehicle_Free(vehicles[i]);
@@ -271,14 +267,8 @@ int Op_SortBusLinesByLineCode(const char* unorderedFile, const char* orderedFile
 	// Read unorderedFile to ram
 	int n_buslines;
 	BusLine_t** buslines = BinaryReader_BusLines(unorderedFile, &n_buslines);
-	if (buslines == NULL) {
+	if (buslines == NULL || n_buslines < 0) {
 		printf(BAD_FILE_ERROR);
-		return 1;
-	}
-
-	if (n_buslines <= 0) {
-		printf(NO_REGS_ERROR);
-		free(buslines);
 		return 1;
 	}
 
@@ -313,6 +303,7 @@ int Op_SortMergeJoin(const char* vehicleFile, const char* buslineFile) {
 	
 	Order_Vehicles(vehicles, 0, n_vehicles-1);
 
+	// Sorts registers
 	int n_buslines;
 	BusLine_t** buslines = BinaryReader_BusLines(buslineFile, &n_buslines);
 
