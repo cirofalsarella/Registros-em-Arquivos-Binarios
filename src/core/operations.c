@@ -49,13 +49,14 @@ void Op_NestedLoopJoin(const char* vehiclesFileName, const char* busLinesFileNam
 
 	FILE* vehiclesFile = fopen(vehiclesFileName, "rb");
 	if (!BinaryReader_ValidateStatus(vehiclesFile)) {
+		if (vehiclesFile != NULL) fclose(vehiclesFile);
 		printf(BAD_FILE_ERROR);
 		return;
 	}
 
 	FILE* busLinesFile = fopen(busLinesFileName, "rb");
 	if (!BinaryReader_ValidateStatus(busLinesFile)) {
-		fclose(vehiclesFile);
+		if (busLinesFile != NULL) fclose(busLinesFile);
 		printf(BAD_FILE_ERROR);
 		return;
 	}
@@ -121,7 +122,7 @@ void CleanupWithError(BNode_t* nodeFound, Vehicle_t* vehicle, BusLine_t* busLine
 	BNode_Free(nodeFound);
 	Vehicle_Free(vehicle);
 	BusLine_Free(busLine);
-	fclose(vehiclesFile);
+	if (vehiclesFile != NULL) fclose(vehiclesFile);
 	BTreeMetadata_Free(busLineIndex);
 	BinaryHeaders_FreeVehicleHeader(vehicleHeader);
 }
@@ -138,6 +139,7 @@ void Op_SingleLoopJoin(const char* vehiclesFileName, const char* busLinesFileNam
 
 	// Checks for nonexistent files and for files with invalid status
 	if (!BinaryReader_ValidateStatus(vehiclesFile)) {
+		if (vehiclesFile != NULL) fclose(vehiclesFile);
 		printf(BAD_FILE_ERROR);
 		return;
 	}
@@ -146,8 +148,8 @@ void Op_SingleLoopJoin(const char* vehiclesFileName, const char* busLinesFileNam
 
 	// Checks for inconsistent headers
 	if (!BinaryHeaders_IsVehicleHeaderValid(vehicleHeader)) {
+		if (vehiclesFile != NULL) fclose(vehiclesFile);
 		printf(BAD_FILE_ERROR);
-		fclose(vehiclesFile);
 		return;
 	}
 
@@ -232,11 +234,11 @@ void Op_SingleLoopJoin(const char* vehiclesFileName, const char* busLinesFileNam
 int Op_SortVehiclesByLineCode(const char* unorderedFile, const char* orderedFile) {
 	char field[64] = { "\0" };
 	scanf("%s", field);
-	if (strcmp(field, "codLinha")){
+	if (strcmp(field, "codLinha") != 0) {
 		printf(BAD_FILE_ERROR);
 		return 1;
 	}
-	
+
 	// Read unorderedFile to ram
 	int n_vehicles;
 	Vehicle_t** vehicles = BinaryReader_Vehicles(unorderedFile, &n_vehicles);
@@ -244,7 +246,8 @@ int Op_SortVehiclesByLineCode(const char* unorderedFile, const char* orderedFile
 		printf(BAD_FILE_ERROR);
 		return 1;
 	}
-	if (n_vehicles == 0) {
+
+	if (n_vehicles <= 0) {
 		printf(NO_REGS_ERROR);
 		free(vehicles);
 		return 1;
@@ -263,7 +266,7 @@ int Op_SortVehiclesByLineCode(const char* unorderedFile, const char* orderedFile
 int Op_SortBusLinesByLineCode(const char* unorderedFile, const char* orderedFile) {
 	char field[64] = { "\0" };
 	scanf("%s", field);
-	if (strcmp(field, "codLinha")){
+	if (strcmp(field, "codLinha") != 0) {
 		printf(BAD_FILE_ERROR);
 		return 1;
 	}
@@ -274,7 +277,8 @@ int Op_SortBusLinesByLineCode(const char* unorderedFile, const char* orderedFile
 		printf(BAD_FILE_ERROR);
 		return 1;
 	}
-	if (n_buslines == 0) {
+
+	if (n_buslines <= 0) {
 		printf(NO_REGS_ERROR);
 		free(buslines);
 		return 1;
@@ -302,15 +306,19 @@ int Op_SortMergeJoin(const char* vehicleFile, const char* buslineFile) {
 		printf(BAD_FILE_ERROR);
 		return 1;
 	}
-	if (n_vehicles == 0) {
+
+	if (n_vehicles <= 0) {
+		if (vehicleFile != NULL) fclose(vehicleFile);
 		printf(NO_REGS_ERROR);
 		free(vehicles);
 		return 1;
 	}
+	
 	Order_Vehicles(vehicles, 0, n_vehicles-1);
 
 	int n_buslines;
 	BusLine_t** buslines = BinaryReader_BusLines(buslineFile, &n_buslines);
+
 	if (buslines == NULL) {
 		printf(BAD_FILE_ERROR);
 
@@ -319,7 +327,8 @@ int Op_SortMergeJoin(const char* vehicleFile, const char* buslineFile) {
 		
 		return 1;
 	}
-	if (n_buslines == 0) {
+
+	if (n_buslines <= 0) {
 		printf(NO_REGS_ERROR);
 
 		for (int i = 0; i < n_vehicles; i++)	Vehicle_Free(vehicles[i]);
@@ -328,6 +337,7 @@ int Op_SortMergeJoin(const char* vehicleFile, const char* buslineFile) {
 		
 		return 1;
 	}
+
 	Order_BusLines(buslines, 0, n_buslines-1);
 
 	// Prints registers merging
