@@ -1,6 +1,6 @@
 A database management system that uses B-Trees for quickly retrieving registers. University project by @cirofalsarella @PedroMartelleto.
 
-Each branch represents a different project, with different functions and operations.
+Each branch represents different milestones for the project, with different operations supported.
 
 ## Folder structure
     .
