@@ -1,10 +1,6 @@
-Projects made for a college subject by
-@cirofalsarella
-@PedroMartelleto
+A database management system that uses B-Trees for quickly retrieving registers. University project by @cirofalsarella @PedroMartelleto.
 
-Each branch represents a different project, with different functions/operations
-
-A database management system that uses B-Trees for quickly retrieving registers.
+Each branch represents a different project, with different functions and operations.
 
 ## Folder structure
     .
